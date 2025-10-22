@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* Define your theme variables */
+@theme {
+  --color-back: #000000;
+  --color-theme: #121212;
+  --color-obj: #b3b3b3;
+  --color-hover: #202020;
+  --color-w: #ffffff;
+}
+
+/* src/index.css */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+  /* Gray like Spotify */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
+/* add this in your global CSS or tailwind.css */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.play-button {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #1db954;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 1);
+  /* subtle black shadow */
+}
+
+.play-button-topresults {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #1db954;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 1);
+  /* subtle black shadow */
+}
+
+.image-wrapper:hover .play-button {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  /* keep default scale */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  /* smooth animation */
+}
+.image-wrapper:hover .play-button-topresults {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  /* keep default scale */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  /* smooth animation */
+}
+
+.topresult:hover .play-button {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  /* keep default scale */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  /* smooth animation */
+}
+
+.topresult:hover .play-button-topresults {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  /* keep default scale */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  /* smooth animation */
+}
+
+
+.play-button:hover {
+  background-color: #4dc075;
+}
+
+.play-button-topresults:hover {
+  background-color: #4dc075;
+}
+
+.like-btn{
+  display: none;
+  transition: all 0.2 ease;
+}
+
+.like-btn:hover{
+  transform: scale(1.15);
+}
+
+.recommended-cont2:hover .like-btn {
+  display: block;
+}
+
+
+/* Play/pause button */
+.play-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;               /* hidden by default */
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Show button on hover of container */
+.recommended-cont2:hover .play-btn {
+  opacity: 1;
+  transform: translate(0);
+}
