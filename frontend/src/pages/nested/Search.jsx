@@ -6,15 +6,59 @@ import ScrollContainer from "../../layouts/ScrollContainer";
 import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
 import Loader from "../../components/Loader"; // Make sure you have a Loader component
 import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
+import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
 import PlayBtn from "../../assets/playbtn.svg";
+import PauseBtn from "../../assets/pause.svg";
+import { useScrollStore } from "../../context/useScrollStore";
+import { useRef } from "react";
+import { useAudio } from "../../context/AudioContext";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Search({ topResults, songs, playlists, albums, artists, loading2, query }) {
+  const scrollRef = useRef(null);
+  const { pathname } = useLocation();
+  const { positions, setPosition } = useScrollStore();
+  const [recommendedSongs, setRecommendedSongs] = useState([]);
+  const [currentSongId, setCurrentSongId] = useState("");
+
+  const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (container && positions[pathname]) {
+      container.scrollTop = positions[pathname];
+    }
+
+    const handleScroll = () => {
+      setPosition(pathname, container.scrollTop);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [pathname, positions, setPosition]);
 
   const location = useLocation();
 
   const navigate = useNavigate();
 
   const [activeFilter, setActiveFilter] = useState("All");
+
+
+  const fetchRecommendedSongs = async (id, song) => {
+    try {
+      const { data } = await axios.get(
+        `${API_URL}/api/songs/${id}/suggestions?limit=20`
+      );
+      setPlaylistSongs([song, ...data.data])
+
+    } catch (err) {
+      console.error("Error fetching recommendations:", err);
+      setRecommendedSongs([]);
+    } finally {
+      //setLoading(false);
+    }
+  };
+
 
   // Clear songs if leaving search page
   useEffect(() => {
@@ -35,11 +79,26 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
 
   // 🔹 Filter logic
   const shouldShow = (type) => activeFilter === "All" || activeFilter === type;
-  
+
+  const isCurrent = currentSongId === topResults[0]?.id;
+  const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+
+  const handleClick = (e, song) => {
+    setCurrentSongId(song.id)
+    fetchRecommendedSongs(song.id, song)
+    e.stopPropagation()
+    if (isCurrent) {
+      // same song → toggle play/pause
+      togglePlayPause();
+    } else {
+      // different song → play new song
+      playSong(topResults[0].id);
+    }
+  };
 
 
   return (
-    <section className="flex flex-col w-full bg-[#121212] h-full text-white">
+    <section ref={scrollRef} className="flex flex-col w-full bg-[#121212] h-full text-white">
 
 
       {/* CASE 1: No query typed yet */}
@@ -87,17 +146,19 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   className="relative w-112 bg-[#181818] rounded-lg p-5 hover:bg-[#191919] transition-all cursor-pointer topresult"
                 >
                   <LazyLoadImage
+                    defaultImage={LoadImage}
                     image={song.image[2]?.url || fallbackImg}
                     className={`rounded-${song.type == "artist" ? "full" : "lg"} mb-3 w-30 max-h-30 object-cover`}
-                    placeholder={
-                      <div className="song-placeholder" />
-                    }
                     onError={handleError}
                   />
 
                   {song.type == "song" && (
-                    <button className="play-button-topresults">
-                      <img src={PlayBtn} alt="Play" className="h-8 w-8" />
+                    <button onClick={(e) => handleClick(e, song)} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
+                      <img
+                        src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                        alt={isCurrentPlaying ? "Pause" : "Play"}
+                        className="h-8 w-8"
+                      />
                     </button>
                   )}
 
@@ -106,7 +167,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     navigate(`/${song.type}/${song.id}`)
                     e.stopPropagation();
                   }} className="text-2xl font-bold truncate hover:underline">{song.title}</h3>
-                  <p className="text-sm text-gray-400 truncate font-medium">
+                  <p className="text-sm text-gray-400 line-clamp-2 font-medium">
                     {song.type.charAt(0).toUpperCase() + song.type.slice(1)} {song.type == "song" ? "•" : ""} {song.primaryArtists}
 
                   </p>
@@ -119,52 +180,74 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
           {songs.length > 0 && (
             (shouldShow("All") || shouldShow("Songs") ? (
               <ScrollContainer title="Songs">
-                {songs.map((song) => (
-                  <div
-                    key={song.id}
-                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
-                    onClick={(e) => {
-                      navigate(`/${song.type}/${song.id}`)
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div className="image-wrapper mb-2">
-                      <LazyLoadImage
-                        image={song.image[2]?.url || fallbackImg}
-                        className="song-image"
-                        placeholder={
-                          <div className="song-placeholder" />
-                        }
-                        onError={handleError}
-                      />
-                      <button className="play-button ">
-                        <img src={PlayBtn} alt="Play" className="h-8 w-8" />
-                      </button>
+                {songs.map((song) => {
+                  const isCurrent = currentSongId === song?.id;
+                  const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+
+                  return (
+                    <div
+                      key={song.id}
+                      className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                      onClick={(e) => {
+                        navigate(`/${song.type}/${song.id}`)
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div className="image-wrapper mb-2">
+                        <LazyLoadImage
+                          defaultImage={LoadImage}
+                          image={song.image[2]?.url || fallbackImg}
+                          className="song-image"
+                          onError={handleError}
+                        />
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      </div>
+
+                      <h3 onClick={(e) => {
+                        navigate(`/${song.type}/${song.id}`)
+                        e.stopPropagation();
+                      }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#1db954]" : "text-white"} `}>{song.name}</h3>
+                      <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                        {song.artists.primary.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                navigate(`/artist/${a.id}`)
+                                e.stopPropagation();
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.artists.primary.length - 1 && ", "}
+                          </span>
+                        ))}
+                      </p>
+
                     </div>
 
-                    <h3 onClick={(e) => {
-                      navigate(`/${song.type}/${song.id}`)
-                      e.stopPropagation();
-                    }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                    <p className="text-sm text-gray-400 truncate font-medium">
-                      {song.artists.primary.map((a, index) => (
-                        <span key={a.id || index}>
-                          <a
-                            className="hover:underline hover:text-white"
-                            onClick={(e) => {
-                              navigate(`/artist/${a.id}`)
-                              e.stopPropagation();
-                            }}
-                          >
-                            {a.name}
-                          </a>
-                          {index < song.artists.primary.length - 1 && ", "}
-                        </span>
-                      ))}
-                    </p>
+                  )
 
-                  </div>
-                ))}
+                })}
               </ScrollContainer>
             ) : null)
           )}
@@ -182,11 +265,9 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }}
                   >
                     <LazyLoadImage
+                      defaultImage={LoadImage}
                       image={song.image[2]?.url || fallbackImg}
                       className="rounded-lg mb-3 w-full max-h-43 object-cover"
-                      placeholder={
-                        <div className="rounded-lg mb-3 w-full max-h-43 bg-[#2a2a2a] animate-pulse" />
-                      }
                       onError={handleError}
                     />
 
@@ -194,7 +275,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
                     }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                    <p className="text-sm text-gray-400 truncate font-medium">
+                    <p className="text-sm text-gray-400 font-medium line-clamp-2">
                       {song.type.charAt(0).toUpperCase() + song.type.slice(1)}
                     </p>
                   </div>
@@ -217,13 +298,11 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }}
                   >
                     <LazyLoadImage
+                      defaultImage={LoadImage}
                       image={album.image[2].url || fallbackImg}
                       onError={handleError}
                       className="rounded-lg mb-3 w-full max-h-43 object-cover"
-                      placeholder={
-                        <div className="rounded-lg mb-3 w-full max-h-43 bg-[#2a2a2a] animate-pulse" />
-                      }
-                      
+
                     />
                     <h3 onClick={(e) => {
                       navigate(`/${album.type}/${album.id}`)
@@ -231,7 +310,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }} className="text-base font-semibold truncate hover:underline">
                       {album.name}
                     </h3>
-                    <p className="text-sm text-gray-400 truncate font-medium">
+                    <p className="text-sm text-gray-400 line-clamp-2 font-medium">
                       {album.artists.all.map((a, index) => (
                         <span key={a.id || index}>
                           <a
@@ -265,12 +344,11 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
                   >
                     <LazyLoadImage
+                      defaultImage={LoadImage}
                       image={artist.image?.[2]?.url || fallbackImg}
                       onError={handleError}
                       className="rounded-full mb-3 w-full max-h-43 object-cover"
-                      placeholder={
-                        <div className="rounded-full mb-3 w-full max-h-43 bg-[#2a2a2a] animate-pulse" />
-                      }
+
                     />
                     <h3 onClick={(e) => {
                       navigate(`/${artist.type}/${artist.id}`)

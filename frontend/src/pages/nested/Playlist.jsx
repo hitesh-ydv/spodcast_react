@@ -14,107 +14,51 @@ import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default 
 import axios from 'axios';
 import { useAudio } from '../../context/AudioContext';
 import { CButton, CTooltip } from '@coreui/react'
-import { toggleLikeSong } from '../../api/UserApi';
+import Bullet from "../../assets/bullet.svg";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
 const API_URL = import.meta.env.VITE_API_URL;
 
 
-const Song = () => {
+const Playlist = () => {
     const { id } = useParams();
-    const [song, setSong] = useState(null);
-    const [recommendedSongs, setRecommendedSongs] = useState([]);
-    const [recommendedSongs2, setRecommendedSongs2] = useState([]);
+    const [songs, setSongs] = useState([]);
+    const [details, setDetails] = useState([]);
     const [backgroundColor, setBackgroundColor] = useState('');
     const [scrollContainerBg, setScrollContainerBg] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
-    const [lyrics, setLyrics] = useState("");
-    const [showMore, setShowMore] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isLiked, setIsLiked] = useState(false);
-    const [currentSongId, setCurrentSongId] = useState("");
-    const token = localStorage.getItem("token")
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchSongData = async () => {
+        setLoading(true)
+        const fetchPlaylistData = async () => {
             try {
                 setIsLoading(true);
                 const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}`
+                    `${API_URL}/api/playlists?id=${id}&page=0&limit=50`
                 );
-                setSong(data.data);
+                setDetails(data.data)
+                setSongs(data.data.songs);
+                setPlaylistSongs(data.data.songs);
+                console.log(data)
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
             } finally {
-                //setIsLoading(false);
-            }
-        };
-
-        const fetchLyrics = async () => {
-            try {
-                setLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}/lyrics`
-                );
-                setLyrics(data.data?.lyrics || "Lyrics not available");
-            } catch (err) {
-                console.error("Error fetching lyrics:", err);
-                setLyrics("Lyrics not found.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const fetchRecommendedSongs = async () => {
-            try {
-                setLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}/suggestions?limit=5`
-                );
-                setRecommendedSongs(data.data);
-
-            } catch (err) {
-                console.error("Error fetching recommendations:", err);
-                setRecommendedSongs([]);
-            } finally {
-                //setLoading(false);
+                setLoading(false)
             }
         };
 
         if (id) {
-            fetchSongData();
-            fetchLyrics();
-            fetchRecommendedSongs();
+            fetchPlaylistData();
         }
-
-
     }, [id]);
-
-    useEffect(() => {
-        // Fetch liked songs when component loads
-        const fetchLikedSongs = async () => {
-            try {
-                const res = await axios.get("http://localhost:5000/api/user/likes", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                const likedSongs = res.data.likedSongs || [];
-                console.log(res.data.likedSongs)
-                setIsLiked(likedSongs.includes(song[0].id));
-            } catch (err) {
-                console.error("Error fetching liked songs:", err);
-            }
-        };
-
-        if (token && song) fetchLikedSongs();
-    }, [token, song]);
-
-
 
     const extractColorFromImage = () => {
         if (!imageRef2.current) return;
@@ -165,23 +109,10 @@ const Song = () => {
   `;
 
         setScrollContainerBg(scrollGradient);
-    };
-
-    const handleLike = async () => {
-        try {
-            const data = await toggleLikeSong(token, song[0]?.id);
-            setIsLiked(data.likedSongs.includes(song[0]?.id))
-        } catch (err) {
-            console.error("Error liking song:", err);
-        }
+        console.log(mainGradient, scrollGradient)
     };
 
 
-
-    // Split lyrics by <br> to handle HTML format
-    const lines = lyrics.split(/<br\s*\/?>/i).filter((line) => line.trim() !== "");
-    const MAX_LINES = 8;
-    const displayedLyrics = showMore ? lines : lines.slice(0, MAX_LINES);
 
     if (loading) {
         return (
@@ -197,7 +128,7 @@ const Song = () => {
         );
     }
 
-    if (!song) {
+    if (!songs) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-900">
                 <div className="text-white text-xl">Song not found</div>
@@ -210,36 +141,15 @@ const Song = () => {
         e.target.src = fallbackImg; // set default image
     };
 
-    const isCurrent = currentSongId === song[0]?.id;
-    const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
-
-    const handleClick = () => {
-        setCurrentSongId(song[0].id)
-        if (isCurrent) {
-            // same song → toggle play/pause
-            togglePlayPause();
-        } else {
-            // different song → play new song
-            playSong(song[0]?.id);
-        }
-        if (song && song.length > 0 && recommendedSongs.length > 0) {
-            setPlaylistSongs([song[0], ...recommendedSongs]);
-        }
-    };
-
     const handleRecommendedSongClick = (song) => {
-        const id = song?.id;
-        if (!id) return;
-
-        if (currentSong?.id === id) {
-            togglePlayPause();
+        if (currentSong?.id === song.id) {
+            togglePlayPause(); // ✅ pause/resume same song
         } else {
-            playSong(id);
-        }
-        if (recommendedSongs.length > 0) {
-            setPlaylistSongs(recommendedSongs);
+            playSong(song.id); // ✅ play new song
         }
     };
+
+
 
 
     return (
@@ -249,7 +159,7 @@ const Song = () => {
                 <div className="flex-shrink-0">
                     <img
                         ref={imageRef2}
-                        src={song[0].image[2].url || fallbackImg}
+                        src={details.image[2]?.url || fallbackImg}
                         //alt={artist.name}
                         className="w-50 h-50 rounded-sm object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                         onLoad={extractColorFromImage}
@@ -262,46 +172,30 @@ const Song = () => {
                 <div className="max-w-full">
 
                     <span className="text-md font-bold">
-                        {song[0].type.charAt(0).toUpperCase() + song[0].type.slice(1)}
+                        {details.type.charAt(0).toUpperCase() + details.type.slice(1)}
                     </span>
 
                     {/* Artist Name */}
-                    <h1 className="text-6xl font-black mb-6 mt-3 line-clamp-1 leading-none">
-                        {song[0].name}
+                    <h1 className="text-6xl font-black mb-3 mt-3 line-clamp-1 leading-none">
+                        {details.name}
                     </h1>
 
-
-                    <div className="mb-0 flex flex-row items-center gap-1">
-                        <img
-                            src={song[0].artists.primary[0].image[0]?.url || DefaultCover}
-                            //alt={artist.name}
-                            className="w-6 h-6 rounded-full object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
-                            crossOrigin="anonymous"
-                        />
+                    <span className="text-sm text-[#adadad] font-medium">
+                        {details.description}
+                    </span>
 
 
-                        <span onClick={(e) => {
-                            navigate(`/${song[0].artists.primary[0]?.type}/${song[0].artists.primary[0]?.id}`)
-                            e.stopPropagation()
+                    <div className="mb-0 flex flex-row items-center gap-2 mt-1">
 
-                        }} className="text-md ml-1 font-medium hover:underline cursor-pointer">
-                            {song[0].artists.primary[0].name}
+
+                        <span className="text-sm text-[#adadad] font-medium">
+                            SongCount
                         </span>
-                        <span className="text-md text-[#adadad] font-medium">
+                        <span className="text-sm text-[#adadad] font-medium">
                             •
                         </span>
-                        <span onClick={(e) => {
-                            navigate(`/album/${song[0].album.id}`)
-                            e.stopPropagation()
-
-                        }} className="text-md font-medium hover:underline cursor-pointer">
-                            {song[0].album.name}
-                        </span>
-                        <span className="text-md text-[#adadad] font-medium">
-                            •
-                        </span>
-                        <span className="text-md text-[#adadad] font-medium">
-                            {song[0].year}
+                        <span className="text-sm text-[#adadad] font-medium">
+                            {details.songCount} Songs
                         </span>
 
                     </div>
@@ -316,101 +210,79 @@ const Song = () => {
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-4'>
-                    <button onClick={handleClick} className="bg-[#1db954] rounded-full px-2.5 py-2.5 hover:bg-[#4dc075] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105">
+                    <button
+                        onClick={() => {
+                            // If no song is playing or the current song is not in this playlist
+                            const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
+
+                            if (!currentSong || !isCurrentInPlaylist) {
+                                // Play first song of this playlist
+                                if (songs.length > 0) {
+                                    playSong(songs[0].id, songs); // pass playlist songs to context
+                                }
+                            } else {
+                                // Toggle play/pause of current song
+                                togglePlayPause();
+                            }
+                        }}
+                        className="bg-[#1db954] rounded-full px-2.5 py-2.5 hover:bg-[#4dc075] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                    >
                         <img
-                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            src={
+                                songs.some(s => s.id === currentSong?.id) && isPlaying
+                                    ? PauseBtn
+                                    : PlayBtn
+                            }
+                            alt={
+                                songs.some(s => s.id === currentSong?.id) && isPlaying
+                                    ? "Pause"
+                                    : "Play"
+                            }
                             className="h-8 w-8"
                         />
                     </button>
 
                     <CTooltip
-                        content="Add to Liked Songs"
+                        content="Save to Your Library"
                         placement="top"
                         style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
                     >
                         <button
-                            onClick={handleLike}
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
-                            {isLiked ? (
-                                <span className="text-sm font-semibold text-red-500">
-                                    Remove from liked songs
-                                </span>
-                            ) : (
-                                <img src={Like} alt="Like" className="h-8 w-8" />
-                            )}
+                            <img src={Like} alt="Play" className="h-8 w-8" />
                         </button>
                     </CTooltip>
 
-                    <CTooltip
-                        content="Download Song"
-                        placement="top"
-                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
-                    >
-                        <button className="px-2.5 py-2.5 flex items-center cursor-pointer  justify-center transition-transform duration-200 hover:scale-105">
-                            <img src={Download} alt="Play" className="h-8 w-8" />
-                        </button>
-                    </CTooltip>
-                </div>
+                    <Menu>
+                        <MenuButton
+                            className="rounded-full px-2 py-2 cursor-pointer flex items-center justify-center"
+                        >
+                            <img src={Bullet} alt="Bullet" className="h-9 w-9" />
+                        </MenuButton>
 
-                <div className="p-6 rounded-lg shadow-lg text-white">
-                    <h2 className="text-2xl font-bold mb-4">Lyrics</h2>
-
-                    {loading ? (
-                        <p className="text-gray-400 italic">Loading lyrics...</p>
-                    ) : (
-                        <>
-                            <div className="text-gray-200 leading-relaxed">
-                                {displayedLyrics.map((line, index) => (
-                                    <p key={index} className="mb-2">
-                                        {line.trim()}
-                                    </p>
-                                ))}
-                            </div>
-
-                            {lines.length > MAX_LINES && (
-                                <button
-                                    onClick={() => setShowMore(!showMore)}
-                                    className="mt-4 text-sm font-semibold text-gray-400 hover:text-white transition-all"
-                                >
-                                    {showMore ? "Show less" : "...Show more"}
+                        <MenuItems
+                            anchor="right end"
+                            className="w-48 origin-top-right rounded-sm border border-white/5 bg-[#282828] p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95"
+                        >
+                            <MenuItem>
+                                <button className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
+                                    Add to Library
                                 </button>
-                            )}
-                        </>
-                    )}
+                            </MenuItem>
+                            <MenuItem>
+                                <button className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
+                                    Share
+                                </button>
+                            </MenuItem>
+
+                        </MenuItems>
+                    </Menu>
                 </div>
 
-                {song[0].artists.primary !== 0 && (
-                    <div className='p-3'>
-                        {song[0].artists.primary.map((artist) => (
-                            <div key={artist.id} className='flex flex-row items-center gap-4 hover:bg-[#202020] px-3 py-3 rounded-lg transition-all'>
-                                <LazyLoadImage
-                                    defaultImage={LoadImage}
-                                    image={artist.image[2]?.url || fallbackImg}
-                                    className="w-16 h-16 rounded-full"
-                                    onError={handleError}
-                                />
-                                <div>
-                                    <h1 className='text-md font-medium'>{artist.type.charAt(0).toUpperCase() + artist.type.slice(1)}</h1>
-                                    <span onClick={(e) => {
-                                        navigate(`/artist/${artist.id}`)
-                                        e.stopPropagation()
-
-                                    }} className="text-md font-medium hover:underline cursor-pointer">
-                                        {artist.name}
-                                    </span>
-
-                                </div>
-                            </div>
-                        ))}
-
-                    </div>
-                )}
-
-                {recommendedSongs.length !== 0 && (
-                    <ScrollContainer title="Recommended" icons={false} direction="col">
-                        {recommendedSongs.map((song) => {
+                {songs.length !== 0 && (
+                    <ScrollContainer title={false} icons={false} direction="col">
+                        {songs.map((song, index) => {
                             const isCurrent = currentSong?.id === song.id;
                             const isCurrentPlaying = isCurrent && isPlaying;
 
@@ -419,9 +291,11 @@ const Song = () => {
                                     key={song.id}
                                     onClick={() => handleRecommendedSongClick(song)}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
-    ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
+                    ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
                                 >
+
                                     <div className='flex flex-row items-center gap-4 '>
+                                        <p className='text-[16px] ml-1 text-gray-400 truncate font-medium z-20'>{index + 1}.</p>
                                         {/* Image Container */}
                                         <div className="relative">
                                             <LazyLoadImage
@@ -483,7 +357,15 @@ const Song = () => {
                                     <CTooltip
                                         content="Add to Liked Songs"
                                         placement="top"
-                                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
+                                        style={{
+                                            backgroundColor: '#242424',
+                                            color: 'white',
+                                            padding: 6,
+                                            borderRadius: 5,
+                                            fontSize: 15,
+                                            fontWeight: 550,
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)', // 👈 add this line
+                                        }}
                                     >
                                         <button className="transition-all like-btn  cursor-pointer px-2.5 py-2.5 flex items-center justify-center">
                                             <img src={Like} alt="Play" className="w-6" />
@@ -502,4 +384,4 @@ const Song = () => {
     )
 }
 
-export default Song
+export default Playlist

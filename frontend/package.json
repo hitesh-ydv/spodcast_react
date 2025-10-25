@@ -10,20 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@coreui/react": "^5.9.1",
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
-    "@namhong2001/react-textfit": "^2.0.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tjoskar/react-lazyload-img": "^1.2.3",
-    "auto-text-size": "^0.2.3",
     "axios": "^1.12.2",
-    "flowbite-react": "^0.12.9",
+    "primereact": "^10.9.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4",
     "react-spinners": "^0.17.0",
-    "react-textfit": "^1.1.1",
-    "tailwindcss": "^4.1.14"
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.14",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
