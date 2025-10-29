@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
-import AuthRoute from "./routes/authRoute";
+import AuthRoute from "./routes/AuthRoute";
 import ProtectedRoute from "./routes/ProtectedRoute"
 import './App.css'
 import { SearchProvider } from "./context/SearchContext";

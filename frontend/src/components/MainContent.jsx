@@ -155,9 +155,10 @@ export default function MainContent() {
   }, [query]);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/home?limit=5")
+    axios.get(`${API_URL}/api/songs/o_azuPYd/suggestions?limit=10`)
       .then(res => {
         setData(res.data.data)
+        console.log(res.data.data)
       })
       .catch(err => {
         console.error("Error fetching home data:", err);

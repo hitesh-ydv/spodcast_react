@@ -12,6 +12,8 @@ export const AudioProvider = ({ children }) => {
 
   const audioRef = useRef(null);
 
+  console.log(playlistSongs)
+
 const playSong = async (songId, playlist = playlistSongs) => {
   try {
     // optional: update playlist if provided

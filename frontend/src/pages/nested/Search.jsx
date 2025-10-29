@@ -67,8 +67,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
     }
   }, [location.pathname]);
 
-  console.log(albums)
-
   const handleError = (e) => {
     e.target.onerror = null; // prevent infinite loop
     e.target.src = fallbackImg; // set default image

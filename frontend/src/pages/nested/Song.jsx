@@ -9,13 +9,14 @@ import PauseWhite from "../../assets/pause-white.svg";
 import Like from "../../assets/like.svg";
 import Download from "../../assets/download.svg";
 import { LazyLoadImage } from '@tjoskar/react-lazyload-img';
+
 import ScrollContainer from '../../layouts/ScrollContainer';
-import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
+import fallbackImg from "../../assets/playlist_cover.jpg";
 import axios from 'axios';
 import { useAudio } from '../../context/AudioContext';
 import { CButton, CTooltip } from '@coreui/react'
 import { toggleLikeSong } from '../../api/UserApi';
-import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
+import LoadImage from "../../assets/afterload.png";
 const API_URL = import.meta.env.VITE_API_URL;
 
 
