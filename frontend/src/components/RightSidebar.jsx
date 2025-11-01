@@ -3,6 +3,9 @@ import { useAudio } from "../context/AudioContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const clientId = import.meta.env.VITE_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+
 export default function RightSidebar() {
   const { currentSong, isPlaying } = useAudio();
 
@@ -17,8 +20,6 @@ export default function RightSidebar() {
   const scrollRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const clientId = "61469e91d2a84c7f9ad2bbe093042906";
-  const clientSecret = "5f14c431be714b0e9de2adedd86af848";
   const authString = btoa(`${clientId}:${clientSecret}`);
 
 
