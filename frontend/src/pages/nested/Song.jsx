@@ -18,6 +18,7 @@ import { CButton, CTooltip } from '@coreui/react'
 import { toggleLikeSong } from '../../api/UserApi';
 import LoadImage from "../../assets/afterload.png";
 const API_URL = import.meta.env.VITE_API_URL;
+const URL = import.meta.env.VITE_API_URL2;
 
 
 const Song = () => {
@@ -101,7 +102,7 @@ const Song = () => {
         // Fetch liked songs when component loads
         const fetchLikedSongs = async () => {
             try {
-                const res = await axios.get("http://localhost:5000/api/user/likes", {
+                const res = await axios.get(`${URL}/api/user/likes`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const likedSongs = res.data.likedSongs || [];

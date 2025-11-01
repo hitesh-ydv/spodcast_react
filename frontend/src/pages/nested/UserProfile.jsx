@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/Loader";
 
+const URL = import.meta.env.VITE_API_URL2;
+
 const UserProfile = () => {
     const { userid } = useParams();
     const [user, setUser] = useState(null);
@@ -26,7 +28,7 @@ const UserProfile = () => {
                     return;
                 }
 
-                const res = await axios.get("http://localhost:5000/api/user/me", {
+                const res = await axios.get(`${URL}/api/user/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -66,7 +68,7 @@ const UserProfile = () => {
 
             // Update name
             const res = await axios.put(
-                "http://localhost:5000/api/user/update",
+                `${URL}/api/user/update`,
                 { name: editedName },
                 {
                     headers: {
@@ -81,7 +83,7 @@ const UserProfile = () => {
                 formData.append('photo', selectedFile);
 
                 await axios.put(
-                    "http://localhost:5000/api/user/update-photo",
+                    `${URL}/api/user/update-photo`,
                     formData,
                     {
                         headers: {
@@ -155,7 +157,7 @@ const UserProfile = () => {
                     <div className="w-28 h-28 rounded-full bg-green-600 flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden">
                         {user.userId ? (
                             <img
-                                src={`http://localhost:5000/api/user/${user.userId}/photo`}
+                                src={`${URL}/api/user/${user.userId}/photo`}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
                             />
@@ -260,7 +262,7 @@ const UserProfile = () => {
                                     />
                                 ) : user.userId ? (
                                     <img
-                                        src={`http://localhost:5000/api/user/${user.userId}/photo`}
+                                        src={`${URL}/api/user/${user.userId}/photo`}
                                         alt="Profile"
                                         className="w-full h-full object-cover"
                                     />

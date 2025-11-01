@@ -10,6 +10,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import axios from "axios";
 import { useSearch } from "../context/SearchContext";
 
+const URL = import.meta.env.VITE_API_URL2;
+
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -41,7 +43,7 @@ export default function Navbar() {
             if (!token) return;
 
             try {
-                const res = await axios.get("http://localhost:5000/api/user/me", {
+                const res = await axios.get(`${URL}/api/user/me`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -160,7 +162,7 @@ export default function Navbar() {
                     >
                         {user?.userId ? (
                             <img
-                                src={`http://localhost:5000/api/user/${user.userId}/photo`}
+                                src={`${URL}/api/user/${user.userId}/photo`}
                                 alt="Profile"
                                 className="w-full h-full object-cover rounded-full"
                             />

@@ -7,6 +7,8 @@ import MiddleSection from "../../layouts/MiddleSection";
 import { SearchProvider } from "../../context/SearchContext";
 import { AudioProvider } from "../../context/AudioContext";
 
+const URL = import.meta.env.VITE_API_URL2;
+
 export default function DashboardLayout() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
@@ -17,7 +19,7 @@ export default function DashboardLayout() {
             if (!token) return;
 
             try {
-                const res = await axios.get("http://localhost:5000/api/user/me", {
+                const res = await axios.get(`${URL}/api/user/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(res.data);

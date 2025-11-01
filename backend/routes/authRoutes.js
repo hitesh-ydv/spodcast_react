@@ -35,7 +35,7 @@ router.post("/signup", async (req, res) => {
     );
 
     // Send verification email
-    const verifyUrl = `http://localhost:5000/api/auth/verify/${verificationToken}`;
+    const verifyUrl = `${process.env.CLIENT_URL}/api/auth/verify/${verificationToken}`;
     await sendEmail(
       email,
       "Verify your account",

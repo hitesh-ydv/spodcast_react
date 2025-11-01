@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_BASE = "http://localhost:5000/api/user"; // replace with your actual backend URL
+const URL = import.meta.env.VITE_API_URL2;
+
+const API_BASE = URL; // replace with your actual backend URL
 
 // Like/unlike song
 export const toggleLikeSong = async (token, songId) => {
