@@ -12,8 +12,8 @@ import { useSearch } from "../context/SearchContext";
 
 const URL = import.meta.env.VITE_API_URL2;
 
-
 export default function Navbar() {
+
     const navigate = useNavigate();
     const { setQuery } = useSearch();
 
@@ -35,7 +35,6 @@ export default function Navbar() {
             }
         }
     }, [location.pathname]);
-
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -160,7 +159,7 @@ export default function Navbar() {
                    text-sm font-semibold text-white shadow-inner shadow-white/10 
                    focus:outline-none data-hover:bg-gray-700 data-open:bg-gray-700"
                     >
-                        {user?.userId ? (
+                        {user?.photo ? (
                             <img
                                 src={`${URL}/api/user/${user.userId}/photo`}
                                 alt="Profile"

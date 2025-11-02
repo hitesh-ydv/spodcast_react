@@ -24,6 +24,52 @@ export default function FooterPlayer() {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Check if spacebar is pressed
+      if (e.code === "Space") {
+        // If user is typing in an input or textarea → do nothing
+        const activeEl = document.activeElement;
+        if (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.isContentEditable) {
+          return;
+        }
+
+        e.preventDefault(); // prevent page scrolling
+        togglePlayPause(); // call your play/pause toggle function
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [togglePlayPause]);
+
+  useEffect(() => {
+    if ("mediaSession" in navigator) {
+      // Set metadata for lockscreen / Bluetooth display
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentSong?.name || "Unknown",
+        artist: currentSong?.artists.primary.map(a => a.name).join(", "),
+        artwork: [
+          { src: currentSong?.image[2].url || "/default-cover.png", sizes: "512x512", type: "image/png" }
+        ]
+      });
+
+      // Register play/pause handlers for Bluetooth & hardware buttons
+      navigator.mediaSession.setActionHandler("play", () => {
+        togglePlayPause(true);
+      });
+      navigator.mediaSession.setActionHandler("pause", () => {
+        togglePlayPause(false);
+      });
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
+        // optional: previous track logic
+      });
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
+        // optional: next track logic
+      });
+    }
+  }, [currentSong, togglePlayPause]);
+
   // Toggle shuffle → turn off repeat
   const toggleShuffle = () => {
     setIsShuffle(prev => !prev);
@@ -39,34 +85,45 @@ export default function FooterPlayer() {
   const playNext = () => {
     if (!playlistSongs || !currentSong) return;
 
-    const currentIndex = playlistSongs.findIndex(s => s.id === currentSong.id);
+    const currentIndex = playlistSongs.findIndex((s) => s.id === currentSong.id);
 
-    // Always skip repeat for manual next
     if (isShuffle) {
       let randomIndex;
       do {
         randomIndex = Math.floor(Math.random() * playlistSongs.length);
       } while (playlistSongs.length > 1 && randomIndex === currentIndex);
-      playSong(playlistSongs[randomIndex].id, playlistSongs);
+      const nextSong = playlistSongs[randomIndex];
+      playSong(nextSong.id, playlistSongs, {
+        artist: nextSong?.artists?.primary?.map((a) => a.name).join(", ") || "Unknown Artist",
+      });
     } else if (currentIndex < playlistSongs.length - 1) {
-      playSong(playlistSongs[currentIndex + 1].id, playlistSongs);
+      const nextSong = playlistSongs[currentIndex + 1];
+      playSong(nextSong.id, playlistSongs, {
+        artist: nextSong?.artists?.primary?.map((a) => a.name).join(", ") || "Unknown Artist",
+      });
     } else {
-      // loop to first song if at end
-      playSong(playlistSongs[0].id, playlistSongs);
+      const nextSong = playlistSongs[0];
+      playSong(nextSong.id, playlistSongs, {
+        artist: nextSong?.artists?.primary?.map((a) => a.name).join(", ") || "Unknown Artist",
+      });
     }
   };
 
   const playPrevious = () => {
     if (!playlistSongs || !currentSong) return;
 
-    const currentIndex = playlistSongs.findIndex(s => s.id === currentSong.id);
+    const currentIndex = playlistSongs.findIndex((s) => s.id === currentSong.id);
 
-    // Always skip repeat for manual previous
     if (currentIndex > 0) {
-      playSong(playlistSongs[currentIndex - 1].id, playlistSongs);
+      const prevSong = playlistSongs[currentIndex - 1];
+      playSong(prevSong.id, playlistSongs, {
+        artist: prevSong?.artists?.primary?.map((a) => a.name).join(", ") || "Unknown Artist",
+      });
     } else {
-      // loop to last song if at start
-      playSong(playlistSongs[playlistSongs.length - 1].id, playlistSongs);
+      const prevSong = playlistSongs[playlistSongs.length - 1];
+      playSong(prevSong.id, playlistSongs, {
+        artist: prevSong?.artists?.primary?.map((a) => a.name).join(", ") || "Unknown Artist",
+      });
     }
   };
 

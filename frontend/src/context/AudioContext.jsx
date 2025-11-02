@@ -14,44 +14,52 @@ export const AudioProvider = ({ children }) => {
 
   console.log(playlistSongs)
 
-const playSong = async (songId, playlist = playlistSongs) => {
-  try {
-    // optional: update playlist if provided
-    if (playlist && playlist.length > 0) {
-      setPlaylistSongs(playlist);
-    }
+  const playSong = async (songId, playlist = playlistSongs) => {
+    try {
+      // optional: update playlist if provided
+      if (playlist && playlist.length > 0) {
+        setPlaylistSongs(playlist);
+      }
 
-    // If the same song is playing, restart it directly
-    if (currentSong?.id === songId && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play();
-      setIsPlaying(true);
-      return; // ✅ stop here — no need to refetch
-    }
-
-    // Otherwise, fetch new song URL
-    const response = await fetch(
-      `${API_URL}/api/songs/${songId}`
-    );
-    const data = await response.json();
-
-    const url = data?.data[0]?.downloadUrl?.[3]?.url;
-    if (!url) throw new Error("No audio URL found");
-
-    setAudioUrl(url);
-    setCurrentSong(data.data[0]);
-
-    // Wait briefly before playing
-    setTimeout(() => {
-      if (audioRef.current) {
+      // If the same song is playing, restart it directly
+      if (currentSong?.id === songId && audioRef.current) {
+        audioRef.current.currentTime = 0;
         audioRef.current.play();
         setIsPlaying(true);
+        return; // ✅ stop here — no need to refetch
       }
-    }, 200);
-  } catch (err) {
-    console.error("Error fetching audio:", err);
-  }
-};
+
+      // Otherwise, fetch new song URL
+      const response = await fetch(
+        `${API_URL}/api/songs/${songId}`
+      );
+      const data = await response.json();
+
+      const url = data?.data[0]?.downloadUrl?.[3]?.url;
+      if (!url) throw new Error("No audio URL found");
+
+      setAudioUrl(url);
+      setCurrentSong(data.data[0]);
+
+      // Wait briefly before playing
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play();
+          setIsPlaying(true);
+        }
+      }, 200);
+    } catch (err) {
+      console.error("Error fetching audio:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (currentSong?.name && currentSong?.artists.primary[0].name) {
+      document.title = `${currentSong.name} · ${currentSong.artists.primary[0].name}`;
+    } else {
+      document.title = "Spodcast";
+    }
+  }, [currentSong]);
 
 
   // ✅ Toggle play/pause

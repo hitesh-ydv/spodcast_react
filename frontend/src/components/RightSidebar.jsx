@@ -23,6 +23,7 @@ export default function RightSidebar() {
   const authString = btoa(`${clientId}:${clientSecret}`);
 
 
+
   const getSpotifyToken = async () => {
     const res = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
@@ -182,7 +183,7 @@ export default function RightSidebar() {
             >
               {currentSong.name}
             </h3>
-            <p className="font-semibold text-md text-gray-300">
+            <p className="font-semibold text-md text-gray-300 line-clamp-2">
               {currentSong.artists.primary.map((a, i) => (
                 <span key={a.id || i}>
                   <a
