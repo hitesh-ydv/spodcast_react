@@ -174,7 +174,6 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Show button on hover of container */
 .recommended-cont2:hover .play-btn {
   opacity: 1;
   transform: translate(0);
@@ -320,3 +319,6 @@
   scrollbar-gutter: stable both-edges;
 }
 
+button{
+  outline: none;
+}

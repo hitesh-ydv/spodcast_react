@@ -2,19 +2,17 @@ import express from "express";
 import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
 
 const router = express.Router();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
 /* ===========================
     🔹 PROFILE ROUTES
 =========================== */
 
-// Update profile photo
+
 router.put(
   "/update-photo",
   authMiddleware,
@@ -25,18 +23,29 @@ router.put(
       if (!user) return res.status(404).json({ msg: "User not found" });
       if (!req.file) return res.status(400).json({ msg: "No file uploaded" });
 
-      user.photo = req.file.buffer;
-      user.photoContentType = req.file.mimetype;
-      await user.save();
+      // Upload to Cloudinary
+      const result = await cloudinary.uploader.upload_stream(
+        { folder: "user_photos" },
+        async (error, uploadResult) => {
+          if (error) return res.status(500).json({ msg: "Upload failed" });
 
-      res.json({
-        msg: "Profile photo updated successfully",
-        user: {
-          userId: user.userId,
-          name: user.name,
-          email: user.email,
-        },
-      });
+          user.photoUrl = uploadResult.secure_url; // 👈 store only URL
+          await user.save();
+
+          res.json({
+            msg: "Profile photo updated successfully",
+            user: {
+              userId: user.userId,
+              name: user.name,
+              email: user.email,
+              photoUrl: user.photoUrl,
+            },
+          });
+        }
+      );
+
+      // Stream the buffer to Cloudinary
+      require("streamifier").createReadStream(req.file.buffer).pipe(result);
     } catch (err) {
       console.error(err);
       res.status(500).json({ msg: "Server error" });

@@ -55,7 +55,8 @@ const userSchema = new mongoose.Schema({
   verificationToken: {
     type: String,
   },
-  photo: { type: Buffer },
+  photoUrl: { type: String }, // instead of Buffer
+
   photoContentType: { type: String },
 
   // 🎧 Recent plays (comma-separated song IDs or as array)

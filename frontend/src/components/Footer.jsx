@@ -127,9 +127,6 @@ export default function FooterPlayer() {
     }
   };
 
-
-
-
   useEffect(() => {
     if (!audioRef.current || !currentSong) return;
 
@@ -150,9 +147,6 @@ export default function FooterPlayer() {
 
     return () => audioEl.removeEventListener("ended", handleSongEnd);
   }, [currentSong, playlistSongs, isRepeat, playNext]);
-
-
-
 
   useEffect(() => {
     const audio = audioRef.current;
