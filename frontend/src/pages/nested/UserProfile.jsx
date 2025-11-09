@@ -41,8 +41,8 @@ const UserProfile = () => {
 
           // set profileImage to the photo endpoint so the avatar displays
           if (res.data.userId) {
-            setProfileImage(`${API_URL}/api/user/${res.data.userId}/photo`);
-            setTempImage(`${API_URL}/api/user/${res.data.userId}/photo`);
+            setProfileImage(res.data.photoUrl);
+            setTempImage(res.data.photoUrl);
           }
         }
       } catch (err) {

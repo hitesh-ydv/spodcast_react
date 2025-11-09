@@ -49,9 +49,10 @@ router.post("/signup", async (req, res) => {
       msg: "Verification email sent",
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("Signup Error:", err);
+    res.status(500).json({ msg: "Internal Server Error", error: err.message, stack: err.stack });
   }
+
 });
 
 // Verify Email

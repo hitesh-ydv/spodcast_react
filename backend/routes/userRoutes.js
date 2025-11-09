@@ -3,15 +3,12 @@ import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
+
 
 const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
-
-/* ===========================
-    🔹 PROFILE ROUTES
-=========================== */
-
 
 router.put(
   "/update-photo",
@@ -23,13 +20,12 @@ router.put(
       if (!user) return res.status(404).json({ msg: "User not found" });
       if (!req.file) return res.status(400).json({ msg: "No file uploaded" });
 
-      // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload_stream(
+      const uploadStream = cloudinary.uploader.upload_stream(
         { folder: "user_photos" },
         async (error, uploadResult) => {
           if (error) return res.status(500).json({ msg: "Upload failed" });
 
-          user.photoUrl = uploadResult.secure_url; // 👈 store only URL
+          user.photoUrl = uploadResult.secure_url;
           await user.save();
 
           res.json({
@@ -44,8 +40,7 @@ router.put(
         }
       );
 
-      // Stream the buffer to Cloudinary
-      require("streamifier").createReadStream(req.file.buffer).pipe(result);
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
     } catch (err) {
       console.error(err);
       res.status(500).json({ msg: "Server error" });
@@ -75,46 +70,50 @@ router.put("/update", authMiddleware, async (req, res) => {
   }
 });
 
-// Get logged-in user info
+// 1️⃣ Get logged-in user info
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const user = await User.findOne({ userId: req.user.userId }).select(
       "-password -verificationToken"
     );
     if (!user) return res.status(404).json({ msg: "User not found" });
-
     res.json(user);
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }
 });
 
-// Get any user's public info
-router.get("/:userId", async (req, res) => {
-  try {
-    const user = await User.findOne({ userId: req.params.userId }).select(
-      "userId name email verified"
-    );
-    if (!user) return res.status(404).json({ msg: "User not found" });
-
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-// Get user photo
+// 2️⃣ Get user photo (specific route)
 router.get("/:userId/photo", async (req, res) => {
   try {
     const user = await User.findOne({ userId: req.params.userId });
-    if (!user || !user.photo) return res.status(404).send("No photo");
+    if (!user || !user.photoUrl)
+      return res.status(404).send("No photo found");
 
-    res.set("Content-Type", user.photoContentType);
-    res.send(user.photo);
+    // if using Cloudinary URL:
+    res.json({ photoUrl: user.photoUrl });
+
+    // if serving binary photo from DB:
+    // res.set("Content-Type", user.photoContentType);
+    // res.send(user.photo);
   } catch (err) {
     res.status(500).send("Server error");
   }
 });
+
+// 3️⃣ Get any user's public info (generic, placed last)
+router.get("/:userId", async (req, res) => {
+  try {
+    const user = await User.findOne({ userId: req.params.userId }).select(
+      "userId name email verified photoUrl"
+    );
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
 
 /* ===========================
     🎧 RECENT PLAYS
@@ -226,74 +225,6 @@ router.get("/library", authMiddleware, async (req, res) => {
   try {
     const user = await User.findOne({ userId: req.user.userId });
     res.json({ library: user.library });
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-/* ===========================
-    📀 SELF PLAYLISTS
-=========================== */
-
-// Create a new self playlist
-router.post("/self-playlist", authMiddleware, async (req, res) => {
-  const { name, description } = req.body;
-  if (!name) return res.status(400).json({ msg: "Playlist name required" });
-
-  try {
-    const user = await User.findOne({ userId: req.user.userId });
-
-    user.selfPlaylists.push({ name, description });
-    await user.save();
-
-    res.json({ msg: "Playlist created", selfPlaylists: user.selfPlaylists });
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-// Add a song to a self playlist
-router.post("/self-playlist/:playlistId/add", authMiddleware, async (req, res) => {
-  const { songId } = req.body;
-  if (!songId) return res.status(400).json({ msg: "songId required" });
-
-  try {
-    const user = await User.findOne({ userId: req.user.userId });
-    const playlist = user.selfPlaylists.find(p => p.playlistId === req.params.playlistId);
-
-    if (!playlist) return res.status(404).json({ msg: "Playlist not found" });
-
-    if (!playlist.songs.includes(songId)) {
-      playlist.songs.push(songId);
-      await user.save();
-    }
-
-    res.json({ msg: "Song added", playlist });
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-// Delete a self playlist
-router.delete("/self-playlist/:playlistId", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findOne({ userId: req.user.userId });
-    user.selfPlaylists = user.selfPlaylists.filter(
-      p => p.playlistId !== req.params.playlistId
-    );
-    await user.save();
-
-    res.json({ msg: "Playlist deleted", selfPlaylists: user.selfPlaylists });
-  } catch (err) {
-    res.status(500).json({ msg: "Server error" });
-  }
-});
-
-// Get all self playlists
-router.get("/self-playlist", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findOne({ userId: req.user.userId });
-    res.json({ selfPlaylists: user.selfPlaylists });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }

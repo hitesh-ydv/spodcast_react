@@ -159,9 +159,9 @@ export default function Navbar() {
                    text-sm font-semibold text-white shadow-inner shadow-white/10 
                    focus:outline-none data-hover:bg-gray-700 data-open:bg-gray-700"
                     >
-                        {user?.photo ? (
+                        {user?.photoUrl ? (
                             <img
-                                src={`${URL}/api/user/${user.userId}/photo`}
+                                src={user.photoUrl}
                                 alt="Profile"
                                 className="w-full h-full object-cover rounded-full"
                             />
