@@ -35,7 +35,7 @@ export const AudioProvider = ({ children }) => {
       );
       const data = await response.json();
 
-      const url = data?.data[0]?.downloadUrl?.[3]?.url;
+      const url = data?.data[0]?.downloadUrl?.[4]?.url;
       if (!url) throw new Error("No audio URL found");
 
       setAudioUrl(url);
