@@ -50,12 +50,32 @@ export default function RightSidebar() {
     return data.tracks.items[0]?.id;
   };
 
+  const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq";
+
   const getCanvasUrl = async (trackId) => {
-    const res = await fetch(`https://api.paxsenix.org/spotify/canvas?id=${trackId}`);
-    const data = await res.json();
-    console.log(data)
-    return data.data.canvasesList?.[0]?.canvasUrl;
+    try {
+      const res = await fetch(`https://api.paxsenix.org/spotify/canvas?id=${trackId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log(data);
+
+      return data.data?.canvasesList?.[0]?.canvasUrl || null;
+    } catch (error) {
+      console.error('Error fetching canvas URL:', error);
+      return null;
+    }
   };
+
 
 
   useEffect(() => {
