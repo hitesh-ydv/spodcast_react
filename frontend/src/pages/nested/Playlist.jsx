@@ -18,6 +18,7 @@ import Bullet from "../../assets/bullet.svg";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
 const API_URL = import.meta.env.VITE_API_URL;
+import { Vibrant } from "node-vibrant/browser";
 
 
 const Playlist = () => {
@@ -60,57 +61,50 @@ const Playlist = () => {
         }
     }, [id]);
 
-    const extractColorFromImage = () => {
+    const extractColorFromImage = async () => {
         if (!imageRef2.current) return;
 
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const img = imageRef2.current;
+        try {
+            const palette = await Vibrant
+                .from(imageRef2.current.src)
+                .getPalette();
 
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0, img.width, img.height);
+            // Spotify-style priority
+            const swatch =
+                palette.DarkVibrant ||
+                palette.Muted ||
+                palette.DarkMuted;
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
+            if (!swatch) return;
 
-        let r = 0, g = 0, b = 0, count = 0;
+            const [r, g, b] = swatch.rgb;
 
-        // Sample every 10th pixel for performance
-        for (let i = 0; i < pixels.length; i += 40) {
-            r += pixels[i];
-            g += pixels[i + 1];
-            b += pixels[i + 2];
-            count++;
-        }
+            const gradient = `
+  linear-gradient(
+    180deg,
+    rgba(${r}, ${g}, ${b}, 0.95) 0%,
+    rgba(${r}, ${g}, ${b}, 0.75) 50%,
+    rgba(${r}, ${g}, ${b}, 0.6) 100%
+  )
+`;
 
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-
-        // Much darker tone for scroll container (Spotify-style deep look)
-        const deepR = Math.max(0, r - 70);
-        const deepG = Math.max(0, g - 70);
-        const deepB = Math.max(0, b - 70);
-
-        // For main hero section (less dark)
-        const mainGradient = `linear-gradient(0deg, rgb(${deepR - 20}, ${deepG - 20}, ${deepB - 20}), rgb(${r - 20}, ${g - 20}, ${b - 20}))`;
-        setBackgroundColor(mainGradient);
-
-        // 🖤 Scroll container gradient — deep top to dark theme bottom
-        const scrollGradient = `
+            const scrollGradient = `
     linear-gradient(
       to bottom,
-      rgba(${deepR}, ${deepG}, ${deepB}, 0.6) 0px,
-      rgba(${deepR}, ${deepG}, ${deepB}, 0.4) 30px,
-      rgba(18, 18, 18, 0.8) 130px,
+      rgba(${r}, ${g}, ${b}, 0.35) 0px,
+      rgba(18,18,18,0.7) 150px,
       #121212 100%
     )
   `;
 
-        setScrollContainerBg(scrollGradient);
-        console.log(mainGradient, scrollGradient)
+            setBackgroundColor(gradient);
+            setScrollContainerBg(scrollGradient);
+
+        } catch (err) {
+            console.error("Vibrant error:", err);
+        }
     };
+
 
 
 

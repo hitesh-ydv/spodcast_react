@@ -76,8 +76,6 @@ export default function RightSidebar() {
     }
   };
 
-
-
   useEffect(() => {
     setCanvasUrl(""); // reset first
 
