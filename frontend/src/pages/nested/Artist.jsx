@@ -72,9 +72,9 @@ const Artist = () => {
             const gradient = `
   linear-gradient(
     180deg,
-    rgba(${r}, ${g}, ${b}, 0.95) 0%,
-    rgba(${r}, ${g}, ${b}, 0.75) 50%,
-    rgba(${r}, ${g}, ${b}, 0.6) 100%
+    rgba(${r + 20}, ${g + 20}, ${b + 20}, 0.95) 0%,
+    rgba(${r}, ${g}, ${b}, 0.8) 50%,
+    rgba(${r}, ${g}, ${b}, 0.5) 100%
   )
 `;
 
