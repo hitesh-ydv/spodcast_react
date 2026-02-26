@@ -7,7 +7,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import { SearchProvider } from "./context/SearchContext";
 import MaintenanceModal from "./components/MaintenanceModal";
 import { useState } from "react";
-import './app.css'
+import './App.css'
 
 function App() {
   // Set true by default
