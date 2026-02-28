@@ -17,7 +17,7 @@ function App() {
     <SearchProvider>
       <Router>
         {/* Maintenance Popup */}
-        <MaintenanceModal isOpen={maintenance} />
+        <MaintenanceModal isOpen={!maintenance} />
 
         <Routes>
           <Route element={<AuthRoute />}>
