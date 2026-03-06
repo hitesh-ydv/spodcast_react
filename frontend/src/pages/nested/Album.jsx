@@ -19,6 +19,7 @@ import LoadImage from "../../assets/afterload.png"; // 👈 your default image p
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
+import MusicGif from "../../assets/music.gif";
 
 
 const Album = () => {
@@ -299,6 +300,17 @@ const Album = () => {
                                                 className="w-11 h-11 rounded"
                                                 onError={handleError}
                                             />
+
+                                            {/* GIF Overlay (visible when NOT hovered & song playing) */}
+                                            {isCurrentPlaying && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
+                                                    <img
+                                                        src={MusicGif}
+                                                        alt="playing"
+                                                        className="w-4 h-4 object-contain"
+                                                    />
+                                                </div>
+                                            )}
 
                                             {/* ▶️ Play/Pause Button */}
                                             <button
