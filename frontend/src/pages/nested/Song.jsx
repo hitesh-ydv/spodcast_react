@@ -20,6 +20,7 @@ import LoadImage from "../../assets/afterload.png";
 const API_URL = import.meta.env.VITE_API_URL;
 const URL = import.meta.env.VITE_API_URL2;
 import { Vibrant } from "node-vibrant/browser";
+import MusicGif from "../../assets/music.gif";
 
 
 const Song = () => {
@@ -414,12 +415,15 @@ const Song = () => {
                                 <div
                                     key={song.id}
                                     onClick={() => handleRecommendedSongClick(song)}
-                                    className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
-    ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
+                                    className={`recommended-cont2 group relative p-2.5 rounded flex items-center justify-between cursor-pointer
+  ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
                                 >
-                                    <div className='flex flex-row items-center gap-4 '>
+                                    <div className='flex flex-row items-center gap-4'>
+
                                         {/* Image Container */}
                                         <div className="relative">
+
+                                            {/* Song Image */}
                                             <LazyLoadImage
                                                 defaultImage={LoadImage}
                                                 image={song.image[1]?.url || fallbackImg}
@@ -427,21 +431,33 @@ const Song = () => {
                                                 onError={handleError}
                                             />
 
-                                            {/* ▶️ Play/Pause Button */}
+                                            {/* GIF Overlay (visible when NOT hovered & song playing) */}
+                                            {isCurrentPlaying && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
+                                                    <img
+                                                        src={MusicGif}
+                                                        alt="playing"
+                                                        className="w-4 h-4 object-contain"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Play/Pause Button (visible on hover) */}
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleRecommendedSongClick(song);
                                                 }}
-                                                className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
+                                                className={`play-btn absolute inset-0 flex items-center justify-center
+        bg-black/40 rounded opacity-0 group-hover:opacity-100 transition`}
                                             >
-
                                                 <img
                                                     src={isCurrentPlaying ? PauseWhite : PlayWhite}
                                                     alt={isCurrentPlaying ? "Pause" : "Play"}
                                                     className="max-h-6 max-w-6"
                                                 />
                                             </button>
+
                                         </div>
 
                                         {/* Song Info */}
@@ -451,8 +467,8 @@ const Song = () => {
                                                     navigate(`/${song.type}/${song.id}`);
                                                     e.stopPropagation();
                                                 }}
-                                                className={`inline-block cursor-pointer text-md font-medium truncate ${isCurrent ? "text-[#1db954]" : "text-white hover:underline"
-                                                    }`}
+                                                className={`inline-block cursor-pointer text-md font-medium truncate 
+        ${isCurrent ? "text-[#1db954]" : "text-white hover:underline"}`}
                                             >
                                                 {song.name}
                                             </h1>
@@ -475,16 +491,6 @@ const Song = () => {
                                             </p>
                                         </div>
                                     </div>
-
-                                    <CTooltip
-                                        content="Add to Liked Songs"
-                                        placement="top"
-                                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
-                                    >
-                                        <button className="transition-all like-btn  cursor-pointer px-2.5 py-2.5 flex items-center justify-center">
-                                            <img src={Like} alt="Play" className="w-6" />
-                                        </button>
-                                    </CTooltip>
                                 </div>
 
                             );

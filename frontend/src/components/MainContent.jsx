@@ -54,48 +54,6 @@ export default function MainContent() {
     return () => el.removeEventListener("scroll", handleScroll);
   }, [pathname, setPosition]);
 
-  // useEffect(() => {
-  //   const CLIENT_ID = "61469e91d2a84c7f9ad2bbe093042906";
-  //   const CLIENT_SECRET = "5f14c431be714b0e9de2adedd86af848";
-
-  //   const fetchNewReleases = async () => {
-  //     try {
-  //       // Get access token from Spotify
-  //       const tokenResponse = await axios.post(
-  //         "https://accounts.spotify.com/api/token",
-  //         new URLSearchParams({
-  //           grant_type: "client_credentials",
-  //         }),
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/x-www-form-urlencoded",
-  //             Authorization: "Basic " + btoa(`${CLIENT_ID}:${CLIENT_SECRET}`),
-  //           },
-  //         }
-  //       );
-
-  //       const accessToken = tokenResponse.data.access_token;
-
-  //       // Fetch new releases
-  //       const res = await axios.get(
-  //         "https://api.spotify.com/v1/browse/new-releases?locale=IN&limit=12",
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${accessToken}`,
-  //           },
-  //         }
-  //       );
-
-  //       setNewReleases(res.data.albums.items);
-  //     } catch (err) {
-  //       console.error("Error fetching new releases:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchNewReleases();
-  // }, []);
 
   useEffect(() => {
     if (!query) {

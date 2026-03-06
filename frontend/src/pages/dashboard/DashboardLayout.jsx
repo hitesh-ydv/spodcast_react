@@ -35,7 +35,6 @@ export default function DashboardLayout() {
 
     return (
         <AudioProvider>
-            <SearchProvider>
                 <div className="flex flex-col h-screen bg-black text-white">
                     <Navbar />
                     <main className="flex-1 overflow-y-auto px-2">
@@ -46,7 +45,6 @@ export default function DashboardLayout() {
                     </div>
 
                 </div>
-            </SearchProvider>
         </AudioProvider>
     );
 }
