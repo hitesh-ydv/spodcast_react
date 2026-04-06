@@ -48,7 +48,6 @@ const Playlist = () => {
                 setDetails(data.data)
                 setSongs(data.data.songs);
                 setPlaylistSongs(data.data.songs);
-                console.log(data)
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
@@ -220,7 +219,7 @@ const Playlist = () => {
                                 togglePlayPause();
                             }
                         }}
-                        className="bg-[#1db954] rounded-full px-2.5 py-2.5 hover:bg-[#4dc075] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                        className="bg-[#a362e0] rounded-full px-2.5 py-2.5 hover:bg-[#c194ec] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
                     >
                         <img
                             src={
@@ -286,11 +285,11 @@ const Playlist = () => {
                                     key={song.id}
                                     onClick={() => handleRecommendedSongClick(song)}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
-                    ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
+                    ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >
 
                                     <div className='flex flex-row items-center gap-4 '>
-                                        <p className='text-[16px] ml-1 text-gray-400 truncate font-medium z-20'>{index + 1}.</p>
+                                        <p className='text-[16px] ml-1 text-[#A0A0B2] truncate font-medium z-20'>{index + 1}.</p>
                                         {/* Image Container */}
                                         <div className="relative">
                                             <LazyLoadImage
@@ -337,13 +336,13 @@ const Playlist = () => {
                                                     navigate(`/${song.type}/${song.id}`);
                                                     e.stopPropagation();
                                                 }}
-                                                className={`inline-block cursor-pointer text-md font-medium truncate ${isCurrent ? "text-[#1db954]" : "text-white hover:underline"
+                                                className={`inline-block cursor-pointer text-md font-medium truncate ${isCurrent ? "text-[#7C4DFF]" : "text-white hover:underline"
                                                     }`}
                                             >
                                                 {song.name}
                                             </h1>
 
-                                            <p className="text-[14px] text-gray-400 truncate font-medium">
+                                            <p className="text-[14px] text-[#A0A0B2] truncate font-medium">
                                                 {song.artists.primary.map((a, index) => (
                                                     <span key={a.id || index}>
                                                         <a

@@ -67,7 +67,6 @@ export default function RightSidebar() {
       }
 
       const data = await res.json();
-      console.log(data);
 
       return data.data?.canvasesList?.[0]?.canvasUrl || null;
     } catch (error) {
@@ -90,7 +89,6 @@ export default function RightSidebar() {
 
         // 3️⃣ Fetch canvas URL
         const url = await getCanvasUrl(trackId);
-        console.log(url);
 
         // ✅ Check if URL contains "image"
         if (url.toLowerCase().includes("image")) {

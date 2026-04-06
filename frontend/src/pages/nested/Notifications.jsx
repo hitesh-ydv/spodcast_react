@@ -6,7 +6,7 @@ const Notifications = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white mb-2">What's New</h1>
-        <p className="text-gray-400 text-sm">
+        <p className="text-[#A0A0B2] text-sm">
           The latest releases from artists, podcasts, and shows you follow.
         </p>
       </div>
@@ -16,7 +16,7 @@ const Notifications = () => {
         <button className="pb-3 px-4 border-b-2 border-green-500 text-white font-medium">
           Music
         </button>
-        <button className="pb-3 px-4 text-gray-400 font-medium hover:text-white transition-colors">
+        <button className="pb-3 px-4 text-[#A0A0B2] font-medium hover:text-white transition-colors">
           Podcasts & Shows
         </button>
       </div>
@@ -33,10 +33,10 @@ const Notifications = () => {
           {/* Content */}
           <div className="flex-1 min-w-0">
             <h3 className="text-white font-semibold truncate">House Navior</h3>
-            <p className="text-gray-400 text-sm truncate">
+            <p className="text-[#A0A0B2] text-sm truncate">
               Navaan Sandhu, Gurinder Gill, Bir
             </p>
-            <div className="flex items-center gap-1 text-gray-400 text-xs mt-1">
+            <div className="flex items-center gap-1 text-[#A0A0B2] text-xs mt-1">
               <span>Album</span>
               <span>·</span>
               <span>Sep 19, 2025</span>

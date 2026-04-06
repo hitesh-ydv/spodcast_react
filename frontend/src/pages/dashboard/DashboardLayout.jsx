@@ -35,7 +35,7 @@ export default function DashboardLayout() {
 
     return (
         <AudioProvider>
-                <div className="flex flex-col h-screen bg-black text-white">
+                <div className="flex flex-col h-screen bg-[#0B0B10] text-white">
                     <Navbar />
                     <main className="flex-1 overflow-y-auto px-2">
                         <MiddleSection />

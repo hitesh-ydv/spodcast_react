@@ -96,7 +96,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
 
 
   return (
-    <section ref={scrollRef} className="flex flex-col w-full bg-[#121212] h-full text-white">
+    <section ref={scrollRef} className="flex flex-col w-full bg-[#12121A] h-full text-white">
 
 
       {/* CASE 1: No query typed yet */}
@@ -123,7 +123,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                 className={`px-3 py-0 rounded-full text-[13px] font-medium transition-all duration-200 flex items-center justify-center
         ${activeFilter === filter
                     ? "bg-white text-black"
-                    : "bg-[#1f1f1f] text-white hover:bg-[#2a2a2a]"
+                    : "bg-[#222231] text-white hover:bg-[#2b2b3e]"
                   }`}
               >
                 {filter}
@@ -141,7 +141,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     e.stopPropagation();
                   }}
                   key={song.id}
-                  className="relative w-112 bg-[#181818] rounded-lg p-5 hover:bg-[#191919] transition-all cursor-pointer topresult"
+                  className="relative w-112 bg-[rgba(124,77,255,0.05)] rounded-lg p-5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer topresult"
                 >
                   <LazyLoadImage
                     defaultImage={LoadImage}
@@ -165,7 +165,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     navigate(`/${song.type}/${song.id}`)
                     e.stopPropagation();
                   }} className="text-2xl font-bold truncate hover:underline">{song.title}</h3>
-                  <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                  <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                     {song.type.charAt(0).toUpperCase() + song.type.slice(1)} {song.type == "song" ? "•" : ""} {song.primaryArtists}
 
                   </p>
@@ -185,7 +185,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   return (
                     <div
                       key={song.id}
-                      className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                      className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                       onClick={(e) => {
                         navigate(`/${song.type}/${song.id}`)
                         e.stopPropagation();
@@ -223,8 +223,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       <h3 onClick={(e) => {
                         navigate(`/${song.type}/${song.id}`)
                         e.stopPropagation();
-                      }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#1db954]" : "text-white"} `}>{song.name}</h3>
-                      <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                      }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#7C4DFF]" : "text-white"} `}>{song.name}</h3>
+                      <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                         {song.artists.primary.map((a, index) => (
                           <span key={a.id || index}>
                             <a
@@ -256,7 +256,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                 {playlists.map((song) => (
                   <div
                     key={song.id}
-                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
@@ -273,7 +273,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
                     }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                    <p className="text-sm text-gray-400 font-medium line-clamp-2">
+                    <p className="text-sm text-[#A0A0B2] font-medium line-clamp-2">
                       {song.type.charAt(0).toUpperCase() + song.type.slice(1)}
                     </p>
                   </div>
@@ -289,7 +289,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                 {albums.map((album) => (
                   <div
                     key={album.id}
-                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
                       navigate(`/${album.type}/${album.id}`)
                       e.stopPropagation();
@@ -308,7 +308,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }} className="text-base font-semibold truncate hover:underline">
                       {album.name}
                     </h3>
-                    <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                       {album.artists.all.map((a, index) => (
                         <span key={a.id || index}>
                           <a
@@ -339,7 +339,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     onClick={(e) => {
                       navigate(`/${artist.type}/${artist.id}`)
                     }}
-                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                   >
                     <LazyLoadImage
                       defaultImage={LoadImage}
@@ -354,7 +354,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }} className="text-base font-semibold truncate hover:underline">
                       {artist.name}
                     </h3>
-                    <p className="text-sm text-gray-400 truncate font-medium">
+                    <p className="text-sm text-[#A0A0B2] truncate font-medium">
                       Artist
                     </p>
                   </div>

@@ -47,7 +47,7 @@ export default function Login() {
         onSubmit={handleLogin}
         className="p-8 bg-[#1a1a1a] rounded-2xl w-96 space-y-5 shadow-lg"
       >
-        <h2 className="text-3xl font-bold text-center mb-4 text-[#1db954]">
+        <h2 className="text-3xl font-bold text-center mb-4 text-[#7C4DFF]">
           Welcome Back
         </h2>
 
@@ -72,7 +72,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#1db954] text-black font-semibold py-3 rounded hover:opacity-90 transition"
+          className="w-full bg-[#a362e0] text-black font-semibold py-3 rounded hover:opacity-90 transition"
         >
           {loading ? "Logging in..." : "Log In"}
         </button>
@@ -87,10 +87,10 @@ export default function Login() {
           </p>
         )}
 
-        <p className="text-center text-gray-400 text-sm mt-4">
+        <p className="text-center text-[#A0A0B2] text-sm mt-4">
           Don’t have an account?{" "}
           <span
-            className="text-[#1db954] cursor-pointer"
+            className="text-[#7C4DFF] cursor-pointer"
             onClick={() => navigate("/signup")}
           >
             Sign Up

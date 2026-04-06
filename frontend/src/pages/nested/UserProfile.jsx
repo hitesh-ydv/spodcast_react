@@ -196,7 +196,7 @@ const UserProfile = () => {
 
         <div className="text-center space-y-3 mb-6">
           <h1 className="text-3xl font-semibold">{user.name}</h1>
-          <div className="flex justify-center gap-6 text-gray-400">
+          <div className="flex justify-center gap-6 text-[#A0A0B2]">
             <div className="text-center">
               <p className="font-semibold text-white">1</p>
               <p className="text-sm">Public Playlist</p>
@@ -261,7 +261,7 @@ const UserProfile = () => {
             </div>
 
             <div className="mb-6">
-              <label className="block text-gray-400 text-sm font-medium mb-2">
+              <label className="block text-[#A0A0B2] text-sm font-medium mb-2">
                 Name
               </label>
               <input
@@ -273,7 +273,7 @@ const UserProfile = () => {
             </div>
 
             <div className="bg-[#1a1a1a] p-4 rounded-lg mb-6">
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-[#A0A0B2]">
                 By proceeding, you agree to give Spodcast access to the image you
                 choose to upload. Please make sure you have the right to upload
                 the image.

@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import axios from "axios";
 import { useSearch } from "../context/SearchContext";
+import toast, { Toaster } from 'react-hot-toast';
 
 const URL = import.meta.env.VITE_API_URL2;
 
@@ -24,6 +25,15 @@ export default function Navbar() {
 
     const location = useLocation();
     const isHomePage = location.pathname === "/";
+
+    const notify = () => toast.success('Link Copied', {
+        style: {
+            background: '#1d1d2f',
+            color: '#fff',
+            marginBottom: '100px',
+        },
+        duration: 2000,
+    });
 
     useEffect(() => {
         if (inputRef.current) {
@@ -110,7 +120,7 @@ export default function Navbar() {
             <div className="h-full w-[35%] min-w-[20%] flex items-center gap-2">
 
                 {/* Home Button */}
-                <button onClick={handleFocus2} className="transition-transform duration-300 hover:scale-105 w-13 bg-[#1f1f1f] p-2 rounded-full hover:bg-[#242424] cursor-pointer transition-all">
+                <button onClick={handleFocus2} className="duration-300 hover:scale-105 w-13 bg-[#151520] p-2 rounded-full hover:bg-[#1d1d2f] cursor-pointer transition-all">
                     <img
                         src={isHomePage ? HomeFill : Home}
                         alt="Home"
@@ -118,7 +128,18 @@ export default function Navbar() {
                 </button>
 
                 {/* Search Bar */}
-                <div className="flex items-center bg-[#1f1f1f] hover:bg-neutral-800 rounded-full w-full transition h-full px-3">
+                <div className="flex items-center 
+    bg-[#151520] 
+    hover:bg-[#1d1d2f] 
+    focus-within:bg-[#1d1d2f] 
+    rounded-full w-full 
+    transition-all duration-200 
+    h-full px-3 
+    border border-transparent 
+    focus-within:border-[rgba(255,255,255,0.08)] 
+    focus-within:ring-1 
+    focus-within:ring-[rgba(255,255,255,0.05)]">
+
                     <img src={Search} alt="Search" className="h-8 w-8" />
 
                     <input
@@ -127,12 +148,10 @@ export default function Navbar() {
                         placeholder="What do you want to play?"
                         value={searchText}
                         onChange={handleInputChange}
-
                         className="bg-transparent outline-none text-white placeholder-[#adadad] flex-1 ml-3 h-full font-semibold"
                         onClick={handleFocus}
                     />
 
-                    {/* Close Icon — only show when there's text */}
                     {searchText && (
                         <button
                             onClick={() => {
@@ -146,7 +165,17 @@ export default function Navbar() {
                     )}
 
                     <div className="h-6 w-[1px] bg-[#adadad] py-2"></div>
-                    <img src={Share} alt="Share" className="h-8 ml-2 p-1 hover:bg-[#2a2a2a] rounded-full cursor-pointer" />
+
+                    <img
+                        onClick={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            notify(); // your toast / alert
+                        }}
+                        src={Share}
+                        alt="Share"
+                        className="h-8 ml-2 p-1 hover:bg-[#2c2c47] rounded-full cursor-pointer"
+                    />
+                    <Toaster position="bottom-center" />
                 </div>
             </div>
 

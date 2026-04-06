@@ -214,7 +214,7 @@ const Artist = () => {
                 <div className='px-6 py-1 flex items-center gap-6'>
                     <button
                         onClick={handleMainPlayButton}
-                        className="bg-[#1db954] rounded-full px-2.5 py-2.5 hover:bg-[#4dc075] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                        className="bg-[#a362e0] rounded-full px-2.5 py-2.5 hover:bg-[#c194ec] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
                     >
                         <LazyLoadImage
                             defaultImage={LoadImage}
@@ -263,7 +263,7 @@ const Artist = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                                     onClick={(e) => {
                                         navigate(`/${song.type}/${song.id}`)
                                         e.stopPropagation();
@@ -303,7 +303,7 @@ const Artist = () => {
                                         e.stopPropagation();
                                     }}
                                         className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                                    <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                                         {song.artists.primary.map((a, index) => (
                                             <span key={a.id || index}>
                                                 <a
@@ -332,7 +332,7 @@ const Artist = () => {
                         {artist?.topAlbums?.map((song) => (
                             <div
                                 key={song.id}
-                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                                 onClick={(e) => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
@@ -350,7 +350,7 @@ const Artist = () => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
                                 }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                                <p className="text-sm text-gray-400 truncate font-medium">
+                                <p className="text-sm text-[#A0A0B2] truncate font-medium">
                                     {song.artists.primary.map((a, index) => (
                                         <span key={a.id || index} onClick={(e) => e.stopPropagation()}>
                                             <a
@@ -378,7 +378,7 @@ const Artist = () => {
                         {artist?.singles?.map((song) => (
                             <div
                                 key={song.id}
-                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                                 onClick={(e) => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
@@ -400,7 +400,7 @@ const Artist = () => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
                                 }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                                <p className="text-sm text-gray-400 truncate font-medium">
+                                <p className="text-sm text-[#A0A0B2] truncate font-medium">
                                     {song.artists.primary.map((a, index) => (
                                         <span key={a.id || index}>
                                             <a
@@ -427,7 +427,7 @@ const Artist = () => {
                         {artist?.similarArtists?.map((song) => (
                             <div
                                 key={song.id}
-                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                                 onClick={(e) => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
@@ -444,7 +444,7 @@ const Artist = () => {
                                     navigate(`/${song.type}/${song.id}`)
                                     e.stopPropagation();
                                 }} className="text-base font-semibold truncate hover:underline">{song.name}</h3>
-                                <p className="text-sm text-gray-400 truncate font-medium">
+                                <p className="text-sm text-[#A0A0B2] truncate font-medium">
                                     {song.type.toUpperCase()}
                                 </p>
 

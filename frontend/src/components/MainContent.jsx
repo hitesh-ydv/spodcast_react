@@ -85,7 +85,6 @@ export default function MainContent() {
           axios.get(`${API_URL}/api/search/artists?query=${encoded}&limit=20`)
         ]);
 
-        console.log(playlistsRes.data)
 
         // Set states safely with fallback defaults
         setTopResults(topRes.data.data.topQuery?.results || []);
@@ -93,8 +92,6 @@ export default function MainContent() {
         setPlaylists(playlistsRes.data.data.results || []);
         setAlbums(albumsRes.data.data.results || []);
         setArtists(artistsRes.data.data.results || []);
-
-        console.log("✅ Fetched All Search Data");
       } catch (err) {
         console.error("❌ Error fetching search data:", err);
         setTopResults([]);
@@ -116,7 +113,6 @@ export default function MainContent() {
     axios.get(`${API_URL}/api/songs/o_azuPYd/suggestions?limit=10`)
       .then(res => {
         setData(res.data.data)
-        console.log(res.data.data)
       })
       .catch(err => {
         console.error("Error fetching home data:", err);
@@ -127,7 +123,7 @@ export default function MainContent() {
   return (
     <main
      ref={scrollRef}
-     className="flex-1 overflow-y-auto max-h-full max-w-full rounded-md bg-theme"
+     className="flex-1 overflow-y-auto max-h-full max-w-full rounded-md bg-[#12121A]"
      >
       <Routes>
         <Route

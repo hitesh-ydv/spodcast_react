@@ -58,7 +58,7 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  background-color: #1db954;
+  background-color: #a362e0;
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -87,7 +87,7 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  background-color: #1db954;
+  background-color: #a362e0;
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -138,11 +138,11 @@
 }
 
 .play-button:hover {
-  background-color: #4dc075;
+  background-color: #c194ec;
 }
 
 .play-button-topresults:hover {
-  background-color: #4dc075;
+  background-color: #c194ec;
 }
 
 .like-btn{

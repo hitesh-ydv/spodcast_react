@@ -48,7 +48,7 @@ export default function Home({ data, loading }) {
             return (
               <div
                 key={song.id}
-                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[#191919] transition-all cursor-pointer snap-start"
+                className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                 onClick={(e) => {
                   navigate(`/${song.type}/${song.id}`)
                   e.stopPropagation();
@@ -86,8 +86,8 @@ export default function Home({ data, loading }) {
                 <h3 onClick={(e) => {
                   navigate(`/${song.type}/${song.id}`)
                   e.stopPropagation();
-                }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#1db954]" : "text-white"} `}>{song.name}</h3>
-                <p className="text-sm text-gray-400 line-clamp-2 font-medium">
+                }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#a362e0]" : "text-white"} `}>{song.name}</h3>
+                <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                   {song.artists.primary.map((a, index) => (
                     <span key={a.id || index}>
                       <a

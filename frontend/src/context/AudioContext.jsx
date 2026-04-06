@@ -12,7 +12,37 @@ export const AudioProvider = ({ children }) => {
 
   const audioRef = useRef(null);
 
-  console.log(playlistSongs)
+  useEffect(() => {
+    if (currentSong) {
+      localStorage.setItem("lastSong", JSON.stringify(currentSong));
+    }
+  }, [currentSong]);
+
+  useEffect(() => {
+    if (audioUrl) {
+      localStorage.setItem("lastAudioUrl", audioUrl);
+
+      console.log("Audio URL updated:", audioUrl);
+    }
+  }, [audioUrl]);
+
+  useEffect(() => {
+    const savedSong = localStorage.getItem("lastSong");
+    const savedUrl = localStorage.getItem("lastAudioUrl");
+
+    if (savedSong) {
+      try {
+        const parsedSong = JSON.parse(savedSong);
+        setCurrentSong(parsedSong);
+      } catch (err) {
+        console.error("Error parsing lastSong:", err);
+      }
+    }
+
+    if (savedUrl) {
+      setAudioUrl(savedUrl);
+    }
+  }, []);
 
   const playSong = async (songId, playlist = playlistSongs) => {
     try {
@@ -33,6 +63,7 @@ export const AudioProvider = ({ children }) => {
       const response = await fetch(
         `${API_URL}/api/songs/${songId}`
       );
+
       const data = await response.json();
 
       const url = data?.data[0]?.downloadUrl?.[4]?.url;

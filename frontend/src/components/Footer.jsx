@@ -211,7 +211,7 @@ export default function FooterPlayer() {
                 >
                   <a className="inline-block hover:underline cursor-pointer">{currentSong.name}</a>
                 </p>
-                <p className="inline-block text-sm font-medium text-gray-400 truncate line-clamp-1">
+                <p className="inline-block text-sm font-medium text-[#A0A0B2] truncate line-clamp-1">
                   {currentSong.artists.primary.map((a, i) => (
                     <span key={a.id || i}>
                       <a
@@ -235,7 +235,7 @@ export default function FooterPlayer() {
               <div className="flex items-center gap-3 justify-center pt-1 ">
                 <button
                   onClick={toggleShuffle}
-                  className={`p-2 rounded-full transition ${isShuffle ? "text-[#1db954]" : "text-gray-300 hover:text-white"
+                  className={`p-2 rounded-full transition ${isShuffle ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white"
                     }`}
                 >
                   <svg
@@ -304,7 +304,7 @@ export default function FooterPlayer() {
 
                 <button
                   onClick={toggleRepeat}
-                  className={`p-2 rounded-full transition ${isRepeat ? "text-[#1db954]" : "text-gray-300 hover:text-white"
+                  className={`p-2 rounded-full transition ${isRepeat ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white"
                     }`}
                 >
                   <svg
@@ -328,7 +328,7 @@ export default function FooterPlayer() {
               {/* Progress Bar */}
               {/* Progress Bar */}
               <div className="flex items-center gap-2 w-full">
-                <span className="text-xs font-medium text-gray-400">{formatTime(currentTime)}</span>
+                <span className="text-xs font-medium text-[#A0A0B2]">{formatTime(currentTime)}</span>
 
                 <div
                   className="relative flex-1 h-6 group cursor-pointer" // taller container for easier click
@@ -350,14 +350,14 @@ export default function FooterPlayer() {
                   ></div>
                 </div>
 
-                <span className="text-xs font-medium text-gray-400">{formatTime(duration)}</span>
+                <span className="text-xs font-medium text-[#A0A0B2]">{formatTime(duration)}</span>
               </div>
 
 
             </div>
 
             {/* Right - filler or extra icons */}
-            <div className="w-1/3 flex justify-end font-medium text-gray-400 text-xs">
+            <div className="w-1/3 flex justify-end font-medium text-[#A0A0B2] text-xs">
               <span>Now Playing</span>
             </div>
           </div>
@@ -366,7 +366,7 @@ export default function FooterPlayer() {
           <audio ref={audioRef} src={audioUrl} className="hidden" />
         </>
       ) : (
-        <div className="text-gray-400 text-sm text-center py-3">
+        <div className="text-[#A0A0B2] text-sm text-center py-3">
           No song playing
         </div>
       )}

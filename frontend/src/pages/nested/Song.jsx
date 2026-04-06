@@ -108,7 +108,6 @@ const Song = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const likedSongs = res.data.likedSongs || [];
-                console.log(res.data.likedSongs)
                 setIsLiked(likedSongs.includes(song[0].id));
             } catch (err) {
                 console.error("Error fetching liked songs:", err);
@@ -313,7 +312,7 @@ const Song = () => {
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-4'>
-                    <button onClick={handleClick} className="bg-[#1db954] rounded-full px-2.5 py-2.5 hover:bg-[#4dc075] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105">
+                    <button onClick={handleClick} className="bg-[#a362e0] rounded-full px-2.5 py-2.5 hover:bg-[#c194ec] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105">
                         <img
                             src={isCurrentPlaying ? PauseBtn : PlayBtn}
                             alt={isCurrentPlaying ? "Pause" : "Play"}
@@ -355,7 +354,7 @@ const Song = () => {
                     <h2 className="text-2xl font-bold mb-4">Lyrics</h2>
 
                     {loading ? (
-                        <p className="text-gray-400 italic">Loading lyrics...</p>
+                        <p className="text-[#A0A0B2] italic">Loading lyrics...</p>
                     ) : (
                         <>
                             <div className="text-gray-200 leading-relaxed">
@@ -369,7 +368,7 @@ const Song = () => {
                             {lines.length > MAX_LINES && (
                                 <button
                                     onClick={() => setShowMore(!showMore)}
-                                    className="mt-4 text-sm font-semibold text-gray-400 hover:text-white transition-all"
+                                    className="mt-4 text-sm font-semibold text-[#A0A0B2] hover:text-white transition-all"
                                 >
                                     {showMore ? "Show less" : "...Show more"}
                                 </button>
@@ -381,7 +380,7 @@ const Song = () => {
                 {song[0].artists.primary !== 0 && (
                     <div className='p-3'>
                         {song[0].artists.primary.map((artist) => (
-                            <div key={artist.id} className='flex flex-row items-center gap-4 hover:bg-[#202020] px-3 py-3 rounded-lg transition-all'>
+                            <div key={artist.id} className='flex flex-row items-center gap-4 hover:bg-[rgba(124,77,255,0.1)] px-3 py-3 rounded-lg transition-all'>
                                 <LazyLoadImage
                                     defaultImage={LoadImage}
                                     image={artist.image[2]?.url || fallbackImg}
@@ -416,7 +415,7 @@ const Song = () => {
                                     key={song.id}
                                     onClick={() => handleRecommendedSongClick(song)}
                                     className={`recommended-cont2 group relative p-2.5 rounded flex items-center justify-between cursor-pointer
-  ${isCurrent ? "bg-[#303030]" : "hover:bg-[#202020]"}`}
+  ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >
                                     <div className='flex flex-row items-center gap-4'>
 
@@ -468,12 +467,12 @@ const Song = () => {
                                                     e.stopPropagation();
                                                 }}
                                                 className={`inline-block cursor-pointer text-md font-medium truncate 
-        ${isCurrent ? "text-[#1db954]" : "text-white hover:underline"}`}
+        ${isCurrent ? "text-[#7C4DFF]" : "text-white hover:underline"}`}
                                             >
                                                 {song.name}
                                             </h1>
 
-                                            <p className="text-[14px] text-gray-400 truncate font-medium">
+                                            <p className="text-[14px] text-[#A0A0B2] truncate font-medium">
                                                 {song.artists.primary.map((a, index) => (
                                                     <span key={a.id || index}>
                                                         <a
