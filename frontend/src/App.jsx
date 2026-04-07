@@ -8,6 +8,7 @@ import { SearchProvider } from "./context/SearchContext";
 import MaintenanceModal from "./components/MaintenanceModal";
 import { useState } from "react";
 import './App.css'
+import { RecentProvider } from "./context/RecentContext";
 
 function App() {
   // Set true by default
@@ -15,21 +16,23 @@ function App() {
 
   return (
     <SearchProvider>
-      <Router>
-        {/* Maintenance Popup */}
-        <MaintenanceModal isOpen={!maintenance} />
+      <RecentProvider>
+        <Router>
+          {/* Maintenance Popup */}
+          <MaintenanceModal isOpen={!maintenance} />
 
-        <Routes>
-          <Route element={<AuthRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-          </Route>
+          <Routes>
+            <Route element={<AuthRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </Route>
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/*" element={<DashboardLayout />} />
-          </Route>
-        </Routes>
-      </Router>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/*" element={<DashboardLayout />} />
+            </Route>
+          </Routes>
+        </Router>
+      </RecentProvider>
     </SearchProvider>
   );
 }

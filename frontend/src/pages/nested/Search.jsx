@@ -13,6 +13,7 @@ import { useScrollStore } from "../../context/useScrollStore";
 import { useRef } from "react";
 import { useAudio } from "../../context/AudioContext";
 const API_URL = import.meta.env.VITE_API_URL;
+import { useRecent } from "../../context/RecentContext";
 
 export default function Search({ topResults, songs, playlists, albums, artists, loading2, query }) {
   const scrollRef = useRef(null);
@@ -20,6 +21,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
   const { positions, setPosition } = useScrollStore();
   const [recommendedSongs, setRecommendedSongs] = useState([]);
   const [currentSongId, setCurrentSongId] = useState("");
+
+  const { recentPlayed, saveToRecent } = useRecent(); // Home
 
   const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
@@ -151,7 +154,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   />
 
                   {song.type == "song" && (
-                    <button onClick={(e) => handleClick(e, song)} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
+                    <button onClick={(e) => { handleClick(e, song); saveToRecent(song); }} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
                       <img
                         src={isCurrentPlaying ? PauseBtn : PlayBtn}
                         alt={isCurrentPlaying ? "Pause" : "Play"}

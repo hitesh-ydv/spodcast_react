@@ -21,6 +21,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const URL = import.meta.env.VITE_API_URL2;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
+import { useRecent } from "../../context/RecentContext";
 
 
 const Song = () => {
@@ -39,6 +40,8 @@ const Song = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
+
+    const { recentPlayed, saveToRecent } = useRecent(); // Home
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
@@ -210,6 +213,7 @@ const Song = () => {
     const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
 
     const handleClick = () => {
+        saveToRecent(song[0])
         setCurrentSongId(song[0].id)
         if (isCurrent) {
             // same song → toggle play/pause

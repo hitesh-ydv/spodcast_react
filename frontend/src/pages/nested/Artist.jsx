@@ -13,6 +13,7 @@ import Bullet from "../../assets/bullet.svg";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useAudio } from '../../context/AudioContext';
 import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
+import { useRecent } from "../../context/RecentContext";
 const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 
@@ -24,6 +25,8 @@ const Artist = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const imageRef = useRef(null);
+
+    const { recentPlayed, saveToRecent } = useRecent(); // Home
 
     const [localCurrentSongId, setLocalCurrentSongId] = useState(null);
 
@@ -136,6 +139,7 @@ const Artist = () => {
 
         // set this playlist globally
         setPlaylistSongs(artist.topSongs);
+        saveToRecent(artist);
 
         if (!localCurrentSongId || !isCurrentInPlaylist) {
             if (artist.topSongs.length > 0) {
@@ -288,6 +292,8 @@ const Artist = () => {
                                                     // different song → play new song
                                                     playSong(song.id);
                                                 }
+                                                saveToRecent(artist)
+
                                             }}
                                         >
                                             <img

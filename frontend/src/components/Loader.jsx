@@ -8,7 +8,7 @@ function Loader() {
     <div className="sweet-loading flex w-full h-full items-center justify-center">
 
       <PulseLoader	
-        color="#adadad"
+        color="#fff"
         loading={loading}
         size={12}
         aria-label="Loading Spinner"

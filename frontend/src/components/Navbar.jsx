@@ -28,8 +28,8 @@ export default function Navbar() {
 
     const notify = () => toast.success('Link Copied', {
         style: {
-            background: '#1d1d2f',
-            color: '#fff',
+            background: '#fff',
+            color: '#000',
             marginBottom: '100px',
         },
         duration: 2000,

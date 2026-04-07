@@ -20,6 +20,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
+import { useRecent } from "../../context/RecentContext";
+
 
 
 const Album = () => {
@@ -32,6 +34,7 @@ const Album = () => {
     const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
+    const { recentPlayed, saveToRecent } = useRecent(); // Home
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
@@ -207,6 +210,7 @@ const Album = () => {
                 <div className='px-6 py-1 flex items-center gap-4'>
                     <button
                         onClick={() => {
+                            saveToRecent(details)
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
 
@@ -284,7 +288,9 @@ const Album = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    onClick={() => handleRecommendedSongClick(song)}
+                                    onClick={() => {handleRecommendedSongClick(song)
+                                        saveToRecent(details)
+                                    }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >
@@ -316,6 +322,7 @@ const Album = () => {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleRecommendedSongClick(song);
+                                                    saveToRecent(song);
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
                                             >
