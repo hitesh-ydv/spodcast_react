@@ -139,27 +139,29 @@ export default function Home({ data, loading }) {
                         className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
                         onError={handleError}
                       />
-                      <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                        onClick={(e) => {
-                          setCurrentSongId(song.id)
-                          e.stopPropagation()
-                          fetchRecommendedSongs(song.id, song)
-                          if (isCurrent) {
-                            // same song → toggle play/pause
-                            togglePlayPause();
-                          } else {
-                            // different song → play new song
-                            playSong(song.id);
-                          }
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
 
-                        }}
-                      >
-                        <img
-                          src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                          alt={isCurrentPlaying ? "Pause" : "Play"}
-                          className="h-8 w-8"
-                        />
-                      </button>
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
                     </div>
 
                     <h3 onClick={(e) => {
