@@ -17,26 +17,30 @@ export const RecentProvider = ({ children }) => {
     }
   }, []);
 
-  // 🔥 FIXED FUNCTION
   const saveToRecent = (item) => {
     setRecentPlayed((prev) => {
-      let updated = [...prev];
+      // 🧠 Normalize values (important!)
+      const newItem = {
+        ...item,
+        id: String(item.id),
+        type: item.type || "song",
+      };
 
-      // remove duplicate
-      updated = updated.filter(
-        (i) => !(i.id === item.id && i.type === item.type)
+      let updated = prev.filter(
+        (i) =>
+          !(String(i.id) === newItem.id && (i.type || "song") === newItem.type)
       );
 
       // add to top
-      updated.unshift(item);
+      updated.unshift(newItem);
 
-      // limit
-      if (updated.length > 15) updated.pop();
+      // limit 15
+      if (updated.length > 15) updated = updated.slice(0, 15);
 
-      // save to localStorage
+      // save
       localStorage.setItem("recentPlayed", JSON.stringify(updated));
 
-      return updated; // ✅ THIS triggers realtime update
+      return updated;
     });
   };
 

@@ -18,6 +18,7 @@
     "axios": "^1.12.2",
     "framer-motion": "^12.23.24",
     "howler": "^2.2.4",
+    "lucide-react": "^1.8.0",
     "node-vibrant": "^4.0.4",
     "primereact": "^10.9.7",
     "react": "^19.1.1",

@@ -13,23 +13,23 @@ export default function DashboardLayout() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return;
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         const token = localStorage.getItem("token");
+    //         if (!token) return;
 
-            try {
-                const res = await axios.get(`${URL}/api/user/me`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setUser(res.data);
-            } catch (err) {
-                console.error("Error fetching user:", err.response || err);
-            }
-        };
+    //         try {
+    //             const res = await axios.get(`${URL}/api/user/me`, {
+    //                 headers: { Authorization: `Bearer ${token}` },
+    //             });
+    //             setUser(res.data);
+    //         } catch (err) {
+    //             console.error("Error fetching user:", err.response || err);
+    //         }
+    //     };
 
-        fetchUser();
-    }, []);
+    //     fetchUser();
+    // }, []);
 
 
 

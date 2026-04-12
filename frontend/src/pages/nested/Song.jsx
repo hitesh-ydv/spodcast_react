@@ -22,6 +22,7 @@ const URL = import.meta.env.VITE_API_URL2;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
+import { useLibrary } from "../../context/LibraryContext";
 
 
 const Song = () => {
@@ -40,6 +41,8 @@ const Song = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
+
+     const { addToLiked, addArtist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -330,7 +333,7 @@ const Song = () => {
                         style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
                     >
                         <button
-                            onClick={handleLike}
+                            onClick={() => addToLiked(song)}
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
                             {isLiked ? (

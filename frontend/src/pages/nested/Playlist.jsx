@@ -21,8 +21,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
-
-
+import { useLibrary } from "../../context/LibraryContext";
+import Artist from './Artist';
 
 const Playlist = () => {
     const { id } = useParams();
@@ -34,6 +34,8 @@ const Playlist = () => {
     const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
+
+    const { addPlaylist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -247,6 +249,7 @@ const Playlist = () => {
                         style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
                     >
                         <button
+                            onClick={() => addPlaylist(details)}
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
                             <img src={Like} alt="Play" className="h-8 w-8" />

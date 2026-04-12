@@ -1,116 +1,191 @@
 import { useState, useEffect } from "react";
+import { useLibrary } from "../context/LibraryContext";
+import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
+import LoadImage from "../assets/afterload.png";
+import fallbackImg from "../assets/playlist_cover.jpg";
 
 const LibrarySidebar = () => {
-  const [collapsed, setCollapsed] = useState(false); // manual control
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { library } = useLibrary();
 
-  
+  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
 
-  const artists = [
-    "Karan Aujla",
-    "Shree Ram songs",
-    "Navaan Sandhu",
-    "Sidhu Moose Wala",
-  ];
+  const [filter, setFilter] = useState(null); // ✅ no default filter
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("recent");
 
-  // 📱 Detect screen resize
+  // responsive
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1100);
-    };
-
+    const handleResize = () => setIsMobile(window.innerWidth < 1100);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 🧠 Final state (auto OR manual)
   const finalCollapsed = isMobile || collapsed;
 
-  const [showContent, setShowContent] = useState(!finalCollapsed);
+  // 🔁 toggle filter
+  const handleFilterClick = (type) => {
+    setFilter((prev) => (prev === type ? null : type));
+  };
 
-useEffect(() => {
-  if (!finalCollapsed) {
-    setTimeout(() => setShowContent(true), 150);
-  } else {
-    setShowContent(false);
-  }
-}, [finalCollapsed]);
+  // 🎯 FILTER LOGIC
+  const getItems = () => {
+    let items = [];
+
+    // ✅ no filter = show all
+    if (!filter || filter === "artists") {
+      items.push(
+        ...library.artists.map((a) => ({ ...a, type: "artist" }))
+      );
+    }
+
+    if (!filter || filter === "albums") {
+      items.push(
+        ...library.albums.map((a) => ({ ...a, type: "album" }))
+      );
+    }
+
+    if (!filter || filter === "playlists") {
+      items.push(
+        ...library.playlists.map((p) => ({ ...p, type: "playlist" }))
+      );
+    }
+
+    // 🔍 search
+    if (search) {
+      items = items.filter((i) =>
+        i.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // 🔃 sort
+    if (sort === "az") {
+      items.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return items;
+  };
+
+  const items = getItems();
 
   return (
     <aside
-      className={`bg-[#12121A] p-3 md:p-3 overflow-y-auto mr-2 rounded-md
-      transition-all duration-300 ease-in-out
+      className={`bg-[#12121A] p-3 rounded-md transition-all duration-300 mr-2
       ${finalCollapsed ? "w-20" : "w-72"}`}
     >
-      {/* 🔘 Header */}
-      <div className="flex justify-between items-center mb-4 px-2 py-1">
-       {showContent && !finalCollapsed && (
-          <h2 onClick={() => setCollapsed(!collapsed)} className="text-lg font-semibold cursor-pointer">Your Library</h2>
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-4 px-2">
+        {!finalCollapsed && (
+          <h2 className="text-lg font-semibold">Your Library</h2>
         )}
 
-        {/* hide toggle on mobile (optional) */}
         {!isMobile && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className={`text-white text-sm bg-[#222231] ${finalCollapsed ? "ml-2" : ""}  px-1 py-1 rounded hover:bg-[#2b2b3e] font-bold`}
+            className="bg-[#222231] px-2 py-1 rounded"
           >
-            {finalCollapsed ?
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="size-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-
-              </>
-              :
-
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="size-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
-
-              </>
-            }
-
-
+            {finalCollapsed ? ">" : "<"}
           </button>
         )}
       </div>
 
-      {/* 🎵 Filters */}
-      {showContent && !finalCollapsed && (
-        <div className="flex gap-2 mb-4">
-          <button className="bg-[#222231] px-3 py-1 rounded-full text-sm hover:bg-[#2b2b3e]">
-            Playlists
-          </button>
-          <button className="bg-[#222231] px-3 py-1 rounded-full text-sm hover:bg-[#2b2b3e]">
-            Artists
-          </button>
+      {/* FILTER BUTTONS (NO ALL) */}
+      {!finalCollapsed && (
+        <div className="flex gap-2 mb-3 flex-wrap">
+          {["artists", "albums", "playlists"].map((f) => (
+            <button
+              key={f}
+              onClick={() => handleFilterClick(f)}
+              className={`px-3 py-1 rounded-full text-sm capitalize ${filter === f
+                  ? "bg-white text-black"
+                  : "bg-[#222231] hover:bg-[#2b2b3e]"
+                }`}
+            >
+              {f}
+            </button>
+          ))}
         </div>
       )}
 
-      {/* 🎧 Artist List */}
-      <ul className="space-y-3">
-        {artists.map((artist, index) => (
-          <li
-            key={index}
-            className={`flex items-center
-            ${finalCollapsed ? "justify-center" : "justify-start"}
-            gap-3 p-2 rounded cursor-pointer
-            hover:bg-[rgba(124,77,255,0.1)] transition`}
-          >
-            {/* 🎨 Image */}
-            <div className="w-10 h-10 bg-[#C09AE3] rounded-full flex-shrink-0"></div>
+      {/* SEARCH */}
+      {!finalCollapsed && (
+        <input
+          type="text"
+          placeholder="Search in library"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full mb-3 px-3 py-2 rounded bg-[#1d1d2f] text-sm outline-none"
+        />
+      )}
 
-            {/* 📝 Text */}
-            {showContent && !finalCollapsed && (
+
+
+      {/* SORT */}
+      {!finalCollapsed && (
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="w-full mb-3 px-2 py-2 bg-[#1d1d2f] rounded text-sm"
+        >
+          <option value="recent">Recent</option>
+          <option value="az">A–Z</option>
+        </select>
+      )}
+
+      {/* ❤️ LIKED SONGS */}
+      {library.likedSongs.length > 0 && (
+        <div className="mb-0">
+          <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+              ♥
+            </div>
+
+            {!finalCollapsed && (
               <div>
-                <p className="font-medium text-sm">{artist}</p>
-                <p className="text-xs text-[#A0A0B2]">Artist</p>
+                <p className="text-sm font-medium">Liked Songs</p>
+                <p className="text-xs font-medium text-[#A0A0B2]">
+                  {library.likedSongs.length} songs
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* LIST */}
+      <ul className="space-y-2">
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+              } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+          >
+            <LazyLoadImage
+              defaultImage={LoadImage}
+              image={item.image?.[1]?.url || fallbackImg}
+              className="w-12 h-12 rounded"
+            />
+
+            {!finalCollapsed && (
+              <div>
+                <p className="text-sm font-medium line-clamp-1">
+                  {item.name}
+                </p>
+                <p className="text-xs font-medium text-[#A0A0B2] capitalize">
+                  {item.type}
+                </p>
               </div>
             )}
           </li>
         ))}
       </ul>
+
+      {/* EMPTY */}
+      {items.length === 0 && !finalCollapsed && (
+        <div className="text-center mt-10 text-[#A0A0B2] text-sm">
+          No items found 🎵
+        </div>
+      )}
     </aside>
   );
 };
