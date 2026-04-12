@@ -7,7 +7,7 @@
 /* Define your theme variables */
 @theme {
   --color-back: #000000;
-  --color-theme: #121212;
+  --color-theme: #12121A;
   --color-obj: #b3b3b3;
   --color-hover: #202020;
   --color-w: #ffffff;
@@ -321,4 +321,34 @@
 
 button{
   outline: none;
+}
+
+
+/* 🔥 Hide scrollbar by default */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+/* 🔥 Show scrollbar on hover */
+.scrollbar-show:hover {
+  scrollbar-width: thin;
+}
+
+.scrollbar-show:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-show:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+
+.scrollbar-show:hover::-webkit-scrollbar-track {
+  background: transparent;
 }

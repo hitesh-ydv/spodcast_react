@@ -133,7 +133,7 @@ export default function RightSidebar() {
   const darkOpacity = (0.45 + scrollProgress * 0.45).toFixed(2); // 0.45 → 0.9
 
   return (
-    <aside className="right-section relative w-77 bg-[#121212] rounded-md ml-2 overflow-hidden">
+    <aside className="right-section relative w-77 bg-[#12121A] rounded-md ml-2 overflow-hidden">
       {/* ===== Background Layer (fixed height 500px) ===== */}
       <div className="absolute top-0 left-0 right-0 h-[500px] rounded-md overflow-hidden z-10">
         {/* Background image */}
@@ -166,11 +166,11 @@ export default function RightSidebar() {
           </AnimatePresence>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-b from-transparentt via-transparent to-[#121212]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparentt via-transparent to-[#12121A]" />
 
         {/* Scroll depth overlay — darkens progressively */}
         <motion.div
-          className="absolute inset-0 bg-[#121212]"
+          className="absolute inset-0 bg-[#12121A]"
           style={{
             opacity: darkOpacity, // 0 → 0.45 (or higher)
             transition: "opacity 0.3s ease",
@@ -180,7 +180,7 @@ export default function RightSidebar() {
       </div>
 
       {/* ===== Foreground Content ===== */}
-      <div ref={scrollRef} className="relative z-10 p-4 pt-3 overflow-y-auto container2 h-full">
+      <div ref={scrollRef} className="relative z-10 p-4 pt-3 overflow-y-auto container2 h-full ">
         {/* Header */}
         <div className="flex flex-row items-center justify-between mb-4 sticky top-0">
           <h2 className="text-xl font-bold text-white">Spodcast</h2>

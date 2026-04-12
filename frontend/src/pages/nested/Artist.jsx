@@ -86,7 +86,7 @@ const Artist = () => {
       to bottom,
       rgba(${r}, ${g}, ${b}, 0.35) 0px,
       rgba(18,18,18,0.7) 150px,
-      #121212 100%
+      #12121A 100%
     )
   `;
 
@@ -165,7 +165,7 @@ const Artist = () => {
                 {/* <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                        background: "linear-gradient(to top, #121212 10%, rgba(18,18,18,0) 20%)",
+                        background: "linear-gradient(to top, #12121A 10%, rgba(18,18,18,0) 20%)",
                         opacity: 1
                     }}
                 /> */}

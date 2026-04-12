@@ -176,7 +176,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="h-full bg-[#121212] text-white">
+    <div className="h-full bg-[#12121A] text-white">
       <div className="flex flex-col items-center justify-center pt-16 pb-8 px-6">
         <div className="relative mb-6">
           <div className="w-28 h-28 rounded-full bg-green-600 flex items-center justify-center text-4xl font-bold shadow-lg overflow-hidden">

@@ -39,7 +39,7 @@ export default function Home({ data, loading }) {
   };
 
   return (
-    <div className="h-full">
+    <div className="scroll-container h-full">
       {loading ? (
         <div className="flex items-center justify-center min-h-full">
           <Loader />

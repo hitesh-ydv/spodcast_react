@@ -7,7 +7,7 @@ module.exports = {
     extend: {
       colors: {
         background: "#000000", // black background
-        theme: "#121212",      // main theme color
+        theme: "#12121A",      // main theme color
         object: "#b3b3b3",     // secondary text / icons
         hover: "#202020",      // hover color
         textwhite: "#ffffff",  // text color

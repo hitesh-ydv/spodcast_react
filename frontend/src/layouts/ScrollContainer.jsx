@@ -76,7 +76,7 @@ export default function ScrollContainer({
         {/* Conditionally render gradients + icons */}
         {icons && direction === "row" && canScrollLeft && (
           <div className="absolute inset-y-0 left-0 -mx-2 flex items-center pointer-events-none">
-            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#121212] to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#12121A] to-transparent" />
             <button
               onClick={() => scroll("left")}
               className="pointer-events-auto relative z-10 bg-[#1f1f1f]/80 p-2 rounded-full hover:bg-[#2a2a2a] ml-3 shadow-md transition-all"
@@ -88,7 +88,7 @@ export default function ScrollContainer({
 
         {icons && direction === "row" && canScrollRight && (
           <div className="absolute inset-y-0 right-0 -mx-2 flex items-center justify-end pointer-events-none">
-            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#121212] to-transparent" />
+            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#12121A] to-transparent" />
             <button
               onClick={() => scroll("right")}
               className="pointer-events-auto relative z-10 bg-[#1f1f1f]/80 p-2 rounded-full hover:bg-[#2a2a2a] mr-3 shadow-md transition-all"

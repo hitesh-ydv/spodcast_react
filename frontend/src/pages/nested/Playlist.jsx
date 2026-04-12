@@ -99,7 +99,7 @@ const Playlist = () => {
       to bottom,
       rgba(${r}, ${g}, ${b}, 0.35) 0px,
       rgba(18,18,18,0.7) 150px,
-      #121212 100%
+      #12121A 100%
     )
   `;
 
