@@ -53,7 +53,6 @@ const Playlist = () => {
                 );
                 setDetails(data.data)
                 setSongs(data.data.songs);
-                setPlaylistSongs(data.data.songs);
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
@@ -215,6 +214,7 @@ const Playlist = () => {
                             saveToRecent(details)
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
+                            setPlaylistSongs(songs); // update context with current playlist songs
 
                             if (!currentSong || !isCurrentInPlaylist) {
                                 // Play first song of this playlist
@@ -291,7 +291,7 @@ const Playlist = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    onClick={() => { handleRecommendedSongClick(song); saveToRecent(details); }}
+                                    onClick={() => { handleRecommendedSongClick(song); saveToRecent(details); setPlaylistSongs(songs); }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >
@@ -325,6 +325,7 @@ const Playlist = () => {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleRecommendedSongClick(song);
+                                                    setPlaylistSongs(songs);
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
                                             >

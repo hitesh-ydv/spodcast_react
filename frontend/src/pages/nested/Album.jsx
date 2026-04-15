@@ -50,7 +50,7 @@ const Album = () => {
                 );
                 setDetails(data.data)
                 setSongs(data.data.songs);
-                setPlaylistSongs(data.data.songs);
+                // setPlaylistSongs(data.data.songs);
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
@@ -211,6 +211,7 @@ const Album = () => {
                     <button
                         onClick={() => {
                             saveToRecent(details)
+                            setPlaylistSongs(songs); // update context with current playlist songs
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
 
@@ -290,6 +291,7 @@ const Album = () => {
                                     key={song.id}
                                     onClick={() => {handleRecommendedSongClick(song)
                                         saveToRecent(details)
+                                        setPlaylistSongs(songs)
                                     }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
@@ -322,6 +324,7 @@ const Album = () => {
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleRecommendedSongClick(song);
+                                                    setPlaylistSongs(songs);
                                                     saveToRecent(song);
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
