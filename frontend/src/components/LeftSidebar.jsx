@@ -3,9 +3,11 @@ import { useLibrary } from "../context/LibraryContext";
 import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
 import LoadImage from "../assets/afterload.png";
 import fallbackImg from "../assets/playlist_cover.jpg";
+import { useNavigate } from "react-router-dom";
 
 const LibrarySidebar = () => {
   const { library } = useLibrary();
+    const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
@@ -70,7 +72,7 @@ const LibrarySidebar = () => {
 
   return (
     <aside
-      className={`bg-[#12121A] p-3 rounded-md transition-all duration-300 mr-2
+      className={`bg-[#12121A] p-2 rounded-md transition-all duration-300 mr-2
       ${finalCollapsed ? "w-20" : "w-72"}`}
     >
       {/* HEADER */}
@@ -82,7 +84,7 @@ const LibrarySidebar = () => {
         {!isMobile && (
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="bg-[#222231] px-2 py-1 rounded"
+            className="bg-[#222231] px-2 py-1 rounded font-bold ml-2 mt-2"
           >
             {finalCollapsed ? ">" : "<"}
           </button>
@@ -97,8 +99,8 @@ const LibrarySidebar = () => {
               key={f}
               onClick={() => handleFilterClick(f)}
               className={`px-3 py-1 rounded-full text-sm capitalize ${filter === f
-                  ? "bg-white text-black"
-                  : "bg-[#222231] hover:bg-[#2b2b3e]"
+                ? "bg-white text-black"
+                : "bg-[#222231] hover:bg-[#2b2b3e]"
                 }`}
             >
               {f}
@@ -134,7 +136,7 @@ const LibrarySidebar = () => {
 
       {/* ❤️ LIKED SONGS */}
       {library.likedSongs.length > 0 && (
-        <div className="mb-0">
+        <div className="mb-0" onClick={() => navigate("/liked")}>
           <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
               ♥
@@ -143,7 +145,7 @@ const LibrarySidebar = () => {
             {!finalCollapsed && (
               <div>
                 <p className="text-sm font-medium">Liked Songs</p>
-                <p className="text-xs font-medium text-[#A0A0B2]">
+                <p className="text-sm font-medium text-[#A0A0B2]">
                   {library.likedSongs.length} songs
                 </p>
               </div>
@@ -153,10 +155,14 @@ const LibrarySidebar = () => {
       )}
 
       {/* LIST */}
-      <ul className="space-y-2">
+      <ul className="space-y-0">
         {items.map((item) => (
           <li
             key={item.id}
+            onClick={(e) => {
+              //e.stopPropagation();
+              navigate(`/${item.type}/${item.id}`);
+            }}
             className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
               } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
           >
@@ -171,7 +177,7 @@ const LibrarySidebar = () => {
                 <p className="text-sm font-medium line-clamp-1">
                   {item.name}
                 </p>
-                <p className="text-xs font-medium text-[#A0A0B2] capitalize">
+                <p className="text-sm font-medium text-[#A0A0B2] capitalize">
                   {item.type}
                 </p>
               </div>

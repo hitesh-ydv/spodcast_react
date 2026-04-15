@@ -13,6 +13,7 @@ import { useSearch } from "../context/SearchContext";
 import { useScrollStore } from "../context/useScrollStore";
 import Playlist from "../pages/nested/Playlist";
 import Album from "../pages/nested/Album";
+import LikedSong from "@/pages/nested/LikedSong";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function MainContent() {
@@ -137,6 +138,7 @@ export default function MainContent() {
         <Route path="/song/:id" element={<Track />} />
         <Route path="/playlist/:id" element={<Playlist />} />
         <Route path="/album/:id" element={<Album />} />
+        <Route path="/liked" element={<LikedSong />} />
         <Route path="*" element={<ErrorPage />} />
 
       </Routes>
