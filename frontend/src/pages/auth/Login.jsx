@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -11,6 +11,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // fake token create
+      const fakeToken = "auto_fake_token_123";
+      localStorage.setItem("token", fakeToken);
+    }
+
+    // redirect to home
+    navigate("/");
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,7 +49,7 @@ export default function Login() {
       setIsError(true);
       setMessage(
         err.response?.data?.msg ||
-          "Login failed. Please check your email or password."
+        "Login failed. Please check your email or password."
       );
     }
   };
@@ -79,9 +92,8 @@ export default function Login() {
 
         {message && (
           <p
-            className={`text-center text-sm mt-2 ${
-              isError ? "text-red-400" : "text-green-400"
-            }`}
+            className={`text-center text-sm mt-2 ${isError ? "text-red-400" : "text-green-400"
+              }`}
           >
             {message}
           </p>
