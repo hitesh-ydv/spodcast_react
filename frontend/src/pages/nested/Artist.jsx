@@ -276,7 +276,7 @@ const Artist = () => {
                                     <div className="image-wrapper mb-2">
                                         <LazyLoadImage
                                             defaultImage={LoadImage}
-                                            image={song.image[2]?.url || fallbackImg}
+                                            image={song.image?.[2]?.url || fallbackImg}
                                             className="song-image"
                                             onError={handleError}
 
@@ -346,7 +346,7 @@ const Artist = () => {
                             >
                                 <LazyLoadImage
                                     defaultImage={LoadImage}
-                                    image={song.image[2]?.url || fallbackImg}
+                                    image={song.image?.[2]?.url || fallbackImg}
                                     className="rounded-lg mb-3 w-full max-h-43 object-cover"
                                     onError={handleError}
 
@@ -393,7 +393,7 @@ const Artist = () => {
                                 <div className="image-wrapper mb-2">
                                     <LazyLoadImage
                                         defaultImage={LoadImage}
-                                        image={song.image[2]?.url || fallbackImg}
+                                        image={song.image?.[2]?.url || fallbackImg}
                                         className="song-image"
                                         onError={handleError}
                                     />
@@ -441,7 +441,7 @@ const Artist = () => {
                             >
                                 <LazyLoadImage
                                     defaultImage={LoadImage}
-                                    image={song.image[2]?.url || fallbackImg}
+                                    image={song.image?.[2]?.url || fallbackImg}
                                     className="rounded-full mb-3 w-full max-h-43 object-cover"
                                     onError={handleError}
                                 />

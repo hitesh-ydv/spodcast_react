@@ -157,7 +157,7 @@ const Album = () => {
                 <div className="flex-shrink-0">
                     <img
                         ref={imageRef2}
-                        src={details.image[2]?.url || fallbackImg}
+                        src={details.image?.[2]?.url || fallbackImg}
                         //alt={artist.name}
                         className="w-50 h-50 rounded-sm object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                         onLoad={extractColorFromImage}

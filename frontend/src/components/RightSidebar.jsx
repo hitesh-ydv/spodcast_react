@@ -222,7 +222,7 @@ export default function RightSidebar() {
           <div className="bg-[#181818]/90 text-white rounded-lg shadow-md hover:bg-[#202020]/90 transition-all duration-300">
             <div className=" overflow-hidden mb-3">
               <img
-                src={currentSong.artists.primary[0]?.image[2]?.url}
+                src={currentSong.artists.primary[0]?.image?.[2]?.url}
                 alt="Artist"
                 className="w-full h-40 object-cover rounded-tr-lg rounded-tl-lg "
               />

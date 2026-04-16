@@ -64,7 +64,7 @@ export default function Home({ data, loading }) {
                     <div className="image-wrapper mb-2">
                       <LazyLoadImage
                         defaultImage={LoadImage}
-                        image={song.image[2]?.url || fallbackImg}
+                        image={song.image?.[2]?.url || fallbackImg}
                         className="song-image"
                         onError={handleError}
                       />
@@ -137,7 +137,7 @@ export default function Home({ data, loading }) {
                     <div className="image-wrapper mb-2">
                       <LazyLoadImage
                         defaultImage={LoadImage}
-                        image={song.image[2]?.url || fallbackImg}
+                        image={song.image?.[2]?.url || fallbackImg}
                         className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
                         onError={handleError}
                       />

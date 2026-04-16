@@ -390,7 +390,7 @@ const Song = () => {
                             <div key={artist.id} className='flex flex-row items-center gap-4 hover:bg-[rgba(124,77,255,0.1)] px-3 py-3 rounded-lg transition-all'>
                                 <LazyLoadImage
                                     defaultImage={LoadImage}
-                                    image={artist.image[2]?.url || fallbackImg}
+                                    image={artist.image?.[2]?.url || fallbackImg}
                                     className="w-16 h-16 rounded-full"
                                     onError={handleError}
                                 />

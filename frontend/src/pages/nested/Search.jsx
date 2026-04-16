@@ -148,7 +148,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                 >
                   <LazyLoadImage
                     defaultImage={LoadImage}
-                    image={song.image[2]?.url || fallbackImg}
+                    image={song.image?.[2]?.url || fallbackImg}
                     className={`rounded-${song.type == "artist" ? "full" : "lg"} mb-3 w-30 max-h-30 object-cover`}
                     onError={handleError}
                   />
@@ -197,7 +197,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       <div className="image-wrapper mb-2">
                         <LazyLoadImage
                           defaultImage={LoadImage}
-                          image={song.image[2]?.url || fallbackImg}
+                          image={song.image?.[2]?.url || fallbackImg}
                           className="song-image"
                           onError={handleError}
                         />
@@ -267,7 +267,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   >
                     <LazyLoadImage
                       defaultImage={LoadImage}
-                      image={song.image[2]?.url || fallbackImg}
+                      image={song.image?.[2]?.url || fallbackImg}
                       className="rounded-lg mb-3 w-full max-h-43 object-cover"
                       onError={handleError}
                     />
