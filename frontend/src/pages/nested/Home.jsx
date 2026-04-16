@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 import { useRecent } from "../../context/RecentContext";
+import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
 
 export default function Home({ data, loading }) {
 
