@@ -42,7 +42,7 @@ const Song = () => {
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
 
-     const { addToLiked, addArtist } = useLibrary();
+     const { toggleLike, addArtist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -333,7 +333,7 @@ const Song = () => {
                         style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
                     >
                         <button
-                            onClick={() => addToLiked(song)}
+                            onClick={() => toggleLike(song)}
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
                             {isLiked ? (

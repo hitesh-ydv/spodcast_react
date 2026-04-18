@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const LibrarySidebar = () => {
   const { library } = useLibrary();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
@@ -72,8 +72,8 @@ const LibrarySidebar = () => {
 
   return (
     <aside
-      className={`bg-[#12121A] p-2 rounded-md transition-all duration-300 mr-2
-      ${finalCollapsed ? "w-20" : "w-72"}`}
+      className={`bg-[#12121A] p-2 rounded-md transition-all duration-300 mr-2 flex flex-col h-full
+  ${finalCollapsed ? "w-20" : "w-72"}`}
     >
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4 px-2">
@@ -91,7 +91,7 @@ const LibrarySidebar = () => {
         )}
       </div>
 
-      {/* FILTER BUTTONS (NO ALL) */}
+      {/* FILTERS */}
       {!finalCollapsed && (
         <div className="flex gap-2 mb-3 flex-wrap">
           {["artists", "albums", "playlists"].map((f) => (
@@ -120,8 +120,6 @@ const LibrarySidebar = () => {
         />
       )}
 
-
-
       {/* SORT */}
       {!finalCollapsed && (
         <select
@@ -134,64 +132,70 @@ const LibrarySidebar = () => {
         </select>
       )}
 
-      {/* ❤️ LIKED SONGS */}
-      {library.likedSongs.length > 0 && (
-        <div className="mb-0" onClick={() => navigate("/liked")}>
-          <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-              ♥
-            </div>
+        <>
+          {/* ✅ SCROLLABLE AREA */}
+          <div className="flex-1 overflow-y-auto pr-1">
+            {/* ❤️ LIKED SONGS */}
+            {library.likedSongs.length > 0 && (
+              <div className="mb-1" onClick={() => navigate("/liked")}>
+                <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+                    ♥
+                  </div>
 
-            {!finalCollapsed && (
-              <div>
-                <p className="text-sm font-medium">Liked Songs</p>
-                <p className="text-sm font-medium text-[#A0A0B2]">
-                  {library.likedSongs.length} songs
-                </p>
+                  {!finalCollapsed && (
+                    <div>
+                      <p className="text-sm font-medium">Liked Songs</p>
+                      <p className="text-sm font-medium text-[#A0A0B2]">
+                        {library.likedSongs.length} songs
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+
+            {/* LIST */}
+            <ul className="space-y-0">
+              {items.map((item) => (
+                <li
+                  key={item.id}
+                  onClick={() => navigate(`/${item.type}/${item.id}`)}
+                  className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+                    } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+                >
+                  <LazyLoadImage
+                    defaultImage={LoadImage}
+                    image={item.image?.[2]?.url || fallbackImg}
+                    className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
+                      }`}
+                  />
+
+                  {!finalCollapsed && (
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1 hover:underline">
+                        {item.name}
+                      </p>
+                      <p className="text-sm font-medium text-[#A0A0B2] capitalize">
+                        {item.type}
+                      </p>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      )}
-
-      {/* LIST */}
-      <ul className="space-y-0">
-        {items.map((item) => (
-          <li
-            key={item.id}
-            onClick={(e) => {
-              //e.stopPropagation();
-              navigate(`/${item.type}/${item.id}`);
-            }}
-            className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
-              } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
-          >
-            <LazyLoadImage
-              defaultImage={LoadImage}
-              image={item.image?.[1]?.url || fallbackImg}
-              className="w-12 h-12 rounded"
-            />
-
-            {!finalCollapsed && (
-              <div>
-                <p className="text-sm font-medium line-clamp-1">
-                  {item.name}
-                </p>
-                <p className="text-sm font-medium text-[#A0A0B2] capitalize">
-                  {item.type}
-                </p>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+        </>
+      
 
       {/* EMPTY */}
-      {items.length === 0 && !finalCollapsed && (
-        <div className="text-center mt-10 text-[#A0A0B2] text-sm">
-          No items found 🎵
-        </div>
-      )}
+      {library.likedSongs.length === 0 &&
+        items.length === 0 &&
+        !finalCollapsed && (
+          <div className="text-center mt-4 text-[#A0A0B2] text-sm">
+            No items found 🎵
+          </div>
+        )}
     </aside>
   );
 };

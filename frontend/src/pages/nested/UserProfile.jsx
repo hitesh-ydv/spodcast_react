@@ -17,53 +17,53 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const prevObjectUrlRef = useRef(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          window.location.href = "/login";
-          return;
-        }
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       if (!token) {
+  //         window.location.href = "/login";
+  //         return;
+  //       }
 
-        const res = await axios.get(`${API_URL}/api/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  //       const res = await axios.get(`${API_URL}/api/user/me`, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
 
-        if (userid && res.data.userId !== userid) {
-          // you used setError earlier but error state wasn't defined — keep simple:
-          console.error("You are not allowed to view this profile.");
-          setUser(null);
-        } else {
-          setUser(res.data);
-          setEditedName(res.data.name || "");
+  //       if (userid && res.data.userId !== userid) {
+  //         // you used setError earlier but error state wasn't defined — keep simple:
+  //         console.error("You are not allowed to view this profile.");
+  //         setUser(null);
+  //       } else {
+  //         setUser(res.data);
+  //         setEditedName(res.data.name || "");
 
-          // set profileImage to the photo endpoint so the avatar displays
-          if (res.data.userId) {
-            setProfileImage(res.data.photoUrl);
-            setTempImage(res.data.photoUrl);
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching user:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //         // set profileImage to the photo endpoint so the avatar displays
+  //         if (res.data.userId) {
+  //           setProfileImage(res.data.photoUrl);
+  //           setTempImage(res.data.photoUrl);
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching user:", err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUser();
+  //   fetchUser();
 
-    // cleanup when component unmounts: revoke any created object URL
-    return () => {
-      if (prevObjectUrlRef.current) {
-        try {
-          window.URL.revokeObjectURL(prevObjectUrlRef.current);
-        } catch (e) {}
-        prevObjectUrlRef.current = null;
-      }
-    };
-  }, [userid]);
+  //   // cleanup when component unmounts: revoke any created object URL
+  //   return () => {
+  //     if (prevObjectUrlRef.current) {
+  //       try {
+  //         window.URL.revokeObjectURL(prevObjectUrlRef.current);
+  //       } catch (e) {}
+  //       prevObjectUrlRef.current = null;
+  //     }
+  //   };
+  // }, [userid]);
 
   const handleEditProfile = () => {
     setShowEditPopup(true);

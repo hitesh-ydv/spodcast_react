@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const LibraryContext = createContext();
 
@@ -10,18 +10,15 @@ export const LibraryProvider = ({ children }) => {
     playlists: [],
   });
 
-  // ✅ LOAD + FIX OLD DATA
+  // ✅ LOAD
   useEffect(() => {
     const stored = localStorage.getItem("library");
 
     if (stored) {
       const parsed = JSON.parse(stored);
 
-      // 🔥 Fix nested arrays issue (VERY IMPORTANT)
-      const fixedLiked = (parsed.likedSongs || []).flat();
-
       setLibrary({
-        likedSongs: fixedLiked,
+        likedSongs: (parsed.likedSongs || []).flat(),
         artists: parsed.artists || [],
         albums: parsed.albums || [],
         playlists: parsed.playlists || [],
@@ -34,7 +31,15 @@ export const LibraryProvider = ({ children }) => {
     localStorage.setItem("library", JSON.stringify(library));
   }, [library]);
 
-  // ❤️ TOGGLE LIKE (BEST PRACTICE)
+  // 🚀 FAST LOOKUP (IMPORTANT)
+  const likedSet = useMemo(() => {
+    return new Set(library.likedSongs.map((s) => s.id));
+  }, [library.likedSongs]);
+
+  // ✅ CHECK FUNCTION (GLOBAL USE)
+  const isLiked = (id) => likedSet.has(id);
+
+  // ❤️ TOGGLE LIKE (CLEAN)
   const toggleLike = (song) => {
     const newSong = Array.isArray(song) ? song[0] : song;
 
@@ -44,27 +49,13 @@ export const LibraryProvider = ({ children }) => {
       return {
         ...prev,
         likedSongs: exists
-          ? prev.likedSongs.filter((s) => s.id !== newSong.id) // ❌ remove
-          : [newSong, ...prev.likedSongs], // ✅ add
+          ? prev.likedSongs.filter((s) => s.id !== newSong.id)
+          : [newSong, ...prev.likedSongs],
       };
     });
   };
 
-  // ❤️ OPTIONAL: ONLY ADD (if you still want separate)
-  const addToLiked = (song) => {
-    const newSong = Array.isArray(song) ? song[0] : song;
-
-    setLibrary((prev) => {
-      if (prev.likedSongs.some((s) => s.id === newSong.id)) return prev;
-
-      return {
-        ...prev,
-        likedSongs: [newSong, ...prev.likedSongs],
-      };
-    });
-  };
-
-  // ❌ REMOVE LIKE
+  // ❌ REMOVE
   const removeFromLiked = (id) => {
     setLibrary((prev) => ({
       ...prev,
@@ -119,8 +110,8 @@ export const LibraryProvider = ({ children }) => {
       value={{
         library,
         toggleLike,
-        addToLiked,
         removeFromLiked,
+        isLiked, // 🔥 IMPORTANT
         addArtist,
         addAlbum,
         addPlaylist,

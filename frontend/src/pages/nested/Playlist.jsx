@@ -35,7 +35,7 @@ const Playlist = () => {
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
 
-    const { addPlaylist } = useLibrary();
+    const { addPlaylist, addAlbum } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 

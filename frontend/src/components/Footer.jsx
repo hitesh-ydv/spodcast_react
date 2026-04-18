@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom";
 import PlayBtn from "../assets/playbtn.svg";
 import PauseBtn from "../assets/pause.svg";
 import LoadImage from "../assets/afterload.png"; // 👈 your default image path
+import { useLibrary } from "../context/LibraryContext";
+import Like from "../assets/like.svg";
+import Unlike from "../assets/unlike.svg";
+import { CButton, CTooltip } from '@coreui/react'
 
 export default function FooterPlayer() {
   const {
@@ -17,12 +21,23 @@ export default function FooterPlayer() {
     playlistSongs,
   } = useAudio();
 
+  const { toggleLike, removeFromLiked, library, isLiked } = useLibrary();
+
+
+
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
   const navigate = useNavigate();
+
+  const liked = isLiked(currentSong?.id)
+
+  const handleLikeToggle = (e) => {
+    e.stopPropagation();
+    toggleLike(currentSong);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -195,13 +210,13 @@ export default function FooterPlayer() {
           {/* 🎧 Song Info + Controls */}
           <div className="flex items-center justify-between w-full">
             {/* Left - Song info */}
-            <div className="flex items-center gap-3 w-1/3">
+            <div className="flex items-center gap-3">
               <LazyLoadImage
                 defaultImage={LoadImage}
                 image={currentSong.image?.[1]?.url}
                 className="w-12 h-12 rounded"
               />
-              <div className="w-full max-w-66 flex flex-col">
+              <div className="w-full max-w-58 flex flex-col">
                 <p
                   className="text-sm inline-block font-medium truncate line-clamp-1"
                   onClick={(e) => {
@@ -228,6 +243,31 @@ export default function FooterPlayer() {
                   ))}
                 </p>
               </div>
+              <CTooltip
+                content={liked ? "Remove from Liked Songs" : "Save to Your Library"}
+                placement="top"
+                style={{
+                  backgroundColor: "#242424",
+                  color: "white",
+                  padding: 6,
+                  borderRadius: 5,
+                  fontSize: 12,
+                  fontWeight: 550,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleLikeToggle}
+                  className="flex items-center justify-center w-6 h-6 cursor-pointer"
+                >
+                  <img
+                    src={liked ? Unlike : Like}
+                    alt="Like"
+                    className={`w-6 h-6 object-contain transition-transform duration-200 
+        ${liked ? "scale-110" : "scale-100"}`}
+                  />
+                </button>
+              </CTooltip>
             </div>
 
             {/* Center - Controls */}

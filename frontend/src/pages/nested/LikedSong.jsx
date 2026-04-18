@@ -216,19 +216,6 @@ const LikedSong = () => {
                         />
                     </button>
 
-                    <CTooltip
-                        content="Save to Your Library"
-                        placement="top"
-                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
-                    >
-                        <button
-                            onClick={() => addPlaylist(details)}
-                            className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
-                        >
-                            <img src={Like} alt="Play" className="h-8 w-8" />
-                        </button>
-                    </CTooltip>
-
                     <Menu>
                         <MenuButton
                             className="rounded-full px-2 py-2 cursor-pointer flex items-center justify-center"
@@ -343,23 +330,7 @@ const LikedSong = () => {
                                         </div>
                                     </div>
 
-                                    <CTooltip
-                                        content="Add to Liked Songs"
-                                        placement="top"
-                                        style={{
-                                            backgroundColor: '#242424',
-                                            color: 'white',
-                                            padding: 6,
-                                            borderRadius: 5,
-                                            fontSize: 15,
-                                            fontWeight: 550,
-                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)', // 👈 add this line
-                                        }}
-                                    >
-                                        <button className="transition-all like-btn  cursor-pointer px-2.5 py-2.5 flex items-center justify-center">
-                                            <img src={Like} alt="Play" className="w-6" />
-                                        </button>
-                                    </CTooltip>
+                                    
                                 </div>
 
                             );

@@ -46,25 +46,25 @@ export default function Navbar() {
         }
     }, [location.pathname]);
 
-    useEffect(() => {
-        const fetchUser = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) return;
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         const token = localStorage.getItem("token");
+    //         if (!token) return;
 
-            try {
-                const res = await axios.get(`${URL}/api/user/me`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setUser(res.data); // { name, email, userid }
-            } catch (err) {
-                console.error("Failed to fetch user:", err);
-            }
-        };
+    //         try {
+    //             const res = await axios.get(`${URL}/api/user/me`, {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             });
+    //             setUser(res.data); // { name, email, userid }
+    //         } catch (err) {
+    //             console.error("Failed to fetch user:", err);
+    //         }
+    //     };
 
-        fetchUser();
-    }, []);
+    //     fetchUser();
+    // }, []);
 
     // const handleFocus = (e) => {
     //     navigate("/search"); // navigate to your search route

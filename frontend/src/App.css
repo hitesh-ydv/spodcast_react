@@ -150,9 +150,9 @@
   transition: all 0.2 ease;
 }
 
-.like-btn:hover{
+/* .like-btn:hover{
   transform: scale(1.15);
-}
+} */
 
 .recommended-cont2:hover .like-btn {
   display: block;
@@ -351,4 +351,13 @@ button{
 
 .scrollbar-show:hover::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* optional better animation */
+.like-animate {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.like-animate:active {
+  transform: scale(0.85);
 }

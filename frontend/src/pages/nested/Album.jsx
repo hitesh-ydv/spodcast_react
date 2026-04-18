@@ -21,6 +21,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
+import { useLibrary } from "../../context/LibraryContext";
 
 
 
@@ -35,6 +36,7 @@ const Album = () => {
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
     const { recentPlayed, saveToRecent } = useRecent(); // Home
+    const { toggleLike, addAlbum } = useLibrary();
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
@@ -245,9 +247,11 @@ const Album = () => {
                     <CTooltip
                         content="Save to Your Library"
                         placement="top"
+
                         style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
                     >
                         <button
+                            onClick={() => addAlbum(details)}
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
                             <img src={Like} alt="Play" className="h-8 w-8" />
@@ -289,17 +293,18 @@ const Album = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    onClick={() => {handleRecommendedSongClick(song)
-                                        saveToRecent(details)
-                                        setPlaylistSongs(songs)
+                                    onClick={() => {
+                                        handleRecommendedSongClick(song);
+                                        setPlaylistSongs(songs);
                                     }}
-                                    className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
-                    ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
+                                    className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between cursor-pointer
+          ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >
+                                    <div className="flex flex-row items-center gap-4">
+                                        <p className="text-[16px] ml-1 text-[#A0A0B2] truncate font-medium z-20">
+                                            {index + 1}.
+                                        </p>
 
-                                    <div className='flex flex-row items-center gap-4 '>
-                                        <p className='text-[16px] ml-1 text-[#A0A0B2] truncate font-medium z-20'>{index + 1}.</p>
-                                        {/* Image Container */}
                                         <div className="relative">
                                             <LazyLoadImage
                                                 defaultImage={LoadImage}
@@ -308,31 +313,26 @@ const Album = () => {
                                                 onError={handleError}
                                             />
 
-                                            {/* GIF Overlay (visible when NOT hovered & song playing) */}
                                             {isCurrentPlaying && (
                                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
-                                                    <img
-                                                        src={MusicGif}
-                                                        alt="playing"
-                                                        className="w-4 h-4 object-contain"
-                                                    />
+                                                    <img src={MusicGif} alt="playing" className="w-4 h-4" />
                                                 </div>
                                             )}
 
-                                            {/* ▶️ Play/Pause Button */}
+                                            {/* ▶️ Play Button */}
                                             <button
+                                                type="button"
                                                 onClick={(e) => {
-                                                    e.stopPropagation();
+                                                    e.stopPropagation(); // ✅ important
                                                     handleRecommendedSongClick(song);
                                                     setPlaylistSongs(songs);
                                                     saveToRecent(song);
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
                                             >
-
                                                 <img
                                                     src={isCurrentPlaying ? PauseWhite : PlayWhite}
-                                                    alt={isCurrentPlaying ? "Pause" : "Play"}
+                                                    alt="Play"
                                                     className="max-h-6 max-w-6"
                                                 />
                                             </button>
@@ -342,28 +342,30 @@ const Album = () => {
                                         <div className="flex flex-col min-w-0">
                                             <h1
                                                 onClick={(e) => {
-                                                    navigate(`/${song.type}/${song.id}`);
                                                     e.stopPropagation();
+                                                    navigate(`/${song.type}/${song.id}`);
                                                 }}
-                                                className={`inline-block cursor-pointer text-md font-medium truncate ${isCurrent ? "text-[#7C4DFF]" : "text-white hover:underline"
+                                                className={`cursor-pointer text-md font-medium truncate ${isCurrent
+                                                    ? "text-[#7C4DFF]"
+                                                    : "text-white hover:underline"
                                                     }`}
                                             >
                                                 {song.name}
                                             </h1>
 
                                             <p className="text-[14px] text-[#A0A0B2] truncate font-medium">
-                                                {song.artists.primary.map((a, index) => (
-                                                    <span key={a.id || index}>
+                                                {song.artists.primary.map((a, i) => (
+                                                    <span key={a.id || i}>
                                                         <a
-                                                            className="hover:underline cursor-pointer hover:text-white"
                                                             onClick={(e) => {
-                                                                navigate(`/artist/${a.id}`);
                                                                 e.stopPropagation();
+                                                                navigate(`/artist/${a.id}`);
                                                             }}
+                                                            className="hover:underline cursor-pointer hover:text-white"
                                                         >
                                                             {a.name}
                                                         </a>
-                                                        {index < song.artists.primary.length - 1 && ", "}
+                                                        {i < song.artists.primary.length - 1 && ", "}
                                                     </span>
                                                 ))}
                                             </p>
@@ -380,15 +382,22 @@ const Album = () => {
                                             borderRadius: 5,
                                             fontSize: 15,
                                             fontWeight: 550,
-                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)', // 👈 add this line
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+                                            zIndex: 9999,
                                         }}
                                     >
-                                        <button className="transition-all like-btn  cursor-pointer px-2.5 py-2.5 flex items-center justify-center">
-                                            <img src={Like} alt="Play" className="w-6" />
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();   // ✅ MOST IMPORTANT
+                                                toggleLike(song);      // ✅ now only this runs
+                                            }}
+                                            className="transition-all like-btn cursor-pointer px-2.5 py-2.5 flex items-center justify-center"
+                                        >
+                                            <img src={Like} alt="Like" className="w-6" />
                                         </button>
                                     </CTooltip>
                                 </div>
-
                             );
                         })}
                     </ScrollContainer>

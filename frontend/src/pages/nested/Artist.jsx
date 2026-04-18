@@ -16,6 +16,7 @@ import LoadImage from "../../assets/afterload.png"; // 👈 your default image p
 import { useRecent } from "../../context/RecentContext";
 const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
+import { useLibrary } from "../../context/LibraryContext";
 
 const Artist = () => {
     const { id } = useParams();
@@ -25,6 +26,8 @@ const Artist = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const imageRef = useRef(null);
+
+    const { addArtist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -229,7 +232,7 @@ const Artist = () => {
                         />
                     </button>
                     {/* Follow Button */}
-                    <button className="bg-transparent border-[#adadad] hover:border-white transition-all border-1 cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform transition-transform duration-200">
+                    <button onClick={() => addArtist(artist)} className="bg-transparent border-[#adadad] hover:border-white transition-all border-1 cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform transition-transform duration-200">
                         Follow
                     </button>
 
@@ -245,7 +248,7 @@ const Artist = () => {
                             className="w-48 origin-top-right rounded-sm border border-white/5 bg-[#282828] p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95"
                         >
                             <MenuItem>
-                                <button onClick={() => navigate(`/user/${user.userId}`)} className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
+                                <button  className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
                                     Follow
                                 </button>
                             </MenuItem>
