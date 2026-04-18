@@ -221,7 +221,7 @@ const Artist = () => {
                 <div className='px-6 py-1 flex items-center gap-6'>
                     <button
                         onClick={handleMainPlayButton}
-                        className="bg-[#a362e0] rounded-full px-2.5 py-2.5 hover:bg-[#c194ec] cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                        className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-full px-2.5 py-2.5 hover:brightness-150 cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105"
                     >
                         <LazyLoadImage
                             defaultImage={LoadImage}

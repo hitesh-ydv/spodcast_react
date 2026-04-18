@@ -58,7 +58,11 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  background-color: #a362e0;
+  background: linear-gradient(
+  to bottom right,
+  rgb(168, 85, 247),
+  rgb(59, 130, 246)
+);
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -70,6 +74,7 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 1);
+  transition: all 0.2s ease;
   /* subtle black shadow */
 }
 
@@ -87,7 +92,11 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  background-color: #a362e0;
+  background: linear-gradient(
+  to bottom right,
+  rgb(168, 85, 247),
+  rgb(59, 130, 246)
+);
   color: black;
   font-size: 20px;
   font-weight: bold;
@@ -98,6 +107,7 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 1);
+  transition: all 0.2s ease;
 }
 
 /* Show if active (current playing) */
@@ -138,11 +148,13 @@
 }
 
 .play-button:hover {
-  background-color: #c194ec;
+  filter: brightness(1.4);
+  /* //box-shadow: 0 0 25px rgba(168, 85, 247, 0.6); */
 }
 
 .play-button-topresults:hover {
-  background-color: #c194ec;
+  filter: brightness(1.4);
+  /* box-shadow: 0 0 25px rgba(168, 85, 247, 0.6); */
 }
 
 .like-btn{

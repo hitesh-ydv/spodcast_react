@@ -78,7 +78,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#a362e0] text-black font-semibold py-3 rounded hover:opacity-90 transition"
+          className="w-full bg-gradient-to-br from-purple-500 to-blue-500 text-black font-semibold py-3 rounded hover:opacity-90 transition"
         >
           {loading ? "Creating Account..." : "Sign Up"}
         </button>

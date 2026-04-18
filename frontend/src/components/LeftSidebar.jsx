@@ -12,7 +12,7 @@ const LibrarySidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1100);
 
-  const [filter, setFilter] = useState(null); // ✅ no default filter
+  const [filter, setFilter] = useState(null);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("recent");
 

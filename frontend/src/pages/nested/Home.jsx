@@ -95,7 +95,7 @@ export default function Home({ data, loading }) {
                     <h3 onClick={(e) => {
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
-                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "text-[#a362e0]" : "text-white"} `}>{song.name}</h3>
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name}</h3>
                     <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                       {song.artists.primary.map((a, index) => (
                         <span key={a.id || index}>
@@ -170,7 +170,7 @@ export default function Home({ data, loading }) {
                     <h3 onClick={(e) => {
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
-                    }} className={`text-base font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "text-[#a362e0]" : "text-white"} `}>{song.name || song.title}</h3>
+                    }} className={`text-base font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
                     {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                     {song.artists.primary.map((a, index) => (
                       <span key={a.id || index}>
