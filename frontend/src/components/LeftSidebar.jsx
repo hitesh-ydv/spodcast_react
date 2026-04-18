@@ -4,6 +4,8 @@ import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
 import LoadImage from "../assets/afterload.png";
 import fallbackImg from "../assets/playlist_cover.jpg";
 import { useNavigate } from "react-router-dom";
+import { TextWrap } from "lucide-react";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 
 const LibrarySidebar = () => {
   const { library } = useLibrary();
@@ -72,8 +74,8 @@ const LibrarySidebar = () => {
 
   return (
     <aside
-      className={`bg-[#12121A] p-2 rounded-md transition-all duration-300 mr-2 flex flex-col h-full
-  ${finalCollapsed ? "w-20" : "w-72"}`}
+      className={`bg-[#12121A] p-1 rounded-md transition-all duration-300 mr-2 pl-2 flex flex-col h-full 
+  ${finalCollapsed ? "w-20" : "w-72 [@media(min-height:1000px)]:w-100"}`}
     >
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4 px-2">
@@ -109,91 +111,127 @@ const LibrarySidebar = () => {
         </div>
       )}
 
-      {/* SEARCH */}
-      {!finalCollapsed && (
-        <input
-          type="text"
-          placeholder="Search in library"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full mb-3 px-3 py-2 rounded bg-[#1d1d2f] text-sm outline-none"
-        />
-      )}
+      <div className="flex gap-3 items-center">
+        {/* SEARCH */}
+        {!finalCollapsed && (
+          <input
+            type="text"
+            placeholder="Search in library"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full mb-3 px-3 py-2 rounded bg-[#1d1d2f] text-sm outline-none"
+          />
+        )}
 
-      {/* SORT */}
-      {!finalCollapsed && (
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          className="w-full mb-3 px-2 py-2 bg-[#1d1d2f] rounded text-sm"
-        >
-          <option value="recent">Recent</option>
-          <option value="az">A–Z</option>
-        </select>
-      )}
+        {!finalCollapsed && (
+          <Menu as="div" className="mb-3">
 
-{(library.likedSongs.length > 0 || items.length > 0) && (
-  <>
-    {/* ✅ SCROLLABLE AREA */}
-    <div className="flex-1 overflow-y-auto pr-1">
-      
-      {/* ❤️ LIKED SONGS */}
-      {library.likedSongs.length > 0 && (
-        <div className="mb-1" onClick={() => navigate("/liked")}>
-          <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-              ♥
-            </div>
+            {/* 🔘 BUTTON (same look as your old one) */}
+            <MenuButton
+              className="w-full flex items-center gap-2 px-3 py-2.5 
+                 bg-[#1d1d2f] rounded text-sm 
+                 hover:bg-[#2a2a40] transition-all"
+            >
+              <TextWrap strokeWidth={2.5} size={16} />
+            </MenuButton>
 
-            {!finalCollapsed && (
-              <div>
-                <p className="text-sm font-medium">Liked Songs</p>
-                <p className="text-sm font-medium text-[#A0A0B2]">
-                  {library.likedSongs.length} songs
-                </p>
+            {/* 📂 DROPDOWN */}
+            <MenuItems
+              anchor="bottom start"
+              className="w-32 gap-1 flex flex-col mt-2 origin-top rounded-md border border-white/10 
+                 bg-[#282828] p-2 text-sm text-white shadow-lg border-none outline-none
+                 transition duration-100 ease-out 
+                 data-[closed]:scale-95 data-[closed]:opacity-0"
+            >
+
+              <MenuItem>
+                <button
+                  onClick={() => setSort("recent")}
+                  className={`w-full text-left px-3 py-2 rounded 
+            ${sort === "recent" ? "bg-white/10 text-white" : "text-gray-300"} 
+            hover:bg-white/10`}
+                >
+                  Recent
+                </button>
+              </MenuItem>
+
+              <MenuItem>
+                <button
+                  onClick={() => setSort("az")}
+                  className={`w-full text-left px-3 py-2 rounded 
+            ${sort === "az" ? "bg-white/10 text-white" : "text-gray-300"} 
+            hover:bg-white/10`}
+                >
+                  A–Z
+                </button>
+              </MenuItem>
+
+            </MenuItems>
+          </Menu>
+        )}
+
+      </div>
+
+      {(library.likedSongs.length > 0 || items.length > 0) && (
+        <>
+          {/* ✅ SCROLLABLE AREA */}
+          <div className="flex-1 overflow-y-auto pr-1">
+
+            {/* ❤️ LIKED SONGS */}
+            {library.likedSongs.length > 0 && (
+              <div className="mb-1" onClick={() => navigate("/liked")}>
+                <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+                    ♥
+                  </div>
+
+                  {!finalCollapsed && (
+                    <div>
+                      <p className="text-sm font-medium">Liked Songs</p>
+                      <p className="text-sm font-medium text-[#A0A0B2]">
+                        {library.likedSongs.length} songs
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+
+            {/* LIST */}
+            {items.length > 0 && (
+              <ul className="space-y-0">
+                {items.map((item) => (
+                  <li
+                    key={item.id}
+                    onClick={() => navigate(`/${item.type}/${item.id}`)}
+                    className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+                      } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+                  >
+                    <LazyLoadImage
+                      defaultImage={LoadImage}
+                      image={item.image?.[2]?.url || fallbackImg}
+                      className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
+                        }`}
+                    />
+
+                    {!finalCollapsed && (
+                      <div>
+                        <p className="text-sm font-medium line-clamp-1 hover:underline">
+                          {item.name}
+                        </p>
+                        <p className="text-sm font-medium text-[#A0A0B2] capitalize">
+                          {item.type}
+                        </p>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        </div>
+        </>
       )}
 
-      {/* LIST */}
-      {items.length > 0 && (
-        <ul className="space-y-0">
-          {items.map((item) => (
-            <li
-              key={item.id}
-              onClick={() => navigate(`/${item.type}/${item.id}`)}
-              className={`flex items-center ${
-                finalCollapsed ? "justify-center" : "gap-3"
-              } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
-            >
-              <LazyLoadImage
-                defaultImage={LoadImage}
-                image={item.image?.[2]?.url || fallbackImg}
-                className={`w-12 h-12 ${
-                  item.type === "artist" ? "rounded-full" : "rounded"
-                }`}
-              />
-
-              {!finalCollapsed && (
-                <div>
-                  <p className="text-sm font-medium line-clamp-1 hover:underline">
-                    {item.name}
-                  </p>
-                  <p className="text-sm font-medium text-[#A0A0B2] capitalize">
-                    {item.type}
-                  </p>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  </>
-)}
-      
 
       {/* EMPTY */}
       {library.likedSongs.length === 0 &&

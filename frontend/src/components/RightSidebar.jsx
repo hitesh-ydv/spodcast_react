@@ -139,9 +139,9 @@ export default function RightSidebar() {
   const darkOpacity = (0.45 + scrollProgress * 0.45).toFixed(2); // 0.45 → 0.9
 
   return (
-    <aside className="right-section relative w-77 bg-[#12121A] rounded-md ml-2 overflow-hidden">
+    <aside className="right-section relative w-77 [@media(min-height:1000px)]:w-100 bg-[#12121A] rounded-md ml-2 overflow-hidden">
       {/* ===== Background Layer (fixed height 500px) ===== */}
-      <div className="absolute top-0 left-0 right-0 h-[500px] rounded-md overflow-hidden z-10">
+      <div className="absolute top-0 left-0 right-0 h-[58vh] rounded-md overflow-hidden z-10">
         {/* Background image */}
         {songImage && (
           <img
@@ -172,7 +172,7 @@ export default function RightSidebar() {
           </AnimatePresence>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-b from-transparentt via-transparent to-[#12121A]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparentt via-transparent vai-transaprent to-[#12121A] min-h-[58vh]  " />
 
         {/* Scroll depth overlay — darkens progressively */}
         <motion.div
@@ -186,15 +186,15 @@ export default function RightSidebar() {
       </div>
 
       {/* ===== Foreground Content ===== */}
-      <div ref={scrollRef} className="relative z-10 p-4 pt-3 overflow-y-auto container2 h-full ">
+      <div ref={scrollRef} className="relative z-10 p-4 pt-3 overflow-y-auto container2 h-full">
         {/* Header */}
         <div className="flex flex-row items-center justify-between mb-4 sticky top-0">
           <h2 className="text-xl font-bold text-white">Spodcast</h2>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="p-1.5 w-11 h-11 rounded-full cursor-pointer fill-[#adadad] hover:fill-white hover:bg-[#202020] transition-all" > <mask id="path-1-inside-1_4_354"> <path fillRule="evenodd" clipRule="evenodd" d="M5.5 12C5.5 12.8284 4.82843 13.5 4 13.5C3.17157 13.5 2.5 12.8284 2.5 12C2.5 11.1716 3.17157 10.5 4 10.5C4.82843 10.5 5.5 11.1716 5.5 12ZM13.5 12C13.5 12.8284 12.8284 13.5 12 13.5C11.1716 13.5 10.5 12.8284 10.5 12C10.5 11.1716 11.1716 10.5 12 10.5C12.8284 10.5 13.5 11.1716 13.5 12ZM20 13.5C20.8284 13.5 21.5 12.8284 21.5 12C21.5 11.1716 20.8284 10.5 20 10.5C19.1716 10.5 18.5 11.1716 18.5 12C18.5 12.8284 19.1716 13.5 20 13.5Z" /> </mask> <path fillRule="evenodd" clipRule="evenodd" d="M5.5 12C5.5 12.8284 4.82843 13.5 4 13.5C3.17157 13.5 2.5 12.8284 2.5 12C2.5 11.1716 3.17157 10.5 4 10.5C4.82843 10.5 5.5 11.1716 5.5 12ZM13.5 12C13.5 12.8284 12.8284 13.5 12 13.5C11.1716 13.5 10.5 12.8284 10.5 12C10.5 11.1716 11.1716 10.5 12 10.5C12.8284 10.5 13.5 11.1716 13.5 12ZM20 13.5C20.8284 13.5 21.5 12.8284 21.5 12C21.5 11.1716 20.8284 10.5 20 10.5C19.1716 10.5 18.5 11.1716 18.5 12C18.5 12.8284 19.1716 13.5 20 13.5Z" /> <path d="M4 14.5C5.38071 14.5 6.5 13.3807 6.5 12H4.5C4.5 12.2761 4.27614 12.5 4 12.5V14.5ZM1.5 12C1.5 13.3807 2.61929 14.5 4 14.5V12.5C3.72386 12.5 3.5 12.2761 3.5 12H1.5ZM4 9.5C2.61929 9.5 1.5 10.6193 1.5 12H3.5C3.5 11.7239 3.72386 11.5 4 11.5V9.5ZM6.5 12C6.5 10.6193 5.38071 9.5 4 9.5V11.5C4.27614 11.5 4.5 11.7239 4.5 12H6.5ZM12 14.5C13.3807 14.5 14.5 13.3807 14.5 12H12.5C12.5 12.2761 12.2761 12.5 12 12.5V14.5ZM9.5 12C9.5 13.3807 10.6193 14.5 12 14.5V12.5C11.7239 12.5 11.5 12.2761 11.5 12H9.5ZM12 9.5C10.6193 9.5 9.5 10.6193 9.5 12H11.5C11.5 11.7239 11.7239 11.5 12 11.5V9.5ZM14.5 12C14.5 10.6193 13.3807 9.5 12 9.5V11.5C12.2761 11.5 12.5 11.7239 12.5 12H14.5ZM20.5 12C20.5 12.2761 20.2761 12.5 20 12.5V14.5C21.3807 14.5 22.5 13.3807 22.5 12H20.5ZM20 11.5C20.2761 11.5 20.5 11.7239 20.5 12H22.5C22.5 10.6193 21.3807 9.5 20 9.5V11.5ZM19.5 12C19.5 11.7239 19.7239 11.5 20 11.5V9.5C18.6193 9.5 17.5 10.6193 17.5 12H19.5ZM20 12.5C19.7239 12.5 19.5 12.2761 19.5 12H17.5C17.5 13.3807 18.6193 14.5 20 14.5V12.5Z" mask="url(#path-1-inside-1_4_354)" /> </svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" className="p-1.5 w-11 h-11 rounded-full cursor-pointer fill-[#adadad] hover:fill-white hover:bg-[#202020] transition-all" > <mask id="path-1-inside-1_4_354"> <path fillRule="evenodd" clipRule="evenodd" d="M5.5 12C5.5 12.8284 4.82843 13.5 4 13.5C3.17157 13.5 2.5 12.8284 2.5 12C2.5 11.1716 3.17157 10.5 4 10.5C4.82843 10.5 5.5 11.1716 5.5 12ZM13.5 12C13.5 12.8284 12.8284 13.5 12 13.5C11.1716 13.5 10.5 12.8284 10.5 12C10.5 11.1716 11.1716 10.5 12 10.5C12.8284 10.5 13.5 11.1716 13.5 12ZM20 13.5C20.8284 13.5 21.5 12.8284 21.5 12C21.5 11.1716 20.8284 10.5 20 10.5C19.1716 10.5 18.5 11.1716 18.5 12C18.5 12.8284 19.1716 13.5 20 13.5Z" /> </mask> <path fillRule="evenodd" clipRule="evenodd" d="M5.5 12C5.5 12.8284 4.82843 13.5 4 13.5C3.17157 13.5 2.5 12.8284 2.5 12C2.5 11.1716 3.17157 10.5 4 10.5C4.82843 10.5 5.5 11.1716 5.5 12ZM13.5 12C13.5 12.8284 12.8284 13.5 12 13.5C11.1716 13.5 10.5 12.8284 10.5 12C10.5 11.1716 11.1716 10.5 12 10.5C12.8284 10.5 13.5 11.1716 13.5 12ZM20 13.5C20.8284 13.5 21.5 12.8284 21.5 12C21.5 11.1716 20.8284 10.5 20 10.5C19.1716 10.5 18.5 11.1716 18.5 12C18.5 12.8284 19.1716 13.5 20 13.5Z" /> <path d="M4 14.5C5.38071 14.5 6.5 13.3807 6.5 12H4.5C4.5 12.2761 4.27614 12.5 4 12.5V14.5ZM1.5 12C1.5 13.3807 2.61929 14.5 4 14.5V12.5C3.72386 12.5 3.5 12.2761 3.5 12H1.5ZM4 9.5C2.61929 9.5 1.5 10.6193 1.5 12H3.5C3.5 11.7239 3.72386 11.5 4 11.5V9.5ZM6.5 12C6.5 10.6193 5.38071 9.5 4 9.5V11.5C4.27614 11.5 4.5 11.7239 4.5 12H6.5ZM12 14.5C13.3807 14.5 14.5 13.3807 14.5 12H12.5C12.5 12.2761 12.2761 12.5 12 12.5V14.5ZM9.5 12C9.5 13.3807 10.6193 14.5 12 14.5V12.5C11.7239 12.5 11.5 12.2761 11.5 12H9.5ZM12 9.5C10.6193 9.5 9.5 10.6193 9.5 12H11.5C11.5 11.7239 11.7239 11.5 12 11.5V9.5ZM14.5 12C14.5 10.6193 13.3807 9.5 12 9.5V11.5C12.2761 11.5 12.5 11.7239 12.5 12H14.5ZM20.5 12C20.5 12.2761 20.2761 12.5 20 12.5V14.5C21.3807 14.5 22.5 13.3807 22.5 12H20.5ZM20 11.5C20.2761 11.5 20.5 11.7239 20.5 12H22.5C22.5 10.6193 21.3807 9.5 20 9.5V11.5ZM19.5 12C19.5 11.7239 19.7239 11.5 20 11.5V9.5C18.6193 9.5 17.5 10.6193 17.5 12H19.5ZM20 12.5C19.7239 12.5 19.5 12.2761 19.5 12H17.5C17.5 13.3807 18.6193 14.5 20 14.5V12.5Z" mask="url(#path-1-inside-1_4_354)" /> </svg>
         </div>
 
         {currentSong && (
-          <div className="mb-6 mt-[400px] flex items-center">
+          <div className="mb-6 mt-[58vh] flex items-center max-mt-[1000px]">
 
             {/* LEFT SIDE */}
             <div className="flex flex-col flex-1 min-w-0 pr-3">
@@ -228,18 +228,6 @@ export default function RightSidebar() {
 
             {/* RIGHT SIDE (FIXED) */}
             <div className="flex-shrink-0">
-              <CTooltip
-                content={liked ? "Remove from Liked Songs" : "Save to Your Library"}
-                placement="top"
-                style={{
-                  backgroundColor: "#242424",
-                  color: "white",
-                  padding: 6,
-                  borderRadius: 5,
-                  fontSize: 15,
-                  fontWeight: 550,
-                }}
-              >
                 <button
                   type="button"
                   onClick={(e) => {
@@ -255,7 +243,6 @@ export default function RightSidebar() {
         ${liked ? "scale-110" : "scale-100"}`}
                   />
                 </button>
-              </CTooltip>
             </div>
 
           </div>

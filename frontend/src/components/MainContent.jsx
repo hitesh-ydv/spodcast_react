@@ -27,6 +27,12 @@ export default function MainContent() {
   const [artists, setArtists] = useState([]);
   const [loading2, setLoading2] = useState(false);
 
+  const [homePlaylists, setHomePlaylists] = useState({
+    punjabi: [],
+    hindi: [],
+    haryanvi: []
+  });
+
   const scrollRef = useRef(null);
   const { pathname } = useLocation();
   const { positions, setPosition } = useScrollStore();
@@ -121,15 +127,40 @@ export default function MainContent() {
       .finally(() => setLoading(false));
   }, []);
 
+
+  useEffect(() => {
+    const fetchHomePlaylists = async () => {
+      try {
+        const [punjabi, hindi, haryanvi] = await Promise.all([
+          axios.get(`https://saavn.sumit.co/api/search/playlists?query=punjabi&limit=10`),
+          axios.get(`https://saavn.sumit.co/api/search/playlists?query=hindi&limit=10`),
+          axios.get(`https://saavn.sumit.co/api/search/playlists?query=haryanvi&limit=10`)
+        ]);
+
+        setHomePlaylists({
+          punjabi: punjabi.data.data.results || [],
+          hindi: hindi.data.data.results || [],
+          haryanvi: haryanvi.data.data.results || []
+        });
+
+      } catch (err) {
+        console.error("❌ Home playlists error:", err);
+      }
+    };
+
+    fetchHomePlaylists();
+  }, []);
+
+
   return (
     <main
-     ref={scrollRef}
-     className="flex-1 overflow-y-auto max-h-full max-w-full rounded-md bg-[#12121A]"
-     >
+      ref={scrollRef}
+      className="flex-1 overflow-y-auto max-h-full max-w-full rounded-md bg-[#12121A]"
+    >
       <Routes>
         <Route
           path="/"
-          element={<Home data={data} loading={loading} />}
+          element={<Home data={data} loading={loading} homePlaylists={homePlaylists} />}
         />
         <Route path="/search" element={<Search songs={songs} topResults={topResults} playlists={playlists} albums={albums} artists={artists} loading2={loading2} query={query} />} />
         <Route path="/user/:userid" element={<UserProfile />} />

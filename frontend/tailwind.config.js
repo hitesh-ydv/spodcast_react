@@ -12,6 +12,9 @@ module.exports = {
         hover: "#202020",      // hover color
         textwhite: "#ffffff",  // text color
       },
+      screens: {
+        'tall': { 'raw': '(min-height: 1000px)' },
+      },
     },
   },
   plugins: [],
