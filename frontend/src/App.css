@@ -13,6 +13,15 @@
   --color-w: #ffffff;
 }
 
+/* Disable text selection */
+body {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* IE */
+}
+
+
+
 /* src/index.css */
 ::-webkit-scrollbar {
   width: 8px;
@@ -373,3 +382,4 @@ button{
 .like-animate:active {
   transform: scale(0.85);
 }
+

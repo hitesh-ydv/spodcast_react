@@ -43,6 +43,7 @@ export default function DashboardLayout() {
                     <div className="px-4">
                         <Footer />
                     </div>
+                    
 
                 </div>
         </AudioProvider>

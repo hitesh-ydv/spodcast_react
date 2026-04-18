@@ -9,6 +9,9 @@ import { useLibrary } from "../context/LibraryContext";
 import Like from "../assets/like.svg";
 import Unlike from "../assets/unlike.svg";
 import { CButton, CTooltip } from '@coreui/react'
+import VolumeControl from "./VolumeControl";
+import { Volume2, Volume1, VolumeX, Maximize } from "lucide-react";
+import FullScreenPlayer from "@/pages/dashboard/FullScreenPlayer";
 
 export default function FooterPlayer() {
   const {
@@ -22,6 +25,7 @@ export default function FooterPlayer() {
   } = useAudio();
 
   const { toggleLike, removeFromLiked, library, isLiked } = useLibrary();
+  const [fullScreen, setFullScreen] = useState(false);
 
 
 
@@ -398,9 +402,19 @@ export default function FooterPlayer() {
 
             </div>
 
-            {/* Right - filler or extra icons */}
-            <div className="w-1/3 flex justify-end font-medium text-[#A0A0B2] text-xs">
-              <span>Now Playing</span>
+            <div className="w-1/3 flex justify-end font-medium text-[#A0A0B2] text-xs items-center gap-4 pr-2"
+            >
+              <VolumeControl audioRef={audioRef} />
+              <button onClick={() => setFullScreen(true)} className="text-gray-400 hover:text-white transition-colors cursor-pointer p-2">
+                <Maximize size={20} />
+              </button>
+
+              {/* Fullscreen */}
+              <FullScreenPlayer
+                isOpen={fullScreen}
+                onClose={() => setFullScreen(false)}
+                song={currentSong}
+              />
             </div>
           </div>
 
