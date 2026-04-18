@@ -132,60 +132,67 @@ const LibrarySidebar = () => {
         </select>
       )}
 
-        <>
-          {/* ✅ SCROLLABLE AREA */}
-          <div className="flex-1 overflow-y-auto pr-1">
-            {/* ❤️ LIKED SONGS */}
-            {library.likedSongs.length > 0 && (
-              <div className="mb-1" onClick={() => navigate("/liked")}>
-                <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-                    ♥
-                  </div>
+{(library.likedSongs.length > 0 || items.length > 0) && (
+  <>
+    {/* ✅ SCROLLABLE AREA */}
+    <div className="flex-1 overflow-y-auto pr-1">
+      
+      {/* ❤️ LIKED SONGS */}
+      {library.likedSongs.length > 0 && (
+        <div className="mb-1" onClick={() => navigate("/liked")}>
+          <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+              ♥
+            </div>
 
-                  {!finalCollapsed && (
-                    <div>
-                      <p className="text-sm font-medium">Liked Songs</p>
-                      <p className="text-sm font-medium text-[#A0A0B2]">
-                        {library.likedSongs.length} songs
-                      </p>
-                    </div>
-                  )}
-                </div>
+            {!finalCollapsed && (
+              <div>
+                <p className="text-sm font-medium">Liked Songs</p>
+                <p className="text-sm font-medium text-[#A0A0B2]">
+                  {library.likedSongs.length} songs
+                </p>
               </div>
             )}
-
-            {/* LIST */}
-            <ul className="space-y-0">
-              {items.map((item) => (
-                <li
-                  key={item.id}
-                  onClick={() => navigate(`/${item.type}/${item.id}`)}
-                  className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
-                    } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
-                >
-                  <LazyLoadImage
-                    defaultImage={LoadImage}
-                    image={item.image?.[2]?.url || fallbackImg}
-                    className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
-                      }`}
-                  />
-
-                  {!finalCollapsed && (
-                    <div>
-                      <p className="text-sm font-medium line-clamp-1 hover:underline">
-                        {item.name}
-                      </p>
-                      <p className="text-sm font-medium text-[#A0A0B2] capitalize">
-                        {item.type}
-                      </p>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
           </div>
-        </>
+        </div>
+      )}
+
+      {/* LIST */}
+      {items.length > 0 && (
+        <ul className="space-y-0">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              onClick={() => navigate(`/${item.type}/${item.id}`)}
+              className={`flex items-center ${
+                finalCollapsed ? "justify-center" : "gap-3"
+              } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+            >
+              <LazyLoadImage
+                defaultImage={LoadImage}
+                image={item.image?.[2]?.url || fallbackImg}
+                className={`w-12 h-12 ${
+                  item.type === "artist" ? "rounded-full" : "rounded"
+                }`}
+              />
+
+              {!finalCollapsed && (
+                <div>
+                  <p className="text-sm font-medium line-clamp-1 hover:underline">
+                    {item.name}
+                  </p>
+                  <p className="text-sm font-medium text-[#A0A0B2] capitalize">
+                    {item.type}
+                  </p>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </>
+)}
       
 
       {/* EMPTY */}

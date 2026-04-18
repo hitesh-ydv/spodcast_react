@@ -55,66 +55,88 @@ export const LibraryProvider = ({ children }) => {
     });
   };
 
-  // ❌ REMOVE
-  const removeFromLiked = (id) => {
-    setLibrary((prev) => ({
+
+// 🎤 TOGGLE ARTIST
+const toggleArtist = (artist) => {
+  const newArtist = Array.isArray(artist) ? artist[0] : artist;
+
+  setLibrary((prev) => {
+    const exists = prev.artists.some((a) => a.id === newArtist.id);
+
+    return {
       ...prev,
-      likedSongs: prev.likedSongs.filter((s) => s.id !== id),
-    }));
-  };
+      artists: exists
+        ? prev.artists.filter((a) => a.id !== newArtist.id)
+        : [newArtist, ...prev.artists],
+    };
+  });
+};
 
-  // 🎤 Artist
-  const addArtist = (artist) => {
-    const newArtist = Array.isArray(artist) ? artist[0] : artist;
+// 💿 TOGGLE ALBUM
+const toggleAlbum = (album) => {
+  const newAlbum = Array.isArray(album) ? album[0] : album;
 
-    setLibrary((prev) => {
-      if (prev.artists.some((a) => a.id === newArtist.id)) return prev;
+  setLibrary((prev) => {
+    const exists = prev.albums.some((a) => a.id === newAlbum.id);
 
-      return {
-        ...prev,
-        artists: [newArtist, ...prev.artists],
-      };
-    });
-  };
+    return {
+      ...prev,
+      albums: exists
+        ? prev.albums.filter((a) => a.id !== newAlbum.id)
+        : [newAlbum, ...prev.albums],
+    };
+  });
+};
 
-  // 💿 Album
-  const addAlbum = (album) => {
-    const newAlbum = Array.isArray(album) ? album[0] : album;
+// 📂 TOGGLE PLAYLIST
+const togglePlaylist = (playlist) => {
+  const newPlaylist = Array.isArray(playlist) ? playlist[0] : playlist;
 
-    setLibrary((prev) => {
-      if (prev.albums.some((a) => a.id === newAlbum.id)) return prev;
+  setLibrary((prev) => {
+    const exists = prev.playlists.some((p) => p.id === newPlaylist.id);
 
-      return {
-        ...prev,
-        albums: [newAlbum, ...prev.albums],
-      };
-    });
-  };
+    return {
+      ...prev,
+      playlists: exists
+        ? prev.playlists.filter((p) => p.id !== newPlaylist.id)
+        : [newPlaylist, ...prev.playlists],
+    };
+  });
+};
 
-  // 📂 Playlist
-  const addPlaylist = (playlist) => {
-    const newPlaylist = Array.isArray(playlist) ? playlist[0] : playlist;
+const artistSet = useMemo(() => {
+  return new Set(library.artists.map((a) => a.id));
+}, [library.artists]);
 
-    setLibrary((prev) => {
-      if (prev.playlists.some((p) => p.id === newPlaylist.id)) return prev;
+const albumSet = useMemo(() => {
+  return new Set(library.albums.map((a) => a.id));
+}, [library.albums]);
 
-      return {
-        ...prev,
-        playlists: [newPlaylist, ...prev.playlists],
-      };
-    });
-  };
+const playlistSet = useMemo(() => {
+  return new Set(library.playlists.map((p) => p.id));
+}, [library.playlists]);
+
+const isArtistSaved = (id) => artistSet.has(id);
+const isAlbumSaved = (id) => albumSet.has(id);
+const isPlaylistSaved = (id) => playlistSet.has(id);
+
+
 
   return (
     <LibraryContext.Provider
       value={{
         library,
         toggleLike,
-        removeFromLiked,
-        isLiked, // 🔥 IMPORTANT
-        addArtist,
-        addAlbum,
-        addPlaylist,
+        isLiked,
+
+    toggleArtist,
+    toggleAlbum,
+    togglePlaylist,
+
+    isArtistSaved,
+  isAlbumSaved,
+  isPlaylistSaved,
+
       }}
     >
       {children}

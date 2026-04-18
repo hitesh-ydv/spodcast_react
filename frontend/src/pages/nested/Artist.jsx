@@ -27,7 +27,7 @@ const Artist = () => {
     const [error, setError] = useState(null);
     const imageRef = useRef(null);
 
-    const { addArtist } = useLibrary();
+    const { toggleArtist, isArtistSaved } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -158,6 +158,8 @@ const Artist = () => {
     const isCurrentPlaying =
         artist.topSongs.some((s) => s.id === localCurrentSongId) && isPlaying;
 
+            const saved = isArtistSaved(artist.id);
+
     return (
         <div
             className="max-h-screen text-white transition-all duration-500 w-full"
@@ -231,10 +233,12 @@ const Artist = () => {
                             onError={handleError}
                         />
                     </button>
-                    {/* Follow Button */}
-                    <button onClick={() => addArtist(artist)} className="bg-transparent border-[#adadad] hover:border-white transition-all border-1 cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform transition-transform duration-200">
-                        Follow
-                    </button>
+                    <button
+  onClick={() => toggleArtist(artist)}
+  className="bg-transparent border-[#adadad] hover:border-white transition-all border cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform duration-200"
+>
+  {saved ? "Unfollow" : "Follow"}
+</button>
 
                     <Menu>
                         <MenuButton

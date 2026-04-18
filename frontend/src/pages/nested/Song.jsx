@@ -23,6 +23,7 @@ import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
+import Unlike from "../../assets/unlike.svg";
 
 
 const Song = () => {
@@ -38,17 +39,24 @@ const Song = () => {
     const [lyrics, setLyrics] = useState("");
     const [showMore, setShowMore] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLikedd, setIsLikedd] = useState(false);
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
 
-     const { toggleLike, addArtist } = useLibrary();
+  const { toggleLike, removeFromLiked, library, isLiked, toggleArtist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
     const navigate = useNavigate();
+
+      const liked = isLiked(currentSong?.id)
+
+      const handleLikeToggle = (e) => {
+    e.stopPropagation();
+    toggleLike(currentSong);
+  };
 
     useEffect(() => {
         const fetchSongData = async () => {
@@ -114,7 +122,7 @@ const Song = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const likedSongs = res.data.likedSongs || [];
-                setIsLiked(likedSongs.includes(song[0].id));
+                setIsLikedd(likedSongs.includes(song[0].id));
             } catch (err) {
                 console.error("Error fetching liked songs:", err);
             }
@@ -318,7 +326,7 @@ const Song = () => {
                     height: "100%",
                 }}
             >
-                <div className='px-6 py-1 flex items-center gap-4'>
+                <div className='px-6 py-1 flex items-center gap-5'>
                     <button onClick={handleClick} className="bg-gradient-to-br from-purple-500 to-blue-500 rounded-full px-2.5 py-2.5 hover:brightness-150 cursor-pointer flex items-center justify-center transition-transform duration-200 hover:scale-105">
                         <img
                             src={isCurrentPlaying ? PauseBtn : PlayBtn}
@@ -328,23 +336,30 @@ const Song = () => {
                     </button>
 
                     <CTooltip
-                        content="Add to Liked Songs"
-                        placement="top"
-                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
-                    >
-                        <button
-                            onClick={() => toggleLike(song)}
-                            className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
-                        >
-                            {isLiked ? (
-                                <span className="text-sm font-semibold text-red-500">
-                                    Remove from liked songs
-                                </span>
-                            ) : (
-                                <img src={Like} alt="Like" className="h-8 w-8" />
-                            )}
-                        </button>
-                    </CTooltip>
+                content={liked ? "Remove from Liked Songs" : "Add to Liked Songs"}
+                placement="top"
+                style={{
+                  backgroundColor: "#242424",
+                  color: "white",
+                  padding: 6,
+                  borderRadius: 5,
+                  fontSize: 15,
+                  fontWeight: 550,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleLikeToggle}
+                  className="flex items-center justify- cursor-pointer"
+                >
+                  <img
+                    src={liked ? Unlike : Like}
+                    alt="Like"
+                    className={`w-8 h-8 object-contain transition-transform duration-200 
+        ${liked ? "scale-110" : "scale-100"}`}
+                  />
+                </button>
+              </CTooltip>
 
                     <CTooltip
                         content="Download Song"

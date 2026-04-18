@@ -12,7 +12,7 @@ const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
 
 export default function RightSidebar() {
   const { currentSong, isPlaying } = useAudio();
-  const { toggleLike, addAlbum, isLiked } = useLibrary();
+  const { toggleLike, toggleAlbum, isLiked } = useLibrary();
 
   const navigate = useNavigate();
 
