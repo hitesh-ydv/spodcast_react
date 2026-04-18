@@ -1,7 +1,7 @@
 import ScrollContainer from "../../layouts/ScrollContainer";
 import Loader from "../../components/Loader"; // make sure this path is correct
 import { LazyLoadImage } from '@tjoskar/react-lazyload-img'
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
 import PlayBtn from "../../assets/playbtn.svg";
 import PauseBtn from "../../assets/pause.svg";
@@ -11,12 +11,16 @@ import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL;
 import { useRecent } from "../../context/RecentContext";
 import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
+import { Vibrant } from "node-vibrant/browser";
+import { motion } from "framer-motion";
 
 export default function Home({ data, loading, homePlaylists }) {
 
   const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
   const [currentSongId, setCurrentSongId] = useState("");
+  const [backgroundColor, setBackgroundColor] = useState('');
+  const [scrollContainerBg, setScrollContainerBg] = useState('');
 
   const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -38,10 +42,66 @@ export default function Home({ data, loading, homePlaylists }) {
     } finally {
     }
   };
-  
+
+  useEffect(() => {
+    const extractColorFromImage = async () => {
+      //if (!imageRef2.current) return;
+
+      try {
+        const palette = await Vibrant
+          .from(currentSong?.image?.[2]?.url || fallbackImg)
+          .getPalette();
+
+        // Spotify-style priority
+        const swatch =
+          palette.DarkVibrant ||
+          palette.Muted ||
+          palette.DarkMuted;
+
+        if (!swatch) return;
+
+        const [r, g, b] = swatch.rgb;
+
+        const gradient = `
+    linear-gradient(
+      180deg,
+      rgba(${r + 20}, ${g + 20}, ${b + 20}, 0.95) 0%,
+      rgba(${r}, ${g}, ${b}, 0.8) 50%,
+      rgba(${r}, ${g}, ${b}, 0.5) 100%
+    )
+  `;
+
+        const scrollGradient = `
+      linear-gradient(
+        to bottom,
+        rgba(${r}, ${g}, ${b}, 0.35) 0px,
+        rgba(18,18,18,0.7) 150px,
+        #12121A 100%
+      )
+    `;
+
+        setBackgroundColor(gradient);
+        setScrollContainerBg(scrollGradient);
+
+      } catch (err) {
+        console.error("Vibrant error:", err);
+      }
+    };
+    extractColorFromImage();
+  }, [currentSong]);
+
 
   return (
-    <div className="scroll-container h-full w-full">
+    <motion.div
+      className="scroll-container h-full w-full"
+      animate={{
+        background: scrollContainerBg,
+      }}
+      transition={{
+        duration: 0.8,
+        ease: "easeInOut",
+      }}
+    >
       {loading ? (
         <div className="flex items-center justify-center min-h-full">
           <Loader />
@@ -69,6 +129,8 @@ export default function Home({ data, loading, homePlaylists }) {
                         image={song.image?.[2]?.url || fallbackImg}
                         className="song-image"
                         onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
                       />
                       <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                         onClick={(e) => {
@@ -142,6 +204,8 @@ export default function Home({ data, loading, homePlaylists }) {
                         image={song.image?.[2]?.url || fallbackImg}
                         className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
                         onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
                       />
                       {song.type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
@@ -218,6 +282,8 @@ export default function Home({ data, loading, homePlaylists }) {
                       image={song.image?.[2]?.url || fallbackImg}
                       className="song-image"
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
@@ -276,6 +342,8 @@ export default function Home({ data, loading, homePlaylists }) {
                       image={song.image?.[2]?.url || fallbackImg}
                       className="song-image"
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
@@ -334,6 +402,8 @@ export default function Home({ data, loading, homePlaylists }) {
                       image={song.image?.[2]?.url || fallbackImg}
                       className="song-image"
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
@@ -375,6 +445,6 @@ export default function Home({ data, loading, homePlaylists }) {
 
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

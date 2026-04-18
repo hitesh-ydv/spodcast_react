@@ -167,7 +167,7 @@ const LikedSong = () => {
                             •
                         </span> */}
                         <span className="text-sm text-[#adadad] font-medium">
-                            {library.likedSongs.length} {   library.likedSongs.length === 1 ? "song" : "songs"}
+                            {library.likedSongs.length} {library.likedSongs.length === 1 ? "song" : "songs"}
                         </span>
 
                     </div>
@@ -265,6 +265,8 @@ const LikedSong = () => {
                                                 image={song.image[1]?.url || fallbackImg}
                                                 className="w-11 h-11 rounded"
                                                 onError={handleError}
+                                                draggable={false}
+                                                onDragStart={(e) => e.preventDefault()}
                                             />
 
                                             {/* GIF Overlay (visible when NOT hovered & song playing) */}
@@ -330,7 +332,7 @@ const LikedSong = () => {
                                         </div>
                                     </div>
 
-                                    
+
                                 </div>
 
                             );

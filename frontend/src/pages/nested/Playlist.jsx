@@ -152,7 +152,7 @@ const Playlist = () => {
     };
 
 
-        const saved = isPlaylistSaved(details.id);
+    const saved = isPlaylistSaved(details.id);
 
 
 
@@ -249,30 +249,29 @@ const Playlist = () => {
                     </button>
 
                     <CTooltip
-  content={saved ? "Remove from Your Library" : "Save to Your Library"}
-  placement="top"
-  style={{
-    backgroundColor: "#242424",
-    color: "white",
-    padding: 6,
-    borderRadius: 5,
-    fontSize: 15,
-    fontWeight: 550,
-  }}
->
-  <button
-    onClick={() => togglePlaylist(details)}
-    className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
-  >
-    <img
-      src={saved ? Unlike : Like}   // 👈 icon change
-      alt="like"
-      className={`h-8 w-8 transition-all duration-200 ${
-        saved ? "scale-110" : ""
-      }`}
-    />
-  </button>
-</CTooltip>
+                        content={saved ? "Remove from Your Library" : "Save to Your Library"}
+                        placement="top"
+                        style={{
+                            backgroundColor: "#242424",
+                            color: "white",
+                            padding: 6,
+                            borderRadius: 5,
+                            fontSize: 15,
+                            fontWeight: 550,
+                        }}
+                    >
+                        <button
+                            onClick={() => togglePlaylist(details)}
+                            className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
+                        >
+                            <img
+                                src={saved ? Unlike : Like}   // 👈 icon change
+                                alt="like"
+                                className={`h-8 w-8 transition-all duration-200 ${saved ? "scale-110" : ""
+                                    }`}
+                            />
+                        </button>
+                    </CTooltip>
 
                     <Menu>
                         <MenuButton
@@ -323,6 +322,8 @@ const Playlist = () => {
                                                 image={song.image[1]?.url || fallbackImg}
                                                 className="w-11 h-11 rounded"
                                                 onError={handleError}
+                                                draggable={false}
+                                                onDragStart={(e) => e.preventDefault()}
                                             />
 
                                             {/* GIF Overlay (visible when NOT hovered & song playing) */}

@@ -43,7 +43,7 @@ const Song = () => {
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
 
-  const { toggleLike, removeFromLiked, library, isLiked, toggleArtist } = useLibrary();
+    const { toggleLike, removeFromLiked, library, isLiked, toggleArtist } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -51,12 +51,12 @@ const Song = () => {
 
     const navigate = useNavigate();
 
-      const liked = isLiked(currentSong?.id)
+    const liked = isLiked(currentSong?.id)
 
-      const handleLikeToggle = (e) => {
-    e.stopPropagation();
-    toggleLike(currentSong);
-  };
+    const handleLikeToggle = (e) => {
+        e.stopPropagation();
+        toggleLike(currentSong);
+    };
 
     useEffect(() => {
         const fetchSongData = async () => {
@@ -254,7 +254,7 @@ const Song = () => {
 
 
     return (
-        <div className="text-white transition-all duration-500 w-full">
+        <div className="text-white transition-all duration-500 w-full relative top-0 left-0 ">
 
             <div className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full" style={{ background: backgroundColor }}>
                 <div className="flex-shrink-0">
@@ -336,30 +336,30 @@ const Song = () => {
                     </button>
 
                     <CTooltip
-                content={liked ? "Remove from Liked Songs" : "Add to Liked Songs"}
-                placement="top"
-                style={{
-                  backgroundColor: "#242424",
-                  color: "white",
-                  padding: 6,
-                  borderRadius: 5,
-                  fontSize: 15,
-                  fontWeight: 550,
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={handleLikeToggle}
-                  className="flex items-center justify- cursor-pointer"
-                >
-                  <img
-                    src={liked ? Unlike : Like}
-                    alt="Like"
-                    className={`w-8 h-8 object-contain transition-transform duration-200 
+                        content={liked ? "Remove from Liked Songs" : "Add to Liked Songs"}
+                        placement="top"
+                        style={{
+                            backgroundColor: "#242424",
+                            color: "white",
+                            padding: 6,
+                            borderRadius: 5,
+                            fontSize: 15,
+                            fontWeight: 550,
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={handleLikeToggle}
+                            className="flex items-center justify- cursor-pointer"
+                        >
+                            <img
+                                src={liked ? Unlike : Like}
+                                alt="Like"
+                                className={`w-8 h-8 object-contain transition-transform duration-200 
         ${liked ? "scale-110" : "scale-100"}`}
-                  />
-                </button>
-              </CTooltip>
+                            />
+                        </button>
+                    </CTooltip>
 
                     <CTooltip
                         content="Download Song"
@@ -408,6 +408,8 @@ const Song = () => {
                                     image={artist.image?.[2]?.url || fallbackImg}
                                     className="w-16 h-16 rounded-full"
                                     onError={handleError}
+                                    draggable={false}
+                                    onDragStart={(e) => e.preventDefault()}
                                 />
                                 <div>
                                     <h1 className='text-md font-medium'>{artist.type.charAt(0).toUpperCase() + artist.type.slice(1)}</h1>
@@ -450,6 +452,8 @@ const Song = () => {
                                                 image={song.image[1]?.url || fallbackImg}
                                                 className="w-11 h-11 rounded"
                                                 onError={handleError}
+                                                draggable={false}
+                                                onDragStart={(e) => e.preventDefault()}
                                             />
 
                                             {/* GIF Overlay (visible when NOT hovered & song playing) */}

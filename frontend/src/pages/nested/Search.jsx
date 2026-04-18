@@ -151,6 +151,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     image={song.image?.[2]?.url || fallbackImg}
                     className={`rounded-${song.type == "artist" ? "full" : "lg"} mb-3 w-30 max-h-30 object-cover`}
                     onError={handleError}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
                   />
 
                   {song.type == "song" && (
@@ -200,6 +202,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                           image={song.image?.[2]?.url || fallbackImg}
                           className="song-image"
                           onError={handleError}
+                          draggable={false}
+                          onDragStart={(e) => e.preventDefault()}
                         />
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
@@ -270,6 +274,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       image={song.image?.[2]?.url || fallbackImg}
                       className="rounded-lg mb-3 w-full max-h-43 object-cover"
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                     />
 
                     <h3 onClick={(e) => {
@@ -302,6 +308,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       defaultImage={LoadImage}
                       image={album.image[2].url || fallbackImg}
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                       className="rounded-lg mb-3 w-full max-h-43 object-cover"
 
                     />
@@ -348,6 +356,8 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       defaultImage={LoadImage}
                       image={artist.image?.[2]?.url || fallbackImg}
                       onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                       className="rounded-full mb-3 w-full max-h-43 object-cover"
 
                     />

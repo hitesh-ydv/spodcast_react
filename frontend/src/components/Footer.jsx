@@ -219,6 +219,8 @@ export default function FooterPlayer() {
                 defaultImage={LoadImage}
                 image={currentSong.image?.[1]?.url}
                 className="w-12 h-12 rounded"
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
               />
               <div className="max-w-60 flex flex-col">
                 <p
@@ -267,6 +269,8 @@ export default function FooterPlayer() {
                   <img
                     src={liked ? Unlike : Like}
                     alt="Like"
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
                     className={`w-6 h-6 object-contain transition-transform duration-200 
         ${liked ? "scale-110" : "scale-100"}`}
                   />
@@ -325,7 +329,8 @@ export default function FooterPlayer() {
                   onClick={togglePlayPause}
                   className="bg-white cursor-pointer text-black p-1 rounded-full flex items-center justify-center"
                 >
-                  <img src={isPlaying ? PauseBtn : PlayBtn} alt="Play" className="h-6.5 w-6.5" />
+                  <img src={isPlaying ? PauseBtn : PlayBtn} alt="Play" className="h-6.5 w-6.5" draggable={false}
+  onDragStart={(e) => e.preventDefault()} />
                 </button>
 
                 <button

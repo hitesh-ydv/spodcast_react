@@ -60,23 +60,22 @@ export default function ScrollContainer({
         {/* Scrollable Container */}
         <div
           ref={scrollRef}
-          className={`flex ${
-            direction === "row" ? "flex-row overflow-x-auto" : "flex-col overflow-y-auto"
-          } scroll-smooth scrollbar-hide no-scrollbar pl-4 `}
+          className={`flex ${direction === "row" ? "flex-row overflow-x-auto" : "flex-col overflow-y-auto"
+            } scroll-smooth scrollbar-hide no-scrollbar pl-4 `}
         >
           {Array.isArray(children)
             ? children.map((child, i) => (
-                <div key={i} className="snap-start flex-shrink-0">
-                  {child}
-                </div>
-              ))
+              <div key={i} className="snap-start flex-shrink-0">
+                {child}
+              </div>
+            ))
             : children}
         </div>
 
         {/* Conditionally render gradients + icons */}
         {icons && direction === "row" && canScrollLeft && (
           <div className="absolute inset-y-0 left-0  flex items-center pointer-events-none">
-            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#12121A] to-transparent" />
+            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#12121A] to-transparent  -ml-1" />
             <button
               onClick={() => scroll("left")}
               className="pointer-events-auto relative z-10 bg-[#1f1f1f]/50 p-2 rounded-full hover:bg-[#2a2a2a] ml-3 shadow-md transition-all"
@@ -88,7 +87,7 @@ export default function ScrollContainer({
 
         {icons && direction === "row" && canScrollRight && (
           <div className="absolute inset-y-0 right-0  flex items-center justify-end pointer-events-none">
-            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#12121A] to-transparent" />
+            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#12121A] to-transparent  -mr-1" />
             <button
               onClick={() => scroll("right")}
               className="pointer-events-auto relative z-10 bg-[#1f1f1f]/50 p-2 rounded-full hover:bg-[#2a2a2a] mr-3 shadow-md transition-all"

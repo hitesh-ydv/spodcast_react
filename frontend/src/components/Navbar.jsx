@@ -113,6 +113,8 @@ export default function Navbar() {
                     src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_White.png"
                     alt="Spotify"
                     className="w-8 h-8"
+                    draggable={false}
+  onDragStart={(e) => e.preventDefault()}
                 />
             </div>
 
@@ -124,6 +126,8 @@ export default function Navbar() {
                     <img
                         src={isHomePage ? HomeFill : Home}
                         alt="Home"
+                        draggable={false}
+  onDragStart={(e) => e.preventDefault()}
                     />
                 </button>
 
@@ -140,7 +144,8 @@ export default function Navbar() {
     focus-within:ring-1 
     focus-within:ring-[rgba(255,255,255,0.05)]">
 
-                    <img src={Search} alt="Search" className="h-8 w-8" />
+                    <img src={Search} alt="Search" className="h-8 w-8" draggable={false}
+  onDragStart={(e) => e.preventDefault()} />
 
                     <input
                         ref={inputRef}

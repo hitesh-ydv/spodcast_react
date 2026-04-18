@@ -210,6 +210,8 @@ const LibrarySidebar = () => {
                     <LazyLoadImage
                       defaultImage={LoadImage}
                       image={item.image?.[2]?.url || fallbackImg}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
                       className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
                         }`}
                     />

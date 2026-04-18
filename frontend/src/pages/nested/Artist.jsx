@@ -158,7 +158,7 @@ const Artist = () => {
     const isCurrentPlaying =
         artist.topSongs.some((s) => s.id === localCurrentSongId) && isPlaying;
 
-            const saved = isArtistSaved(artist.id);
+    const saved = isArtistSaved(artist.id);
 
     return (
         <div
@@ -231,14 +231,16 @@ const Artist = () => {
                             alt={isCurrentPlaying ? "Pause" : "Play"}
                             className="h-8 w-8"
                             onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
                         />
                     </button>
                     <button
-  onClick={() => toggleArtist(artist)}
-  className="bg-transparent border-[#adadad] hover:border-white transition-all border cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform duration-200"
->
-  {saved ? "Unfollow" : "Follow"}
-</button>
+                        onClick={() => toggleArtist(artist)}
+                        className="bg-transparent border-[#adadad] hover:border-white transition-all border cursor-pointer text-white px-6 py-1.5 rounded-full font-semibold hover:scale-105 transform duration-200"
+                    >
+                        {saved ? "Unfollow" : "Follow"}
+                    </button>
 
                     <Menu>
                         <MenuButton
@@ -252,7 +254,7 @@ const Artist = () => {
                             className="w-48 origin-top-right rounded-sm border border-white/5 bg-[#282828] p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95"
                         >
                             <MenuItem>
-                                <button  className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
+                                <button className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
                                     Follow
                                 </button>
                             </MenuItem>
@@ -286,6 +288,8 @@ const Artist = () => {
                                             image={song.image?.[2]?.url || fallbackImg}
                                             className="song-image"
                                             onError={handleError}
+                                            draggable={false}
+                                            onDragStart={(e) => e.preventDefault()}
 
                                         />
                                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
@@ -356,6 +360,8 @@ const Artist = () => {
                                     image={song.image?.[2]?.url || fallbackImg}
                                     className="rounded-lg mb-3 w-full max-h-43 object-cover"
                                     onError={handleError}
+                                    draggable={false}
+                                    onDragStart={(e) => e.preventDefault()}
 
                                 />
 
@@ -403,6 +409,8 @@ const Artist = () => {
                                         image={song.image?.[2]?.url || fallbackImg}
                                         className="song-image"
                                         onError={handleError}
+                                        draggable={false}
+                                        onDragStart={(e) => e.preventDefault()}
                                     />
                                     <button className="play-button ">
                                         <img src={PlayBtn} alt="Play" className="h-8 w-8" />
@@ -451,6 +459,8 @@ const Artist = () => {
                                     image={song.image?.[2]?.url || fallbackImg}
                                     className="rounded-full mb-3 w-full max-h-43 object-cover"
                                     onError={handleError}
+                                    draggable={false}
+                                    onDragStart={(e) => e.preventDefault()}
                                 />
 
                                 <h3 onClick={(e) => {
