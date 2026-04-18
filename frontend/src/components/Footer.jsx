@@ -210,13 +210,13 @@ export default function FooterPlayer() {
           {/* 🎧 Song Info + Controls */}
           <div className="flex items-center justify-between w-full">
             {/* Left - Song info */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-1/3">
               <LazyLoadImage
                 defaultImage={LoadImage}
                 image={currentSong.image?.[1]?.url}
                 className="w-12 h-12 rounded"
               />
-              <div className="w-full max-w-58 flex flex-col">
+              <div className="w-full max-w-60 flex flex-col ml-2">
                 <p
                   className="text-sm inline-block font-medium truncate line-clamp-1"
                   onClick={(e) => {
@@ -258,7 +258,7 @@ export default function FooterPlayer() {
                 <button
                   type="button"
                   onClick={handleLikeToggle}
-                  className="flex items-center justify-center w-6 h-6 cursor-pointer"
+                  className="flex items-center justify-center w-5 h-5 cursor-pointer"
                 >
                   <img
                     src={liked ? Unlike : Like}
