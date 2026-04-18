@@ -124,14 +124,27 @@ export default function Home({ data, loading, homePlaylists }) {
                     }}
                   >
                     <div className="image-wrapper mb-2">
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={song.image?.[2]?.url || fallbackImg}
-                        className="song-image"
-                        onError={handleError}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                      />
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={song.image?.[2]?.url || fallbackImg}
+                            className="song-image"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
+                      </motion.div>
                       <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                         onClick={(e) => {
                           setCurrentSongId(song.id)
@@ -199,14 +212,21 @@ export default function Home({ data, loading, homePlaylists }) {
                     }}
                   >
                     <div className="image-wrapper mb-2">
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={song.image?.[2]?.url || fallbackImg}
-                        className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
-                        onError={handleError}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                      />
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }} // ✅ animate only first time it appears
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <LazyLoadImage
+                          defaultImage={LoadImage}
+                          image={song.image?.[2]?.url || fallbackImg}
+                          className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
+                          onError={handleError}
+                          draggable={false}
+                          onDragStart={(e) => e.preventDefault()}
+                        />
+                      </motion.div>
                       {song.type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
@@ -277,14 +297,21 @@ export default function Home({ data, loading, homePlaylists }) {
                   }}
                 >
                   <div className="image-wrapper mb-2">
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={song.image?.[2]?.url || fallbackImg}
-                      className="song-image"
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={song.image?.[2]?.url || fallbackImg}
+                        className="song-image"
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                      />
+                    </motion.div>
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
                         setCurrentSongId(song.id)
@@ -337,14 +364,21 @@ export default function Home({ data, loading, homePlaylists }) {
                   }}
                 >
                   <div className="image-wrapper mb-2">
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={song.image?.[2]?.url || fallbackImg}
-                      className="song-image"
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={song.image?.[2]?.url || fallbackImg}
+                        className="song-image"
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                      />
+                    </motion.div>
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
                         setCurrentSongId(song.id)
@@ -397,14 +431,21 @@ export default function Home({ data, loading, homePlaylists }) {
                   }}
                 >
                   <div className="image-wrapper mb-2">
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={song.image?.[2]?.url || fallbackImg}
-                      className="song-image"
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={song.image?.[2]?.url || fallbackImg}
+                        className="song-image"
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                      />
+                    </motion.div>
                     {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                       onClick={(e) => {
                         setCurrentSongId(song.id)

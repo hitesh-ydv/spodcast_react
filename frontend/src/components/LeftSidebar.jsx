@@ -6,6 +6,7 @@ import fallbackImg from "../assets/playlist_cover.jpg";
 import { useNavigate } from "react-router-dom";
 import { TextWrap } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { motion } from "framer-motion";
 
 const LibrarySidebar = () => {
   const { library } = useLibrary();
@@ -181,9 +182,16 @@ const LibrarySidebar = () => {
             {library.likedSongs.length > 0 && (
               <div className="mb-1" onClick={() => navigate("/liked")}>
                 <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-                    ♥
-                  </div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }} // ✅ animate only first time it appears
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+                      ♥
+                    </div>
+                  </motion.div>
 
                   {!finalCollapsed && (
                     <div>
@@ -207,14 +215,21 @@ const LibrarySidebar = () => {
                     className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
                       } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
                   >
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={item.image?.[2]?.url || fallbackImg}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                      className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
-                        }`}
-                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={item.image?.[2]?.url || fallbackImg}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                        className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
+                          }`}
+                      />
+                    </motion.div>
 
                     {!finalCollapsed && (
                       <div>

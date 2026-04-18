@@ -24,6 +24,7 @@ import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import Artist from './Artist';
+import { motion } from "framer-motion";
 
 const Playlist = () => {
     const { id } = useParams();
@@ -37,6 +38,26 @@ const Playlist = () => {
     const [loading, setLoading] = useState(true);
 
     const { togglePlaylist, toggleAlbum, isPlaylistSaved } = useLibrary();
+
+
+
+    const container = {
+        hidden: {},
+        show: {
+            transition: {
+                staggerChildren: 0.12,
+            },
+        },
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5, ease: "easeOut" },
+        },
+    };
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -68,6 +89,7 @@ const Playlist = () => {
     }, [id]);
 
     const extractColorFromImage = async () => {
+        
         if (!imageRef2.current) return;
 
         try {
@@ -159,58 +181,86 @@ const Playlist = () => {
     return (
         <div className="text-white transition-all duration-500 w-full">
 
-            <div className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full" style={{ background: backgroundColor }}>
-                <div className="flex-shrink-0">
+
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                style={{
+                    background: backgroundColor,
+                    transition: "background 1.5s ease", // ✅ smooth color change
+                }}
+                className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full"
+            >
+                {/* 🎵 IMAGE */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    whileHover={{ scale: 1.05 }} // ✅ hover scale
+                    className="flex-shrink-0"
+                >
                     <img
                         ref={imageRef2}
                         src={details.image?.[2]?.url || fallbackImg}
-                        //alt={artist.name}
                         className="w-50 h-50 rounded-sm object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                         onLoad={extractColorFromImage}
                         onError={handleError}
-                        crossOrigin='anoymous'
+                        crossOrigin="anonymous"
                     />
-                </div>
+                </motion.div>
 
-                {/* Artist Info */}
-                <div className="max-w-full">
-
-                    <span className="text-md font-bold">
+                {/* 📝 TEXT CONTENT */}
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                    className="max-w-full"
+                >
+                    <motion.span variants={item} className="text-md font-bold">
                         {details.type.charAt(0).toUpperCase() + details.type.slice(1)}
-                    </span>
+                    </motion.span>
 
-                    {/* Artist Name */}
-                    <h1 className="text-6xl font-black mb-3 mt-3 line-clamp-1 leading-none">
+                    <motion.h1
+                        variants={item}
+                        className="text-6xl font-black mb-3 mt-3 line-clamp-1 leading-none"
+                    >
                         {details.name}
-                    </h1>
+                    </motion.h1>
 
-                    <span className="text-sm text-[#adadad] font-medium">
+                    <motion.span
+                        variants={item}
+                        className="text-sm text-[#adadad] font-medium"
+                    >
                         {details.description}
-                    </span>
+                    </motion.span>
 
-
-                    <div className="mb-0 flex flex-row items-center gap-2 mt-1">
-
-
+                    <motion.div
+                        variants={item}
+                        className="mb-0 flex flex-row items-center gap-2 mt-1"
+                    >
                         <span className="text-sm text-[#adadad] font-medium">
                             SongCount
                         </span>
-                        <span className="text-sm text-[#adadad] font-medium">
-                            •
-                        </span>
+                        <span className="text-sm text-[#adadad] font-medium">•</span>
                         <span className="text-sm text-[#adadad] font-medium">
                             {details.songCount} Songs
                         </span>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
 
-                    </div>
-                </div>
-            </div>
-
-            <div
-                className='w-full pt-6 min-h-screen'
+            <motion.div
+                className="w-full pt-6 min-h-screen"
                 style={{
                     background: scrollContainerBg,
                     height: "100%",
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.6,
+                    ease: "easeOut",
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-4'>
@@ -317,6 +367,12 @@ const Playlist = () => {
                                         <p className='text-[16px] ml-1 text-[#A0A0B2] truncate font-medium z-20'>{index + 1}.</p>
                                         {/* Image Container */}
                                         <div className="relative">
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }} // ✅ animate only first time it appears
+                                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                            >
                                             <LazyLoadImage
                                                 defaultImage={LoadImage}
                                                 image={song.image[1]?.url || fallbackImg}
@@ -325,6 +381,8 @@ const Playlist = () => {
                                                 draggable={false}
                                                 onDragStart={(e) => e.preventDefault()}
                                             />
+
+                                            </motion.div>
 
                                             {/* GIF Overlay (visible when NOT hovered & song playing) */}
                                             {isCurrentPlaying && (
@@ -413,7 +471,7 @@ const Playlist = () => {
                     </ScrollContainer>
                 )}
 
-            </div>
+            </motion.div>
 
         </div >
     )

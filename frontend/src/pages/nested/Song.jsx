@@ -24,6 +24,7 @@ import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import Unlike from "../../assets/unlike.svg";
+import { motion } from "framer-motion";
 
 
 const Song = () => {
@@ -31,14 +32,13 @@ const Song = () => {
     const [song, setSong] = useState(null);
     const [recommendedSongs, setRecommendedSongs] = useState([]);
     const [recommendedSongs2, setRecommendedSongs2] = useState([]);
-    const [backgroundColor, setBackgroundColor] = useState('');
-    const [scrollContainerBg, setScrollContainerBg] = useState('');
+    const [backgroundColor, setBackgroundColor] = useState(null);
+    const [scrollContainerBg, setScrollContainerBg] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
     const [lyrics, setLyrics] = useState("");
     const [showMore, setShowMore] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [isLikedd, setIsLikedd] = useState(false);
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
@@ -59,77 +59,62 @@ const Song = () => {
     };
 
     useEffect(() => {
+        if (!id) return;
+
+        let isActive = true; // ✅ prevents outdated updates
+
+        setIsLoading(true);
+        setError(null);
+
         const fetchSongData = async () => {
             try {
-                setIsLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}`
-                );
+                const { data } = await axios.get(`${API_URL}/api/songs/${id}`);
+                if (!isActive) return;
+
                 setSong(data.data);
             } catch (err) {
-                console.error("Error fetching song data:", err);
+                if (!isActive) return;
+
+                console.error(err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
             } finally {
-                //setIsLoading(false);
+                if (isActive) setIsLoading(false);
             }
         };
 
         const fetchLyrics = async () => {
             try {
-                setLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}/lyrics`
-                );
+                const { data } = await axios.get(`${API_URL}/api/songs/${id}/lyrics`);
+                if (!isActive) return;
+
                 setLyrics(data.data?.lyrics || "Lyrics not available");
-            } catch (err) {
-                console.error("Error fetching lyrics:", err);
+            } catch {
+                if (!isActive) return;
                 setLyrics("Lyrics not found.");
-            } finally {
-                setLoading(false);
             }
         };
 
         const fetchRecommendedSongs = async () => {
             try {
-                setLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/songs/${id}/suggestions?limit=5`
-                );
-                setRecommendedSongs(data.data);
+                const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=5`);
+                if (!isActive) return;
 
-            } catch (err) {
-                console.error("Error fetching recommendations:", err);
+                setRecommendedSongs(data.data);
+            } catch {
+                if (!isActive) return;
                 setRecommendedSongs([]);
-            } finally {
-                //setLoading(false);
             }
         };
 
-        if (id) {
-            fetchSongData();
-            fetchLyrics();
-            fetchRecommendedSongs();
-        }
+        fetchSongData();
+        fetchLyrics();
+        fetchRecommendedSongs();
 
+        return () => {
+            isActive = false; // ✅ cancel outdated responses
+        };
 
     }, [id]);
-
-    useEffect(() => {
-        // Fetch liked songs when component loads
-        const fetchLikedSongs = async () => {
-            try {
-                const res = await axios.get(`${URL}/api/user/likes`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                const likedSongs = res.data.likedSongs || [];
-                setIsLikedd(likedSongs.includes(song[0].id));
-            } catch (err) {
-                console.error("Error fetching liked songs:", err);
-            }
-        };
-
-        if (token && song) fetchLikedSongs();
-    }, [token, song]);
 
 
 
@@ -193,10 +178,8 @@ const Song = () => {
     const MAX_LINES = 8;
     const displayedLyrics = showMore ? lines : lines.slice(0, MAX_LINES);
 
-    if (loading) {
-        return (
-            <Loader />
-        );
+    if (isLoading) {
+        return <Loader />;
     }
 
     if (error) {
@@ -208,11 +191,7 @@ const Song = () => {
     }
 
     if (!song) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-900">
-                <div className="text-white text-xl">Song not found</div>
-            </div>
-        );
+        return null;
     }
 
     const handleError = (e) => {
@@ -253,77 +232,128 @@ const Song = () => {
     };
 
 
+    const container = {
+        hidden: {},
+        show: {
+            transition: {
+                staggerChildren: 0.12,
+            },
+        },
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5, ease: "easeOut" },
+        },
+    };
+
+
     return (
         <div className="text-white transition-all duration-500 w-full relative top-0 left-0 ">
 
-            <div className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full" style={{ background: backgroundColor }}>
-                <div className="flex-shrink-0">
+
+
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                style={{
+                    background: backgroundColor,
+                    transition: "background 1.5s ease", // ✅ smooth gradient change
+                }}
+                className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full"
+            >
+                {/* 🎵 IMAGE */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex-shrink-0"
+                >
                     <img
                         ref={imageRef2}
                         src={song[0].image[2].url || fallbackImg}
-                        //alt={artist.name}
                         className="w-50 h-50 rounded-sm object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                         onLoad={extractColorFromImage}
                         onError={handleError}
-                        crossOrigin='anoymous'
+                        crossOrigin="anonymous"
                     />
-                </div>
+                </motion.div>
 
-                {/* Artist Info */}
-                <div className="max-w-full">
-
-                    <span className="text-md font-bold">
+                {/* 📝 TEXT */}
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                    className="max-w-full"
+                >
+                    <motion.span variants={item} className="text-md font-bold">
                         {song[0].type.charAt(0).toUpperCase() + song[0].type.slice(1)}
-                    </span>
+                    </motion.span>
 
-                    {/* Artist Name */}
-                    <h1 className="text-6xl font-black mb-6 mt-3 line-clamp-1 leading-none">
+                    <motion.h1
+                        variants={item}
+                        className="text-6xl font-black mb-6 mt-3 line-clamp-1 leading-none"
+                    >
                         {song[0].name}
-                    </h1>
+                    </motion.h1>
 
-
-                    <div className="mb-0 flex flex-row items-center gap-1">
+                    <motion.div
+                        variants={item}
+                        className="mb-0 flex flex-row items-center gap-1"
+                    >
                         <img
                             src={song[0].artists.primary[0].image[0]?.url || DefaultCover}
-                            //alt={artist.name}
                             className="w-6 h-6 rounded-full object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                             crossOrigin="anonymous"
                         />
 
-
-                        <span onClick={(e) => {
-                            navigate(`/${song[0].artists.primary[0]?.type}/${song[0].artists.primary[0]?.id}`)
-                            e.stopPropagation()
-
-                        }} className="text-md ml-1 font-medium hover:underline cursor-pointer">
+                        <span
+                            onClick={(e) => {
+                                navigate(`/${song[0].artists.primary[0]?.type}/${song[0].artists.primary[0]?.id}`);
+                                e.stopPropagation();
+                            }}
+                            className="text-md ml-1 font-medium hover:underline cursor-pointer"
+                        >
                             {song[0].artists.primary[0].name}
                         </span>
-                        <span className="text-md text-[#adadad] font-medium">
-                            •
-                        </span>
-                        <span onClick={(e) => {
-                            navigate(`/album/${song[0].album.id}`)
-                            e.stopPropagation()
 
-                        }} className="text-md font-medium hover:underline cursor-pointer">
+                        <span className="text-md text-[#adadad] font-medium">•</span>
+
+                        <span
+                            onClick={(e) => {
+                                navigate(`/album/${song[0].album.id}`);
+                                e.stopPropagation();
+                            }}
+                            className="text-md font-medium hover:underline cursor-pointer"
+                        >
                             {song[0].album.name}
                         </span>
-                        <span className="text-md text-[#adadad] font-medium">
-                            •
-                        </span>
+
+                        <span className="text-md text-[#adadad] font-medium">•</span>
+
                         <span className="text-md text-[#adadad] font-medium">
                             {song[0].year}
                         </span>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
 
-                    </div>
-                </div>
-            </div>
-
-            <div
-                className='w-full pt-6 min-h-screen'
+            <motion.div
+                className="w-full pt-6 min-h-screen"
                 style={{
                     background: scrollContainerBg,
                     height: "100%",
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.6,
+                    ease: "easeOut",
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-5'>
@@ -375,7 +405,7 @@ const Song = () => {
                 <div className="p-6 rounded-lg shadow-lg text-white">
                     <h2 className="text-2xl font-bold mb-4">Lyrics</h2>
 
-                    {loading ? (
+                    {isLoading ? (
                         <p className="text-[#A0A0B2] italic">Loading lyrics...</p>
                     ) : (
                         <>
@@ -403,14 +433,21 @@ const Song = () => {
                     <div className='p-3'>
                         {song[0].artists.primary.map((artist) => (
                             <div key={artist.id} className='flex flex-row items-center gap-4 hover:bg-[rgba(124,77,255,0.1)] px-3 py-3 rounded-lg transition-all'>
-                                <LazyLoadImage
-                                    defaultImage={LoadImage}
-                                    image={artist.image?.[2]?.url || fallbackImg}
-                                    className="w-16 h-16 rounded-full"
-                                    onError={handleError}
-                                    draggable={false}
-                                    onDragStart={(e) => e.preventDefault()}
-                                />
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }} // ✅ animate only first time it appears
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                >
+                                    <LazyLoadImage
+                                        defaultImage={LoadImage}
+                                        image={artist.image?.[2]?.url || fallbackImg}
+                                        className="w-16 h-16 rounded-full"
+                                        onError={handleError}
+                                        draggable={false}
+                                        onDragStart={(e) => e.preventDefault()}
+                                    />
+                                </motion.div>
                                 <div>
                                     <h1 className='text-md font-medium'>{artist.type.charAt(0).toUpperCase() + artist.type.slice(1)}</h1>
                                     <span onClick={(e) => {
@@ -445,16 +482,23 @@ const Song = () => {
 
                                         {/* Image Container */}
                                         <div className="relative">
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }} // ✅ animate only first time it appears
+                                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                            >
 
-                                            {/* Song Image */}
-                                            <LazyLoadImage
-                                                defaultImage={LoadImage}
-                                                image={song.image[1]?.url || fallbackImg}
-                                                className="w-11 h-11 rounded"
-                                                onError={handleError}
-                                                draggable={false}
-                                                onDragStart={(e) => e.preventDefault()}
-                                            />
+                                                {/* Song Image */}
+                                                <LazyLoadImage
+                                                    defaultImage={LoadImage}
+                                                    image={song.image[1]?.url || fallbackImg}
+                                                    className="w-11 h-11 rounded"
+                                                    onError={handleError}
+                                                    draggable={false}
+                                                    onDragStart={(e) => e.preventDefault()}
+                                                />
+                                            </motion.div>
 
                                             {/* GIF Overlay (visible when NOT hovered & song playing) */}
                                             {isCurrentPlaying && (
@@ -523,7 +567,7 @@ const Song = () => {
                     </ScrollContainer>
                 )}
 
-            </div>
+            </motion.div>
 
         </div >
     )

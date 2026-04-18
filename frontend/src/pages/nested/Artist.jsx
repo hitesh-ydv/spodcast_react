@@ -17,6 +17,7 @@ import { useRecent } from "../../context/RecentContext";
 const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 import { useLibrary } from "../../context/LibraryContext";
+import { motion } from "framer-motion";
 
 const Artist = () => {
     const { id } = useParams();
@@ -160,64 +161,99 @@ const Artist = () => {
 
     const saved = isArtistSaved(artist.id);
 
+    const container = {
+        hidden: {},
+        show: {
+            transition: {
+                staggerChildren: 0.12,
+            },
+        },
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5, ease: "easeOut" },
+        },
+    };
+
     return (
         <div
             className="max-h-screen text-white transition-all duration-500 w-full"
 
         >
 
-            <div className="relative flex items-end gap-8 px-10 pt-16 pb-10 bg-opacity-30 w-full max-w-full" style={{ background: backgroundColor, transition: all }}>
-                {/* <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        background: "linear-gradient(to top, #12121A 10%, rgba(18,18,18,0) 20%)",
-                        opacity: 1
-                    }}
-                /> */}
-                {/* Artist Image */}
-                <div className="flex-shrink-0">
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                style={{
+                    background: backgroundColor,
+                    transition: "background 1.5s ease",
+                }}
+                className="relative flex items-end gap-8 px-10 pt-16 pb-10 bg-opacity-30 w-full max-w-full"
+            >
+                {/* 🎵 IMAGE */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex-shrink-0"
+                >
                     <img
                         ref={imageRef}
                         src={artist.image[2].url || fallbackImg}
-                        //alt={artist.name}
                         className="w-58 h-58 rounded-full object-cover shadow-2xl"
                         onLoad={extractColorFromImage}
                         crossOrigin="anonymous"
                         onError={handleError}
                     />
-                </div>
+                </motion.div>
 
-                {/* Artist Info */}
-                <div className="pb-5 max-w-full">
-
-                    <div className='flex flex-row gap-2 items-center mb-4'>
+                {/* 📝 TEXT */}
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                    className="pb-5 max-w-full"
+                >
+                    <motion.div
+                        variants={item}
+                        className="flex flex-row gap-2 items-center mb-4"
+                    >
                         <img src={Verify} alt="Verify" className="h-8 w-8" />
-                        {/* Artist Name */}
-                        <h1 className="text-md font-medium">
-                            Verified Artist
-                        </h1>
-                    </div>
+                        <h1 className="text-md font-medium">Verified Artist</h1>
+                    </motion.div>
 
-                    <h1 className="text-6xl font-black mb-6 line-clamp-1">
+                    <motion.h1
+                        variants={item}
+                        className="text-6xl font-black mb-6 line-clamp-1"
+                    >
                         {artist.name}
-                    </h1>
+                    </motion.h1>
 
-                    {/* Monthly Listeners */}
-                    <div className="mb-6">
+                    <motion.div variants={item} className="mb-6">
                         <span className="text-lg font-medium">
                             {formatNumber(artist.followerCount)} followers
                         </span>
-                    </div>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
 
-
-                </div>
-            </div>
-
-            <div
-                className='w-full pt-6'
+            <motion.div
+                className="w-full pt-6"
                 style={{
                     background: scrollContainerBg,
                     height: "100%",
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.6,
+                    ease: "easeOut",
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-6'>
@@ -283,15 +319,22 @@ const Artist = () => {
                                     }}
                                 >
                                     <div className="image-wrapper mb-2">
-                                        <LazyLoadImage
-                                            defaultImage={LoadImage}
-                                            image={song.image?.[2]?.url || fallbackImg}
-                                            className="song-image"
-                                            onError={handleError}
-                                            draggable={false}
-                                            onDragStart={(e) => e.preventDefault()}
+                                        <motion.div
+                                            initial={{ opacity: 0 }}
+                                            whileInView={{ opacity: 1 }}
+                                            viewport={{ once: true }} // ✅ animate only first time it appears
+                                            transition={{ duration: 0.5, ease: "easeOut" }}
+                                        >
+                                            <LazyLoadImage
+                                                defaultImage={LoadImage}
+                                                image={song.image?.[2]?.url || fallbackImg}
+                                                className="song-image"
+                                                onError={handleError}
+                                                draggable={false}
+                                                onDragStart={(e) => e.preventDefault()}
 
-                                        />
+                                            />
+                                        </motion.div>
                                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                                             onClick={(e) => {
                                                 setPlaylistSongs(artist.topSongs)
@@ -355,15 +398,22 @@ const Artist = () => {
                                     e.stopPropagation();
                                 }}
                             >
-                                <LazyLoadImage
-                                    defaultImage={LoadImage}
-                                    image={song.image?.[2]?.url || fallbackImg}
-                                    className="rounded-lg mb-3 w-full max-h-43 object-cover"
-                                    onError={handleError}
-                                    draggable={false}
-                                    onDragStart={(e) => e.preventDefault()}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }} // ✅ animate only first time it appears
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                >
+                                    <LazyLoadImage
+                                        defaultImage={LoadImage}
+                                        image={song.image?.[2]?.url || fallbackImg}
+                                        className="rounded-lg mb-3 w-full max-h-43 object-cover"
+                                        onError={handleError}
+                                        draggable={false}
+                                        onDragStart={(e) => e.preventDefault()}
 
-                                />
+                                    />
+                                </motion.div>
 
                                 <h3 onClick={(e) => {
                                     navigate(`/${song.type}/${song.id}`)
@@ -404,14 +454,21 @@ const Artist = () => {
                                 }}
                             >
                                 <div className="image-wrapper mb-2">
-                                    <LazyLoadImage
-                                        defaultImage={LoadImage}
-                                        image={song.image?.[2]?.url || fallbackImg}
-                                        className="song-image"
-                                        onError={handleError}
-                                        draggable={false}
-                                        onDragStart={(e) => e.preventDefault()}
-                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
+                                        viewport={{ once: true }} // ✅ animate only first time it appears
+                                        transition={{ duration: 0.5, ease: "easeOut" }}
+                                    >
+                                        <LazyLoadImage
+                                            defaultImage={LoadImage}
+                                            image={song.image?.[2]?.url || fallbackImg}
+                                            className="song-image"
+                                            onError={handleError}
+                                            draggable={false}
+                                            onDragStart={(e) => e.preventDefault()}
+                                        />
+                                    </motion.div>
                                     <button className="play-button ">
                                         <img src={PlayBtn} alt="Play" className="h-8 w-8" />
                                     </button>
@@ -454,14 +511,21 @@ const Artist = () => {
                                     e.stopPropagation();
                                 }}
                             >
-                                <LazyLoadImage
-                                    defaultImage={LoadImage}
-                                    image={song.image?.[2]?.url || fallbackImg}
-                                    className="rounded-full mb-3 w-full max-h-43 object-cover"
-                                    onError={handleError}
-                                    draggable={false}
-                                    onDragStart={(e) => e.preventDefault()}
-                                />
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }} // ✅ animate only first time it appears
+                                    transition={{ duration: 0.5, ease: "easeOut" }}
+                                >
+                                    <LazyLoadImage
+                                        defaultImage={LoadImage}
+                                        image={song.image?.[2]?.url || fallbackImg}
+                                        className="rounded-full mb-3 w-full max-h-43 object-cover"
+                                        onError={handleError}
+                                        draggable={false}
+                                        onDragStart={(e) => e.preventDefault()}
+                                    />
+                                </motion.div>
 
                                 <h3 onClick={(e) => {
                                     navigate(`/${song.type}/${song.id}`)
@@ -477,7 +541,7 @@ const Artist = () => {
                 )}
 
 
-            </div>
+            </motion.div>
 
 
         </div>

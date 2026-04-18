@@ -23,6 +23,7 @@ import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import Artist from './Artist';
+import { motion } from "framer-motion";
 
 const LikedSong = () => {
     const { id } = useParams();
@@ -122,77 +123,114 @@ const LikedSong = () => {
     };
 
 
+    const container = {
+        hidden: {},
+        show: {
+            transition: {
+                staggerChildren: 0.12,
+            },
+        },
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5, ease: "easeOut" },
+        },
+    };
+
 
 
     return (
         <div className="text-white transition-all duration-500 w-full">
 
-            <div className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full" style={{ background: backgroundColor }}>
-                <div className="flex-shrink-0">
+
+
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                style={{
+                    background: backgroundColor,
+                    transition: "background 1.5s ease", // ✅ smooth gradient change
+                }}
+                className="relative flex items-end gap-8 px-7 py-7 bg-opacity-30 w-full max-w-full"
+            >
+                {/* 🎵 IMAGE */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    whileHover={{ scale: 1.05 }}
+                    className="flex-shrink-0"
+                >
                     <img
                         ref={imageRef2}
-                        src={`https://misc.scdn.co/liked-songs/liked-songs-640.jpg` || fallbackImg}
-                        //alt={artist.name}
+                        src="https://misc.scdn.co/liked-songs/liked-songs-640.jpg"
                         className="w-50 h-50 rounded-sm object-cover shadow-[0_8px_30px_rgba(0,0,0,0.8)]"
                         onLoad={extractColorFromImage}
                         onError={handleError}
-                        crossOrigin='anoymous'
+                        crossOrigin="anonymous"
                     />
-                </div>
+                </motion.div>
 
-                {/* Artist Info */}
-                <div className="max-w-full">
-
-                    <span className="text-md font-bold">
+                {/* 📝 TEXT */}
+                <motion.div
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                    className="max-w-full"
+                >
+                    <motion.span variants={item} className="text-md font-bold">
                         Playlist
-                    </span>
+                    </motion.span>
 
-                    {/* Artist Name */}
-                    <h1 className="text-6xl font-black mb-3 mt-3 line-clamp-1 leading-none">
+                    <motion.h1
+                        variants={item}
+                        className="text-6xl font-black mb-3 mt-3 line-clamp-1 leading-none"
+                    >
                         Liked Songs
-                    </h1>
+                    </motion.h1>
 
-                    <span className="text-sm text-[#adadad] font-medium">
-                        {/* {details.description} */}
-                    </span>
-
-
-                    <div className="mb-0 flex flex-row items-center gap-2 mt-1">
-
-
-                        {/* <span className="text-sm text-[#adadad] font-medium">
-                            SongCount
-                        </span>
+                    <motion.div
+                        variants={item}
+                        className="mb-0 flex flex-row items-center gap-2 mt-1"
+                    >
                         <span className="text-sm text-[#adadad] font-medium">
-                            •
-                        </span> */}
-                        <span className="text-sm text-[#adadad] font-medium">
-                            {library.likedSongs.length} {library.likedSongs.length === 1 ? "song" : "songs"}
+                            {library.likedSongs.length}{" "}
+                            {library.likedSongs.length === 1 ? "song" : "songs"}
                         </span>
+                    </motion.div>
+                </motion.div>
+            </motion.div>
 
-                    </div>
-                </div>
-            </div>
-
-            <div
-                className='w-full pt-6 min-h-screen'
+            <motion.div
+                className="w-full pt-6 min-h-screen"
                 style={{
                     background: scrollContainerBg,
                     height: "100%",
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.6,
+                    ease: "easeOut",
                 }}
             >
                 <div className='px-6 py-1 flex items-center gap-4'>
                     <button
                         onClick={() => {
-                            saveToRecent(details)
+                            //saveToRecent(details)
                             // If no song is playing or the current song is not in this playlist
-                            const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
-                            setPlaylistSongs(songs); // update context with current playlist songs
+                            const isCurrentInPlaylist = library.likedSongs.some(s => s.id === currentSong?.id);
+                            setPlaylistSongs(library.likedSongs); // update context with current playlist songs
 
                             if (!currentSong || !isCurrentInPlaylist) {
                                 // Play first song of this playlist
-                                if (songs.length > 0) {
-                                    playSong(songs[0].id, songs); // pass playlist songs to context
+                                if (library.likedSongs.length > 0) {
+                                    playSong(library.likedSongs[0].id, library.likedSongs); // pass playlist songs to context
                                 }
                             } else {
                                 // Toggle play/pause of current song
@@ -203,12 +241,12 @@ const LikedSong = () => {
                     >
                         <img
                             src={
-                                songs.some(s => s.id === currentSong?.id) && isPlaying
+                                library.likedSongs.some(s => s.id === currentSong?.id) && isPlaying
                                     ? PauseBtn
                                     : PlayBtn
                             }
                             alt={
-                                songs.some(s => s.id === currentSong?.id) && isPlaying
+                                library.likedSongs.some(s => s.id === currentSong?.id) && isPlaying
                                     ? "Pause"
                                     : "Play"
                             }
@@ -340,7 +378,7 @@ const LikedSong = () => {
                     </ScrollContainer>
                 )}
 
-            </div>
+            </motion.div>
 
         </div >
     )

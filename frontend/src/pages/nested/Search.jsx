@@ -14,6 +14,7 @@ import { useRef } from "react";
 import { useAudio } from "../../context/AudioContext";
 const API_URL = import.meta.env.VITE_API_URL;
 import { useRecent } from "../../context/RecentContext";
+import { motion } from "framer-motion";
 
 export default function Search({ topResults, songs, playlists, albums, artists, loading2, query }) {
   const scrollRef = useRef(null);
@@ -146,14 +147,20 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   key={song.id}
                   className="relative w-112 bg-[rgba(124,77,255,0.05)] rounded-lg p-5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer topresult"
                 >
-                  <LazyLoadImage
-                    defaultImage={LoadImage}
-                    image={song.image?.[2]?.url || fallbackImg}
-                    className={`rounded-${song.type == "artist" ? "full" : "lg"} mb-3 w-30 max-h-30 object-cover`}
-                    onError={handleError}
-                    draggable={false}
-                    onDragStart={(e) => e.preventDefault()}
-                  />
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    <LazyLoadImage
+                      defaultImage={LoadImage}
+                      image={song.image?.[2]?.url || fallbackImg}
+                      className={`rounded-${song.type == "artist" ? "full" : "lg"} mb-3 w-30 max-h-30 object-cover`}
+                      onError={handleError}
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
+                    />
+                  </motion.div>
 
                   {song.type == "song" && (
                     <button onClick={(e) => { handleClick(e, song); saveToRecent(song); }} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
@@ -197,14 +204,21 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       }}
                     >
                       <div className="image-wrapper mb-2">
-                        <LazyLoadImage
-                          defaultImage={LoadImage}
-                          image={song.image?.[2]?.url || fallbackImg}
-                          className="song-image"
-                          onError={handleError}
-                          draggable={false}
-                          onDragStart={(e) => e.preventDefault()}
-                        />
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={song.image?.[2]?.url || fallbackImg}
+                            className="song-image"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
                             setCurrentSongId(song.id)
@@ -269,14 +283,21 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       e.stopPropagation();
                     }}
                   >
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={song.image?.[2]?.url || fallbackImg}
-                      className="rounded-lg mb-3 w-full max-h-43 object-cover"
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={song.image?.[2]?.url || fallbackImg}
+                        className="rounded-lg mb-3 w-full max-h-43 object-cover"
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                      />
+                    </motion.div>
 
                     <h3 onClick={(e) => {
                       navigate(`/${song.type}/${song.id}`)
@@ -304,15 +325,23 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       e.stopPropagation();
                     }}
                   >
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={album.image[2].url || fallbackImg}
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                      className="rounded-lg mb-3 w-full max-h-43 object-cover"
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
 
-                    />
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={album.image[2].url || fallbackImg}
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                        className="rounded-lg mb-3 w-full max-h-43 object-cover"
+
+                      />
+                    </motion.div>
                     <h3 onClick={(e) => {
                       navigate(`/${album.type}/${album.id}`)
                       e.stopPropagation();
@@ -352,6 +381,12 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                     }}
                     className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                   >
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }} // ✅ animate only first time it appears
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
                     <LazyLoadImage
                       defaultImage={LoadImage}
                       image={artist.image?.[2]?.url || fallbackImg}
@@ -361,6 +396,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       className="rounded-full mb-3 w-full max-h-43 object-cover"
 
                     />
+                    </motion.div>
                     <h3 onClick={(e) => {
                       navigate(`/${artist.type}/${artist.id}`)
                       e.stopPropagation();

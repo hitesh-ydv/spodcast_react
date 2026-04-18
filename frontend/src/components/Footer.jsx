@@ -12,6 +12,7 @@ import { CButton, CTooltip } from '@coreui/react'
 import VolumeControl from "./VolumeControl";
 import { Volume2, Volume1, VolumeX, Maximize } from "lucide-react";
 import FullScreenPlayer from "@/pages/dashboard/FullScreenPlayer";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function FooterPlayer() {
   const {
@@ -214,41 +215,72 @@ export default function FooterPlayer() {
           {/* 🎧 Song Info + Controls */}
           <div className="flex items-center justify-between w-full">
             {/* Left - Song info */}
+
+
             <div className="flex items-center gap-4 w-1/3">
-              <LazyLoadImage
-                defaultImage={LoadImage}
-                image={currentSong.image?.[1]?.url}
-                className="w-12 h-12 rounded"
-                draggable={false}
-                onDragStart={(e) => e.preventDefault()}
-              />
-              <div className="max-w-60 flex flex-col">
-                <p
-                  className="text-sm inline-block font-medium truncate line-clamp-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/${currentSong.type}/${currentSong.id}`);
-                  }}
+
+              {/* 🎵 IMAGE */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSong?.id + "-img"}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
                 >
-                  <a className="inline-block hover:underline cursor-pointer">{currentSong.name}</a>
-                </p>
-                <p className="inline-block text-sm font-medium text-[#A0A0B2] truncate line-clamp-1">
-                  {currentSong.artists.primary.map((a, i) => (
-                    <span key={a.id || i}>
-                      <a
-                        className="hover:underline hover:text-white cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/artist/${a.id}`);
-                        }}
-                      >
-                        {a.name}
+                  <LazyLoadImage
+                    defaultImage={LoadImage}
+                    image={currentSong.image?.[1]?.url}
+                    className="w-12 h-12 rounded"
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                  />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* 📝 TEXT */}
+              <div className="max-w-60 flex flex-col">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    className="flex flex-col"
+                    key={currentSong?.id + "-text"}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <p
+                      className="text-sm inline-block font-medium truncate line-clamp-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/${currentSong.type}/${currentSong.id}`);
+                      }}
+                    >
+                      <a className="inline-block hover:underline cursor-pointer">
+                        {currentSong.name}
                       </a>
-                      {i < currentSong.artists.primary.length - 1 && ", "}
-                    </span>
-                  ))}
-                </p>
+                    </p>
+
+                    <p className="inline-block text-sm font-medium text-[#A0A0B2] truncate line-clamp-1">
+                      {currentSong.artists.primary.map((a, i) => (
+                        <span key={a.id || i}>
+                          <a
+                            className="hover:underline hover:text-white cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/artist/${a.id}`);
+                            }}
+                          >
+                            {a.name}
+                          </a>
+                          {i < currentSong.artists.primary.length - 1 && ", "}
+                        </span>
+                      ))}
+                    </p>
+                  </motion.div>
+                </AnimatePresence>
               </div>
+
               <CTooltip
                 content={liked ? "Remove from Liked Songs" : "Save to Your Library"}
                 placement="top"
@@ -261,21 +293,29 @@ export default function FooterPlayer() {
                   fontWeight: 550,
                 }}
               >
-                <button
-                  type="button"
-                  onClick={handleLikeToggle}
-                  className="flex items-center justify-center w-5 h-5 cursor-pointer"
-                >
-                  <img
-                    src={liked ? Unlike : Like}
-                    alt="Like"
-                    draggable={false}
-                    onDragStart={(e) => e.preventDefault()}
-                    className={`w-6 h-6 object-contain transition-transform duration-200 
+                <AnimatePresence mode="wait">
+                  <motion.button
+                    key={currentSong?.id + "-like"} // ✅ only changes when song changes
+                    type="button"
+                    onClick={handleLikeToggle}
+                    className="flex items-center justify-center w-5 h-5 cursor-pointer"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <img
+                      src={liked ? Unlike : Like}
+                      alt="Like"
+                      draggable={false}
+                      onDragStart={(e) => e.preventDefault()}
+                      className={`w-6 h-6 object-contain transition-transform duration-200 
         ${liked ? "scale-110" : "scale-100"}`}
-                  />
-                </button>
+                    />
+                  </motion.button>
+                </AnimatePresence>
               </CTooltip>
+
             </div>
 
 
@@ -330,7 +370,7 @@ export default function FooterPlayer() {
                   className="bg-white cursor-pointer text-black p-1 rounded-full flex items-center justify-center"
                 >
                   <img src={isPlaying ? PauseBtn : PlayBtn} alt="Play" className="h-6.5 w-6.5" draggable={false}
-  onDragStart={(e) => e.preventDefault()} />
+                    onDragStart={(e) => e.preventDefault()} />
                 </button>
 
                 <button
