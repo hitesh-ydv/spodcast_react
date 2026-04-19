@@ -65,7 +65,7 @@ const Album = () => {
                 // setPlaylistSongs(data.data.songs);
                 recordActivity({
                     id: data.data?.id,
-                    type: "song",
+                    type: "album",
                     title: data.data?.name,
                     image: data.data?.image?.[2]?.url,
                 });

@@ -52,7 +52,7 @@ const Artist = () => {
                 setArtist(data.data);
                 recordActivity({
                     id: data.data?.id,
-                    type: "song",
+                    type: "artist",
                     title: data.data?.name,
                     image: data.data?.image?.[2]?.url,
                 });
