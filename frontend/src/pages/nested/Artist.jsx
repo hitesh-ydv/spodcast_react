@@ -18,6 +18,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 import { Vibrant } from "node-vibrant/browser";
 import { useLibrary } from "../../context/LibraryContext";
 import { motion } from "framer-motion";
+import { useActivity } from "../../context/ActivityContext";
 
 const Artist = () => {
     const { id } = useParams();
@@ -31,6 +32,8 @@ const Artist = () => {
     const { toggleArtist, isArtistSaved } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
+
+    const { recordActivity } = useActivity();
 
     const [localCurrentSongId, setLocalCurrentSongId] = useState(null);
 
@@ -47,6 +50,12 @@ const Artist = () => {
                 );
 
                 setArtist(data.data);
+                recordActivity({
+                    id: data.data?.id,
+                    type: "song",
+                    title: data.data?.name,
+                    image: data.data?.image?.[2]?.url,
+                });
             } catch (err) {
                 console.error("Error fetching artist data:", err);
                 setError(err.response?.data?.message || err.message || "Failed to fetch artist data");

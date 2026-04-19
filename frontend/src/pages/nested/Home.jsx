@@ -13,6 +13,8 @@ import { useRecent } from "../../context/RecentContext";
 import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
 import { Vibrant } from "node-vibrant/browser";
 import { motion } from "framer-motion";
+import ActivityGrid from "@/components/ActivityGrid";
+import { getActivity } from "../../utils/activity";
 
 export default function Home({ data, loading, homePlaylists }) {
 
@@ -90,6 +92,8 @@ export default function Home({ data, loading, homePlaylists }) {
     extractColorFromImage();
   }, [currentSong]);
 
+  const activity = getActivity();
+
 
   return (
     <motion.div
@@ -108,6 +112,10 @@ export default function Home({ data, loading, homePlaylists }) {
         </div>
       ) : (
         <>
+          {activity.length > 0 && (
+            <ActivityGrid />
+          )}
+
           {data && data.length > 0 && (
             <ScrollContainer title="Made for you">
               {data.map((song) => {
@@ -196,6 +204,7 @@ export default function Home({ data, loading, homePlaylists }) {
               })}
             </ScrollContainer>
           )}
+
           {recentPlayed.length > 0 && (
             <ScrollContainer title="Recent Played">
               {recentPlayed.map((song) => {

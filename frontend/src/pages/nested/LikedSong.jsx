@@ -87,11 +87,11 @@ const LikedSong = () => {
         }
     };
 
-    if (library.likedSongs.length === 0) {
-        return (
-            <Loader />
-        );
-    }
+    // if (library.likedSongs.length > 0) {
+    //     return (
+    //         <Loader />
+    //     );
+    // }
 
     if (error) {
         return (
@@ -101,10 +101,10 @@ const LikedSong = () => {
         );
     }
 
-    if (!songs) {
+    if (!library.likedSongs.length) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-900">
-                <div className="text-white text-xl">Song not found</div>
+                <div className="text-white text-xl">No Liked Songs</div>
             </div>
         );
     }

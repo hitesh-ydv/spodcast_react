@@ -6,12 +6,17 @@ import Footer from '../../components/Footer';
 import MiddleSection from "../../layouts/MiddleSection";
 import { SearchProvider } from "../../context/SearchContext";
 import { AudioProvider } from "../../context/AudioContext";
+import OfflineBanner from "@/components/OfflineBanner";
+import { useOffline } from "../../context/OfflineProvider";
+
 
 const URL = import.meta.env.VITE_API_URL2;
 
 export default function DashboardLayout() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+
+    const { showOfflineBanner } = useOffline();
 
     // useEffect(() => {
     //     const fetchUser = async () => {
@@ -43,6 +48,7 @@ export default function DashboardLayout() {
                     <div className="px-4">
                         <Footer />
                     </div>
+                    <OfflineBanner isOffline={showOfflineBanner}/>
                     
 
                 </div>

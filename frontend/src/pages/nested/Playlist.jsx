@@ -25,6 +25,7 @@ import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import Artist from './Artist';
 import { motion, AnimatePresence } from "framer-motion";
+import { useActivity } from "../../context/ActivityContext";
 
 const Playlist = () => {
     const { id } = useParams();
@@ -38,6 +39,7 @@ const Playlist = () => {
     const [loading, setLoading] = useState(true);
 
     const { togglePlaylist, toggleAlbum, isPlaylistSaved, isLiked, toggleLike } = useLibrary();
+    const { recordActivity } = useActivity();
 
 
 
@@ -75,6 +77,12 @@ const Playlist = () => {
                 );
                 setDetails(data.data)
                 setSongs(data.data.songs);
+                recordActivity({
+                    id: data.data.id,
+                    type: "playlist",
+                    title: data.data.name,
+                    image: data.data.image?.[2]?.url,
+                });
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
@@ -87,6 +95,8 @@ const Playlist = () => {
             fetchPlaylistData();
         }
     }, [id]);
+
+
 
     const extractColorFromImage = async () => {
 

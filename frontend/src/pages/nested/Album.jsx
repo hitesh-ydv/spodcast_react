@@ -24,6 +24,7 @@ import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { useActivity } from "../../context/ActivityContext";
 
 
 const Album = () => {
@@ -40,6 +41,7 @@ const Album = () => {
     const { toggleLike, toggleAlbum, isAlbumSaved, isLiked } = useLibrary();
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
+    const { recordActivity } = useActivity();
 
     const navigate = useNavigate();
 
@@ -61,6 +63,12 @@ const Album = () => {
                 setDetails(data.data)
                 setSongs(data.data.songs);
                 // setPlaylistSongs(data.data.songs);
+                recordActivity({
+                    id: data.data?.id,
+                    type: "song",
+                    title: data.data?.name,
+                    image: data.data?.image?.[2]?.url,
+                });
             } catch (err) {
                 console.error("Error fetching song data:", err);
                 setError(err.response?.data?.message || "Failed to fetch song data");
@@ -380,14 +388,14 @@ const Album = () => {
                                                 viewport={{ once: true }} // ✅ animate only first time it appears
                                                 transition={{ duration: 0.5, ease: "easeOut" }}
                                             >
-                                            <LazyLoadImage
-                                                defaultImage={LoadImage}
-                                                image={song.image[1]?.url || fallbackImg}
-                                                className="w-11 h-11 rounded"
-                                                onError={handleError}
-                                                draggable={false}
-                                                onDragStart={(e) => e.preventDefault()}
-                                            />
+                                                <LazyLoadImage
+                                                    defaultImage={LoadImage}
+                                                    image={song.image[1]?.url || fallbackImg}
+                                                    className="w-11 h-11 rounded"
+                                                    onError={handleError}
+                                                    draggable={false}
+                                                    onDragStart={(e) => e.preventDefault()}
+                                                />
                                             </motion.div>
 
                                             {isCurrentPlaying && (

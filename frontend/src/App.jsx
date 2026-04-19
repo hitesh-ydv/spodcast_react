@@ -10,6 +10,8 @@ import { useState } from "react";
 import './App.css'
 import { RecentProvider } from "./context/RecentContext";
 import { LibraryProvider } from "./context/LibraryContext";
+import { OfflineProvider } from "./context/OfflineProvider";
+import { ActivityProvider } from "./context/ActivityContext";
 
 function App() {
   // Set true by default
@@ -19,6 +21,8 @@ function App() {
     <SearchProvider>
       <RecentProvider>
         <LibraryProvider>
+          <OfflineProvider>
+            <ActivityProvider>
           <Router>
             {/* Maintenance Popup */}
             <MaintenanceModal isOpen={!maintenance} />
@@ -34,6 +38,8 @@ function App() {
               </Route>
             </Routes>
           </Router>
+          </ActivityProvider>
+          </OfflineProvider>
         </LibraryProvider>
       </RecentProvider>
     </SearchProvider>
