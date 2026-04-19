@@ -23,7 +23,7 @@ import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
-    import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 const Album = () => {
@@ -37,11 +37,18 @@ const Album = () => {
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
     const { recentPlayed, saveToRecent } = useRecent(); // Home
-    const { toggleLike, toggleAlbum, isAlbumSaved } = useLibrary();
+    const { toggleLike, toggleAlbum, isAlbumSaved, isLiked } = useLibrary();
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
     const navigate = useNavigate();
+
+
+
+    const handleLikeToggle = (e) => {
+        e.stopPropagation();
+        toggleLike(currentSong);
+    };
 
     useEffect(() => {
         setLoading(true)
@@ -348,6 +355,9 @@ const Album = () => {
                             const isCurrent = currentSong?.id === song.id;
                             const isCurrentPlaying = isCurrent && isPlaying;
 
+                            // ✅ FIX: per-song liked state
+                            const liked = isLiked(song.id);
+
                             return (
                                 <div
                                     key={song.id}
@@ -364,6 +374,12 @@ const Album = () => {
                                         </p>
 
                                         <div className="relative">
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                whileInView={{ opacity: 1 }}
+                                                viewport={{ once: true }} // ✅ animate only first time it appears
+                                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                            >
                                             <LazyLoadImage
                                                 defaultImage={LoadImage}
                                                 image={song.image[1]?.url || fallbackImg}
@@ -372,6 +388,7 @@ const Album = () => {
                                                 draggable={false}
                                                 onDragStart={(e) => e.preventDefault()}
                                             />
+                                            </motion.div>
 
                                             {isCurrentPlaying && (
                                                 <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded">
@@ -383,7 +400,7 @@ const Album = () => {
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
-                                                    e.stopPropagation(); // ✅ important
+                                                    e.stopPropagation();
                                                     handleRecommendedSongClick(song);
                                                     setPlaylistSongs(songs);
                                                     saveToRecent(song);
@@ -432,30 +449,47 @@ const Album = () => {
                                         </div>
                                     </div>
 
+                                    {/* ❤️ LIKE BUTTON */}
                                     <CTooltip
-                                        content="Add to Liked Songs"
+                                        content={
+                                            liked
+                                                ? "Remove from Liked Songs"
+                                                : "Save to Your Library"
+                                        }
                                         placement="top"
                                         style={{
-                                            backgroundColor: '#242424',
-                                            color: 'white',
+                                            backgroundColor: "#242424",
+                                            color: "white",
                                             padding: 6,
                                             borderRadius: 5,
-                                            fontSize: 15,
+                                            fontSize: 12,
                                             fontWeight: 550,
-                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-                                            zIndex: 9999,
                                         }}
                                     >
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();   // ✅ MOST IMPORTANT
-                                                toggleLike(song);      // ✅ now only this runs
-                                            }}
-                                            className="transition-all like-btn cursor-pointer px-2.5 py-2.5 flex items-center justify-center"
-                                        >
-                                            <img src={Like} alt="Like" className="w-6" />
-                                        </button>
+                                        <AnimatePresence mode="wait">
+                                            <motion.button
+                                                key={song.id + "-like"} // ✅ FIXED
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // ✅ prevent parent click
+                                                    toggleLike(song);     // ✅ pass correct song
+                                                }}
+                                                className="transition-all like-btn cursor-pointer px-2.5 py-2.5 flex items-center justify-center"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 1.05 }}
+                                                transition={{ duration: 0.25 }}
+                                            >
+                                                <img
+                                                    src={liked ? Unlike : Like}
+                                                    alt="Like"
+                                                    draggable={false}
+                                                    onDragStart={(e) => e.preventDefault()}
+                                                    className={`w-6 h-6 object-contain transition-transform duration-200 
+                  ${liked ? "scale-110" : "scale-100"}`}
+                                                />
+                                            </motion.button>
+                                        </AnimatePresence>
                                     </CTooltip>
                                 </div>
                             );
