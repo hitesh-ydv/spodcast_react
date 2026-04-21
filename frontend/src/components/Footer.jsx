@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
 import { useAudio } from "../context/AudioContext";
 import { useNavigate } from "react-router-dom";
@@ -42,6 +42,21 @@ export default function FooterPlayer() {
   const handleLikeToggle = (e) => {
     e.stopPropagation();
     toggleLike(currentSong);
+  };
+
+  const barRef = useRef(null);
+
+  const [hoverTime, setHoverTime] = useState(null);
+  const [hoverX, setHoverX] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const rect = barRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percent = Math.min(Math.max(x / rect.width, 0), 1);
+
+    setHoverX(x);
+    setHoverTime(percent * duration);
   };
 
   useEffect(() => {
@@ -422,32 +437,61 @@ export default function FooterPlayer() {
             </div>
 
             {/* Progress Bar */}
-            {/* Progress Bar */}
             <div className="flex items-center gap-2 w-full">
-              <span className="text-xs font-medium text-[#A0A0B2]">{formatTime(currentTime)}</span>
+              <span className="text-xs font-medium text-[#A0A0B2]">
+                {formatTime(currentTime)}
+              </span>
 
               <div
-                className="relative flex-1 h-6 group cursor-pointer" // taller container for easier click
+                ref={barRef}
+                className="relative flex-1 h-6 group cursor-pointer"
                 onClick={handleSeek}
+                onMouseMove={handleMouseMove}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
               >
-                {/* Visible progress bar */}
+                {/* Base bar */}
                 <div className="absolute top-1/2 left-0 w-full h-1 bg-[#2a2a2a] rounded -translate-y-1/2"></div>
 
-                {/* Filled portion */}
+                {/* Progress */}
                 <div
                   className="absolute top-1/2 left-0 h-1 bg-white rounded -translate-y-1/2 transition-all"
                   style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
-                ></div>
+                />
 
-                {/* Thumb - hidden by default, visible on hover */}
+                {/* Thumb */}
                 <div
                   className="absolute top-1/2 w-3 h-3 bg-white rounded-full -translate-y-1/2 transform transition-all opacity-0 group-hover:opacity-100"
-                  style={{ left: `calc(${(currentTime / duration) * 100 || 0}% - 6px)` }}
-                ></div>
+                  style={{
+                    left: `calc(${(currentTime / duration) * 100 || 0}% - 6px)`,
+                  }}
+                />
+
+                <AnimatePresence>
+                  {isHovering && hoverTime !== null && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute px-2 py-1 text-[12px] bg-[#121212] text-white rounded-md pointer-events-none font-semibold whitespace-nowrap"
+                      style={{
+                        left: hoverX,
+                        transform: "translate(-50%, -100%)", // 👈 moves tooltip upward
+                        top: 0,
+                      }}
+                    >
+                      {formatTime(hoverTime)}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              <span className="text-xs font-medium text-[#A0A0B2]">{formatTime(duration)}</span>
+              <span className="text-xs font-medium text-[#A0A0B2]">
+                {formatTime(duration)}
+              </span>
             </div>
+
 
 
           </div>
