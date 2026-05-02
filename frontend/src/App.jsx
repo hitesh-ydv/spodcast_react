@@ -6,7 +6,7 @@ import AuthRoute from "./routes/AuthRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { SearchProvider } from "./context/SearchContext";
 import MaintenanceModal from "./components/MaintenanceModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './App.css'
 import { RecentProvider } from "./context/RecentContext";
 import { LibraryProvider } from "./context/LibraryContext";
