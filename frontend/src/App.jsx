@@ -17,28 +17,44 @@ function App() {
   // Set true by default
   const [maintenance] = useState(true);
 
+  useEffect(() => {
+    const activate = () => {
+      console.log("TV Mode Activated");
+
+      // 👇 first focus do
+      const firstBtn = document.querySelector("button, a, input");
+      if (firstBtn) firstBtn.focus();
+    };
+
+    document.addEventListener("tv-ready", activate);
+
+    return () => {
+      document.removeEventListener("tv-ready", activate);
+    };
+  }, []);
+
   return (
     <SearchProvider>
       <RecentProvider>
         <LibraryProvider>
           <OfflineProvider>
             <ActivityProvider>
-          <Router>
-            {/* Maintenance Popup */}
-            <MaintenanceModal isOpen={!maintenance} />
+              <Router>
+                {/* Maintenance Popup */}
+                <MaintenanceModal isOpen={!maintenance} />
 
-            <Routes>
-              <Route element={<AuthRoute />}>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-              </Route>
+                <Routes>
+                  <Route element={<AuthRoute />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                  </Route>
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/*" element={<DashboardLayout />} />
-              </Route>
-            </Routes>
-          </Router>
-          </ActivityProvider>
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/*" element={<DashboardLayout />} />
+                  </Route>
+                </Routes>
+              </Router>
+            </ActivityProvider>
           </OfflineProvider>
         </LibraryProvider>
       </RecentProvider>
