@@ -38,8 +38,8 @@ export const ActivityProvider = ({ children }) => {
   // 🔥 compute top activity (your logic optimized)
   const computeTopActivity = useCallback(() => {
     const qualified = activity.filter(item => {
-      if (item.type === "song") return item.playCount >= 5;
-      if (["album", "playlist", "artist"].includes(item.type)) return item.playCount >= 4;
+      if (item.type === "song") return item.playCount >= 3;
+      if (["album", "playlist", "artist"].includes(item.type)) return item.playCount >= 3;
       return false;
     });
 
