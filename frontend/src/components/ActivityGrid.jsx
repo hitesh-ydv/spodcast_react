@@ -25,19 +25,7 @@ const ActivityGrid = () => {
     };
 
     const handleClick = (item) => {
-        switch (item.type) {
-            case "liked":
-                navigate("/liked");
-                break;
-            case "album":
-                navigate(`/album/${item.id}`);
-                break;
-            case "playlist":
-                navigate(`/playlist/${item.id}`);
-                break;
-            default:
-                navigate(`/song/${item.id}`);
-        }
+        navigate(`/${item.type}/${item.id}`);
     };
 
     // ❌ no items → hide
