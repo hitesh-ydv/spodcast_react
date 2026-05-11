@@ -4,11 +4,11 @@ const MaintenanceModal = ({ isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/100 backdrop-blur-sm">
       <div className="bg-[#1e1e1e] text-white w-[90%] max-w-md rounded-2xl shadow-2xl p-8 text-center border border-gray-700">
         
         {/* Logo / App Name */}
-        <h1 className="text-3xl font-bold text-green-500 mb-2">
+        <h1 className="text-3xl font-bold bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent mb-2">
           Spodcast
         </h1>
 

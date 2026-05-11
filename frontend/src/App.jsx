@@ -14,14 +14,11 @@ import { OfflineProvider } from "./context/OfflineProvider";
 import { ActivityProvider } from "./context/ActivityContext";
 
 function App() {
-  // Set true by default
-  const [maintenance] = useState(true);
 
   useEffect(() => {
     const activate = () => {
       console.log("TV Mode Activated");
 
-      // 👇 first focus do
       const firstBtn = document.querySelector("button, a, input");
       if (firstBtn) firstBtn.focus();
     };
@@ -40,8 +37,6 @@ function App() {
           <OfflineProvider>
             <ActivityProvider>
               <Router>
-                {/* Maintenance Popup */}
-                <MaintenanceModal isOpen={!maintenance} />
 
                 <Routes>
                   <Route element={<AuthRoute />}>
