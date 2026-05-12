@@ -4,7 +4,6 @@ import axios from "axios";
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import MiddleSection from "../../layouts/MiddleSection";
-import { SearchProvider } from "../../context/SearchContext";
 import { AudioProvider } from "../../context/AudioContext";
 import OfflineBanner from "@/components/OfflineBanner";
 import { useOffline } from "../../context/OfflineProvider";
@@ -40,7 +39,6 @@ export default function DashboardLayout() {
     useEffect(() => {
         axios.get(`${API_URL}/api/songs/o_azuPYd/suggestions?limit=10`)
             .then(res => {
-                setData(res.data.data)
                 setMaintenance(false);
             })
             .catch(err => {
@@ -48,7 +46,6 @@ export default function DashboardLayout() {
                 setMaintenance(true);
             })
     }, []);
-
 
     return (
         <AudioProvider>
