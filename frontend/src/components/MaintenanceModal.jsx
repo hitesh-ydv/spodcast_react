@@ -4,7 +4,6 @@ const MaintenanceModal = ({ isOpen }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/100 backdrop-blur-sm">
       <div className="bg-[#1e1e1e] text-white w-[90%] max-w-md rounded-2xl shadow-2xl p-8 text-center border border-gray-700">
         
         {/* Logo / App Name */}
@@ -27,7 +26,6 @@ const MaintenanceModal = ({ isOpen }) => {
           Please check back later.
         </div>
       </div>
-    </div>
   );
 };
 

@@ -15,6 +15,7 @@ export default function DashboardLayout() {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const [maintenance, setMaintenance] = useState(true);
+    const [error, setError] = useState(true);
 
     const { showOfflineBanner } = useOffline();
 
@@ -43,13 +44,14 @@ export default function DashboardLayout() {
             .catch(err => {
                 console.error("Error fetching home data:", err);
                 setMaintenance(true);
+                setError(true);
             })
     }, []);
 
     return (
         <AudioProvider>
-            <div>
-                <MaintenanceModal isOpen={maintenance} />
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/100 backdrop-blur-sm">
+                {error && <MaintenanceModal isOpen={maintenance} />}
             </div>
             {!maintenance && (
                 <div className="flex flex-col h-screen bg-[#0B0B10] text-white">
