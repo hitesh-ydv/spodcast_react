@@ -35,7 +35,6 @@ export const ActivityProvider = ({ children }) => {
     setActivity(updated);
   };
 
-  // 🔥 compute top activity (your logic optimized)
   const computeTopActivity = useCallback(() => {
     const qualified = activity.filter(item => {
       if (item.type === "song") return item.playCount >= 3;

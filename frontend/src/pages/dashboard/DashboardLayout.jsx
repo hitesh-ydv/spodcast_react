@@ -32,7 +32,6 @@ export default function DashboardLayout() {
     //             console.error("Error fetching user:", err.response || err);
     //         }
     //     };
-
     //     fetchUser();
     // }, []);
 
@@ -62,8 +61,6 @@ export default function DashboardLayout() {
                         <Footer />
                     </div>
                     <OfflineBanner isOffline={showOfflineBanner} />
-
-
                 </div>
             )}
         </AudioProvider>

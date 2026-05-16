@@ -219,20 +219,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                             onDragStart={(e) => e.preventDefault()}
                           />
                         </motion.div>
-                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                          onClick={(e) => {
-                            setCurrentSongId(song.id)
-                            e.stopPropagation()
-                            fetchRecommendedSongs(song.id, song)
-                            if (isCurrent) {
-                              // same song → toggle play/pause
-                              togglePlayPause();
-                            } else {
-                              // different song → play new song
-                              playSong(song.id);
-                            }
-                          }}
-                        >
+                        <button onClick={(e) => { handleClick(e, song); saveToRecent(song); }} className={`play-button ${isCurrentPlaying ? "active" : ""}`}>
                           <img
                             src={isCurrentPlaying ? PauseBtn : PlayBtn}
                             alt={isCurrentPlaying ? "Pause" : "Play"}
@@ -387,15 +374,15 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                       viewport={{ once: true }} // ✅ animate only first time it appears
                       transition={{ duration: 0.5, ease: "easeOut" }}
                     >
-                    <LazyLoadImage
-                      defaultImage={LoadImage}
-                      image={artist.image?.[2]?.url || fallbackImg}
-                      onError={handleError}
-                      draggable={false}
-                      onDragStart={(e) => e.preventDefault()}
-                      className="rounded-full mb-3 w-full max-h-43 object-cover"
+                      <LazyLoadImage
+                        defaultImage={LoadImage}
+                        image={artist.image?.[2]?.url || fallbackImg}
+                        onError={handleError}
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                        className="rounded-full mb-3 w-full max-h-43 object-cover"
 
-                    />
+                      />
                     </motion.div>
                     <h3 onClick={(e) => {
                       navigate(`/${artist.type}/${artist.id}`)
