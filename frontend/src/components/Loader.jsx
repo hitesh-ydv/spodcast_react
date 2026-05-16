@@ -1,5 +1,5 @@
 import { useState, CSSProperties } from "react";
-import { PulseLoader } from "react-spinners";
+import { SyncLoader } from "react-spinners";
 
 function Loader() {
   let [loading, setLoading] = useState(true);
@@ -7,7 +7,7 @@ function Loader() {
   return (
     <div className="sweet-loading flex w-full h-full items-center justify-center">
 
-      <PulseLoader	
+      <SyncLoader
         color="#fff"
         loading={loading}
         size={12}
