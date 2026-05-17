@@ -19,7 +19,7 @@ const MaintenanceModal = ({ isOpen }) => {
       {/* Message */}
       <p className="text-[#A0A0B2] mb-6">
         We are currently experiencing a technical issue.
-        we are working hard to fix it.
+        We are working hard to fix it.
       </p>
 
       <div className="text-sm text-gray-500">
