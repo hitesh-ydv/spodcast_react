@@ -47,7 +47,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
 
   const [activeFilter, setActiveFilter] = useState("All");
 
-
   const fetchRecommendedSongs = async (id, song) => {
     try {
       const { data } = await axios.get(
@@ -62,7 +61,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
       //setLoading(false);
     }
   };
-
 
   // Clear songs if leaving search page
   useEffect(() => {
@@ -110,15 +108,12 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
         </div>
       )}
 
-      {/* CASE 2: Query typed but loading */}
       {query && loading2 && (
         <Loader />
       )}
 
-      {/* CASE 3: Query typed and loaded */}
       {query && !loading2 && songs.length > 0 && (
         <>
-          {/* 🔹 Filter Buttons */}
           <div className="flex gap-3 overflow-x-auto scrollbar-hide w-full min-h-12 py-2 mt-3 px-4">
             {filters.map((filter) => (
               <button
@@ -134,7 +129,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
               </button>
             ))}
           </div>
-
 
           {shouldShow("All") && topResults.length > 0 && (
             <ScrollContainer title="Top Results" icons={false}>
@@ -179,7 +173,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   }} className="text-2xl font-bold truncate hover:underline">{song.title}</h3>
                   <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                     {song.type.charAt(0).toUpperCase() + song.type.slice(1)} {song.type == "song" ? "•" : ""} {song.primaryArtists}
-
                   </p>
 
                 </div>
@@ -219,7 +212,21 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                             onDragStart={(e) => e.preventDefault()}
                           />
                         </motion.div>
-                        <button onClick={(e) => { handleClick(e, song); saveToRecent(song); }} className={`play-button ${isCurrentPlaying ? "active" : ""}`}>
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            saveToRecent(song);
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                          }}
+                        >
                           <img
                             src={isCurrentPlaying ? PauseBtn : PlayBtn}
                             alt={isCurrentPlaying ? "Pause" : "Play"}
@@ -258,7 +265,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
             ) : null)
           )}
 
-          {playlists?.length > 0 && (  // Outer wrapper: only render if playlists exist
+          {playlists?.length > 0 && (
             (shouldShow("All") || shouldShow("Playlists")) ? (
               <ScrollContainer title="Playlists">
                 {playlists.map((song) => (
@@ -298,7 +305,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
               </ScrollContainer>
             ) : null
           )}
-
 
           {albums.length > 0 && (
             (shouldShow("All") || shouldShow("Albums") ? (
