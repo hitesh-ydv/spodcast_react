@@ -116,39 +116,20 @@ export default function MainContent() {
     return () => clearTimeout(timeoutId);
   }, [query]);
 
-  useEffect(() => {
-    axios.get(`${API_URL}/api/songs/o_azuPYd/suggestions?limit=10`)
-      .then(res => {
-        setData(res.data.data)
-      })
-      .catch(err => {
-        console.error("Error fetching home data:", err);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
 
   useEffect(() => {
-    const fetchHomePlaylists = async () => {
+    const fetchHomeData = async () => {
       try {
-        const [punjabi, hindi, haryanvi] = await Promise.all([
-          axios.get(`https://saavn.sumit.co/api/search/playlists?query=punjabi&limit=10`),
-          axios.get(`https://saavn.sumit.co/api/search/playlists?query=hindi&limit=10`),
-          axios.get(`https://saavn.sumit.co/api/search/playlists?query=haryanvi&limit=10`)
-        ]);
-
-        setHomePlaylists({
-          punjabi: punjabi.data.data.results || [],
-          hindi: hindi.data.data.results || [],
-          haryanvi: haryanvi.data.data.results || []
-        });
-
-      } catch (err) {
-        console.error("❌ Home playlists error:", err);
+        const { data } = await axios.get(`${API_URL}/api/home`);
+        setData(data.data);
+      } catch (error) {
+        console.error('❌ Home error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchHomePlaylists();
+    fetchHomeData();
   }, []);
 
 
@@ -160,7 +141,7 @@ export default function MainContent() {
       <Routes>
         <Route
           path="/"
-          element={<Home data={data} loading={loading} homePlaylists={homePlaylists} />}
+          element={<Home data={data} loading={loading} />}
         />
         <Route path="/search" element={<Search songs={songs} topResults={topResults} playlists={playlists} albums={albums} artists={artists} loading2={loading2} query={query} />} />
         <Route path="/user/:userid" element={<UserProfile />} />

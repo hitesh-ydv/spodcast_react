@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useSearch } from "../../context/SearchContext";
 import ScrollContainer from "../../layouts/ScrollContainer";
 import { LazyLoadImage } from "@tjoskar/react-lazyload-img";
-import Loader from "../../components/Loader"; // Make sure you have a Loader component
-import fallbackImg from "../../assets/playlist_cover.jpg"; // 👈 your default image path
-import LoadImage from "../../assets/afterload.png"; // 👈 your default image path
+import Loader from "../../components/Loader";
+import fallbackImg from "../../assets/playlist_cover.jpg";
+import LoadImage from "../../assets/afterload.png";
 import PlayBtn from "../../assets/playbtn.svg";
 import PauseBtn from "../../assets/pause.svg";
 import { useScrollStore } from "../../context/useScrollStore";
@@ -23,7 +22,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
   const [recommendedSongs, setRecommendedSongs] = useState([]);
   const [currentSongId, setCurrentSongId] = useState("");
 
-  const { recentPlayed, saveToRecent } = useRecent(); // Home
+  const { recentPlayed, saveToRecent } = useRecent();
 
   const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 

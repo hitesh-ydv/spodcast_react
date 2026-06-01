@@ -28,6 +28,8 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const navigate = useNavigate()
 
+  console.log("Home data:", data); // ✅ log the data received from MainContent
+
 
   const handleError = (e) => {
     e.target.onerror = null; // prevent infinite loop
@@ -116,11 +118,12 @@ export default function Home({ data, loading, homePlaylists }) {
             <ActivityGrid />
           )}
 
-          {data && data.length > 0 && (
-            <ScrollContainer title="Made for you">
-              {data.map((song) => {
+          {data?.new_trending && data.new_trending.length > 0 && (
+            <ScrollContainer title="Trending Now">
+              {data?.new_trending?.map((song) => {
                 const isCurrent = currentSongId === song?.id;
                 const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const image = song.image.replace('150x150', '500x500');
 
                 return (
                   <div
@@ -145,7 +148,7 @@ export default function Home({ data, loading, homePlaylists }) {
                         >
                           <LazyLoadImage
                             defaultImage={LoadImage}
-                            image={song.image?.[2]?.url || fallbackImg}
+                            image={image || fallbackImg}
                             className="song-image"
                             onError={handleError}
                             draggable={false}
@@ -153,48 +156,54 @@ export default function Home({ data, loading, homePlaylists }) {
                           />
                         </motion.div>
                       </motion.div>
-                      <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                        onClick={(e) => {
-                          setCurrentSongId(song.id)
-                          e.stopPropagation()
-                          fetchRecommendedSongs(song.id, song)
-                          if (isCurrent) {
-                            // same song → toggle play/pause
-                            togglePlayPause();
-                          } else {
-                            // different song → play new song
-                            playSong(song.id);
-                          }
-                          saveToRecent(song);
-                        }}
-                      >
-                        <img
-                          src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                          alt={isCurrentPlaying ? "Pause" : "Play"}
-                          className="h-8 w-8"
-                        />
-                      </button>
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                            saveToRecent(song);
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
                     </div>
 
                     <h3 onClick={(e) => {
                       navigate(`/${song.type}/${song.id}`)
                       e.stopPropagation();
-                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name}</h3>
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.title}</h3>
                     <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
-                      {song.artists.primary.map((a, index) => (
-                        <span key={a.id || index}>
-                          <a
-                            className="hover:underline hover:text-white"
-                            onClick={(e) => {
-                              navigate(`/artist/${a.id}`)
-                              e.stopPropagation();
-                            }}
-                          >
-                            {a.name}
-                          </a>
-                          {index < song.artists.primary.length - 1 && ", "}
-                        </span>
-                      ))}
+                      {song.more_info.artistMap?.artists?.length > 0 ? (
+                        song.more_info.artistMap.artists.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/artist/${a.id}`);
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.more_info.artistMap.artists.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>{song.subtitle}</span>
+                      )}
                     </p>
 
                   </div>
@@ -290,208 +299,390 @@ export default function Home({ data, loading, homePlaylists }) {
             </ScrollContainer>
           )}
 
+          {data?.new_albums && data.new_albums.length > 0 && (
+            <ScrollContainer title="New Releases">
+              {data?.new_albums?.map((song) => {
+                const isCurrent = currentSongId === song?.id;
+                const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const image = song.image.replace('150x150', '500x500');
 
-          <ScrollContainer title="Punjabi Hits">
-            {homePlaylists.punjabi.map((song) => {
-              const isCurrent = currentSongId === song?.id;
-              const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                return (
+                  <div
+                    key={song.id}
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                    onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="image-wrapper mb-2">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={image || fallbackImg}
+                            className="song-image"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
+                      </motion.div>
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                            saveToRecent(song);
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
+                    </div>
 
-              return (
-                <div
-                  key={song.id}
-                  className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
-                  onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className="image-wrapper mb-2">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }} // ✅ animate only first time it appears
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    >
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={song.image?.[2]?.url || fallbackImg}
-                        className="song-image"
-                        onError={handleError}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </motion.div>
-                    {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                      onClick={(e) => {
-                        setCurrentSongId(song.id)
-                        e.stopPropagation()
-                        fetchRecommendedSongs(song.id, song)
-                        if (isCurrent) {
-                          // same song → toggle play/pause
-                          togglePlayPause();
-                        } else {
-                          // different song → play new song
-                          playSong(song.id);
-                        }
-                        saveToRecent(song);
-                      }}
-                    >
-                      <img
-                        src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                        alt={isCurrentPlaying ? "Pause" : "Play"}
-                        className="h-8 w-8"
-                      />
-                    </button> */}
+                    <h3 onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.title}</h3>
+                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                      {song.more_info.artistMap?.artists?.length > 0 ? (
+                        song.more_info.artistMap.artists.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/artist/${a.id}`);
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.more_info.artistMap.artists.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>{song.subtitle}</span>
+                      )}
+                    </p>
+
                   </div>
 
-                  <h3 onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name}</h3>
-                  <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
-                    {song.type?.charAt(0).toUpperCase() + song.type?.slice(1)}
-                  </p>
+                )
 
-                </div>
+              })}
+            </ScrollContainer>
+          )}
 
-              )
+          {data?.charts && data.charts.length > 0 && (
+            <ScrollContainer title="Top Charts">
+              {data?.charts?.map((song) => {
+                const isCurrent = currentSongId === song?.id;
+                const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const image = song.image.replace('150x150', '500x500');
 
-            })}
-          </ScrollContainer>
-          <ScrollContainer title="Haryanvi Trends">
-            {homePlaylists.haryanvi.map((song) => {
-              const isCurrent = currentSongId === song?.id;
-              const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                return (
+                  <div
+                    key={song.id}
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                    onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="image-wrapper mb-2">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={image || fallbackImg}
+                            className="song-image"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
+                      </motion.div>
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                            saveToRecent(song);
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
+                    </div>
 
-              return (
-                <div
-                  key={song.id}
-                  className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
-                  onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className="image-wrapper mb-2">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }} // ✅ animate only first time it appears
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    >
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={song.image?.[2]?.url || fallbackImg}
-                        className="song-image"
-                        onError={handleError}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </motion.div>
-                    {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                      onClick={(e) => {
-                        setCurrentSongId(song.id)
-                        e.stopPropagation()
-                        fetchRecommendedSongs(song.id, song)
-                        if (isCurrent) {
-                          // same song → toggle play/pause
-                          togglePlayPause();
-                        } else {
-                          // different song → play new song
-                          playSong(song.id);
-                        }
-                        saveToRecent(song);
-                      }}
-                    >
-                      <img
-                        src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                        alt={isCurrentPlaying ? "Pause" : "Play"}
-                        className="h-8 w-8"
-                      />
-                    </button> */}
+                    <h3 onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.title}</h3>
+                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                      {song.more_info.artistMap?.artists?.length > 0 ? (
+                        song.more_info.artistMap.artists.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/artist/${a.id}`);
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.more_info.artistMap.artists.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>{song.subtitle || song.more_info.firstname}</span>
+                      )}
+                    </p>
+
                   </div>
 
-                  <h3 onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name}</h3>
-                  <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
-                    {song.type?.charAt(0).toUpperCase() + song.type?.slice(1)}
-                  </p>
+                )
 
-                </div>
+              })}
+            </ScrollContainer>
+          )}
 
-              )
+          {data?.top_playlists && data.top_playlists.length > 0 && (
+            <ScrollContainer title="Editorial Picks">
+              {data?.top_playlists?.map((song) => {
+                const isCurrent = currentSongId === song?.id;
+                const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const image = song.image.replace('150x150', '500x500');
 
-            })}
-          </ScrollContainer>
-          <ScrollContainer title="Bollywood Vibes">
-            {homePlaylists.hindi.map((song) => {
-              const isCurrent = currentSongId === song?.id;
-              const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                return (
+                  <div
+                    key={song.id}
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                    onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="image-wrapper mb-2">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={image || fallbackImg}
+                            className="song-image"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
+                      </motion.div>
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                            saveToRecent(song);
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
+                    </div>
 
-              return (
-                <div
-                  key={song.id}
-                  className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
-                  onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }}
-                >
-                  <div className="image-wrapper mb-2">
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }} // ✅ animate only first time it appears
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    >
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={song.image?.[2]?.url || fallbackImg}
-                        className="song-image"
-                        onError={handleError}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </motion.div>
-                    {/* <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                      onClick={(e) => {
-                        setCurrentSongId(song.id)
-                        e.stopPropagation()
-                        fetchRecommendedSongs(song.id, song)
-                        if (isCurrent) {
-                          // same song → toggle play/pause
-                          togglePlayPause();
-                        } else {
-                          // different song → play new song
-                          playSong(song.id);
-                        }
-                        saveToRecent(song);
-                      }}
-                    >
-                      <img
-                        src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                        alt={isCurrentPlaying ? "Pause" : "Play"}
-                        className="h-8 w-8"
-                      />
-                    </button> */}
+                    <h3 onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.title}</h3>
+                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                      {song.more_info.artistMap?.artists?.length > 0 ? (
+                        song.more_info.artistMap.artists.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/artist/${a.id}`);
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.more_info.artistMap.artists.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>{song.subtitle}</span>
+                      )}
+                    </p>
+
                   </div>
 
-                  <h3 onClick={(e) => {
-                    navigate(`/${song.type}/${song.id}`)
-                    e.stopPropagation();
-                  }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name}</h3>
-                  <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
-                    {song.type?.charAt(0).toUpperCase() + song.type?.slice(1)}
-                  </p>
+                )
 
-                </div>
+              })}
+            </ScrollContainer>
+          )}
 
-              )
+          {data?.artist_recos && data.artist_recos.length > 0 && (
+            <ScrollContainer title="Top Artists">
+              {data?.artist_recos?.map((song) => {
+                const isCurrent = currentSongId === song?.id;
+                const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const image = song.image.replace('150x150', '500x500');
 
-            })}
-          </ScrollContainer>
+                return (
+                  <div
+                    key={song.id}
+                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                    onClick={(e) => {
+                      navigate(`/artist/${song.id}`)
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="image-wrapper mb-2">
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                      >
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }} // ✅ animate only first time it appears
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                        >
+                          <LazyLoadImage
+                            defaultImage={LoadImage}
+                            image={image || fallbackImg}
+                            className="song-image rounded-full"
+                            onError={handleError}
+                            draggable={false}
+                            onDragStart={(e) => e.preventDefault()}
+                          />
+                        </motion.div>
+                      </motion.div>
+                      {song.type === "song" && (
+                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                          onClick={(e) => {
+                            setCurrentSongId(song.id)
+                            e.stopPropagation()
+                            fetchRecommendedSongs(song.id, song)
+                            if (isCurrent) {
+                              // same song → toggle play/pause
+                              togglePlayPause();
+                            } else {
+                              // different song → play new song
+                              playSong(song.id);
+                            }
+                            saveToRecent(song);
+                          }}
+                        >
+                          <img
+                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                            alt={isCurrentPlaying ? "Pause" : "Play"}
+                            className="h-8 w-8"
+                          />
+                        </button>
+                      )}
+                    </div>
+
+                    <h3 onClick={(e) => {
+                      navigate(`/${song.type}/${song.id}`)
+                      e.stopPropagation();
+                    }} className={`text-base font-semibold truncate hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.title}</h3>
+                    <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                      {song.more_info.artistMap?.artists?.length > 0 ? (
+                        song.more_info.artistMap.artists.map((a, index) => (
+                          <span key={a.id || index}>
+                            <a
+                              className="hover:underline hover:text-white"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/artist/${a.id}`);
+                              }}
+                            >
+                              {a.name}
+                            </a>
+                            {index < song.more_info.artistMap.artists.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>Artist</span>
+                      )}
+                    </p>
+
+                  </div>
+
+                )
+
+              })}
+            </ScrollContainer>
+          )}
+
 
         </>
       )}
