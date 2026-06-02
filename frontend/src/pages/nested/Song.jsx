@@ -9,7 +9,6 @@ import PauseWhite from "../../assets/pause-white.svg";
 import Like from "../../assets/like.svg";
 import Download from "../../assets/download.svg";
 import { LazyLoadImage } from '@tjoskar/react-lazyload-img';
-
 import ScrollContainer from '../../layouts/ScrollContainer';
 import fallbackImg from "../../assets/playlist_cover.jpg";
 import axios from 'axios';
@@ -25,19 +24,14 @@ import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import Unlike from "../../assets/unlike.svg";
 import { motion } from "framer-motion";
+import { useSong } from "../../hooks/service";
 
 
 const Song = () => {
     const { id } = useParams();
-    const [song, setSong] = useState(null);
-    const [recommendedSongs, setRecommendedSongs] = useState([]);
-    const [recommendedSongs2, setRecommendedSongs2] = useState([]);
     const [backgroundColor, setBackgroundColor] = useState(null);
     const [scrollContainerBg, setScrollContainerBg] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
-    const [lyrics, setLyrics] = useState("");
     const [showMore, setShowMore] = useState(false);
     const [isLikedd, setIsLikedd] = useState(false);
     const [currentSongId, setCurrentSongId] = useState("");
@@ -51,70 +45,28 @@ const Song = () => {
 
     const navigate = useNavigate();
 
+    const {
+        songQuery,
+        lyricsQuery,
+        recommendationsQuery,
+    } = useSong(id);
+
+    const song = songQuery.data;
+    const lyrics = lyricsQuery.data;
+    const recommendedSongs = recommendationsQuery.data || [];
+
+    const isLoading =
+        songQuery.isLoading
+
+    const error =
+        songQuery.error
+
     const liked = isLiked(currentSong?.id)
 
     const handleLikeToggle = (e) => {
         e.stopPropagation();
         toggleLike(currentSong);
     };
-
-    useEffect(() => {
-        if (!id) return;
-
-        let isActive = true; // ✅ prevents outdated updates
-
-        setIsLoading(true);
-        setError(null);
-
-        const fetchSongData = async () => {
-            try {
-                const { data } = await axios.get(`${API_URL}/api/songs/${id}`);
-                if (!isActive) return;
-
-                setSong(data.data);
-            } catch (err) {
-                if (!isActive) return;
-
-                console.error(err);
-                setError(err.response?.data?.message || "Failed to fetch song data");
-            } finally {
-                if (isActive) setIsLoading(false);
-            }
-        };
-
-        const fetchLyrics = async () => {
-            try {
-                const { data } = await axios.get(`${API_URL}/api/songs/${id}/lyrics`);
-                if (!isActive) return;
-
-                setLyrics(data.data?.lyrics || "Lyrics not available");
-            } catch {
-                if (!isActive) return;
-                setLyrics("Lyrics not found.");
-            }
-        };
-
-        const fetchRecommendedSongs = async () => {
-            try {
-                const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=5`);
-                if (!isActive) return;
-
-                setRecommendedSongs(data.data);
-            } catch {
-                if (!isActive) return;
-                setRecommendedSongs([]);
-            }
-        };
-
-        fetchSongData();
-        fetchLyrics();
-        fetchRecommendedSongs();
-
-        return () => {
-            isActive = false; // ✅ cancel outdated responses
-        };
-
-    }, [id]);
 
 
 
@@ -162,21 +114,21 @@ const Song = () => {
         }
     };
 
-    const handleLike = async () => {
-        try {
-            const data = await toggleLikeSong(token, song[0]?.id);
-            setIsLiked(data.likedSongs.includes(song[0]?.id))
-        } catch (err) {
-            console.error("Error liking song:", err);
-        }
-    };
+    // const handleLike = async () => {
+    //     try {
+    //         const data = await toggleLikeSong(token, song[0]?.id);
+    //         setIsLiked(data.likedSongs.includes(song[0]?.id))
+    //     } catch (err) {
+    //         console.error("Error liking song:", err);
+    //     }
+    // };
 
 
 
     // Split lyrics by <br> to handle HTML format
-    const lines = lyrics.split(/<br\s*\/?>/i).filter((line) => line.trim() !== "");
+    const lines = lyrics?.split(/<br\s*\/?>/i).filter((line) => line.trim() !== "");
     const MAX_LINES = 8;
-    const displayedLyrics = showMore ? lines : lines.slice(0, MAX_LINES);
+    const displayedLyrics = showMore ? lines : lines?.slice(0, MAX_LINES);
 
     if (isLoading) {
         return <Loader />;
@@ -185,7 +137,7 @@ const Song = () => {
     if (error) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-900">
-                <div className="text-white text-xl">Error: {error}</div>
+                <div className="text-white text-xl">Error</div>
             </div>
         );
     }
@@ -402,33 +354,37 @@ const Song = () => {
                     </CTooltip>
                 </div>
 
-                <div className="p-6 rounded-lg shadow-lg text-white">
-                    <h2 className="text-2xl font-bold mb-4">Lyrics</h2>
 
-                    {isLoading ? (
-                        <p className="text-[#A0A0B2] italic">Loading lyrics...</p>
-                    ) : (
-                        <>
-                            <div className="text-gray-200 leading-relaxed">
-                                {displayedLyrics.map((line, index) => (
-                                    <p key={index} className="mb-2">
-                                        {line.trim()}
-                                    </p>
-                                ))}
-                            </div>
+                {lyrics && (
+                    <div className="p-6 rounded-lg shadow-lg text-white">
+                        <h2 className="text-2xl font-bold mb-4">Lyrics</h2>
 
-                            {lines.length > MAX_LINES && (
-                                <button
-                                    onClick={() => setShowMore(!showMore)}
-                                    className="mt-4 text-sm font-semibold text-[#A0A0B2] hover:text-white transition-all"
-                                >
-                                    {showMore ? "Show less" : "...Show more"}
-                                </button>
-                            )}
-                        </>
-                    )}
-                </div>
+                        {isLoading ? (
+                            <p className="text-[#A0A0B2] italic">Loading lyrics...</p>
+                        ) : (
+                            <>
+                                <div className="text-gray-200 leading-relaxed">
+                                    {displayedLyrics.map((line, index) => (
+                                        <p key={index} className="mb-2">
+                                            {line.trim()}
+                                        </p>
+                                    ))}
+                                </div>
 
+                                {lines.length > MAX_LINES && (
+                                    <button
+                                        onClick={() => setShowMore(!showMore)}
+                                        className="mt-4 text-sm font-semibold text-[#A0A0B2] hover:text-white transition-all"
+                                    >
+                                        {showMore ? "Show less" : "...Show more"}
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </div>
+                )}
+
+                
                 {song[0].artists.primary !== 0 && (
                     <div className='p-3'>
                         {song[0].artists.primary.map((artist) => (

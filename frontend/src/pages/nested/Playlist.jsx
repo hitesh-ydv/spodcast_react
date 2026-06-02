@@ -26,20 +26,35 @@ import { useLibrary } from "../../context/LibraryContext";
 import Artist from './Artist';
 import { motion, AnimatePresence } from "framer-motion";
 import { useActivity } from "../../context/ActivityContext";
+import { usePlaylist } from "../../hooks/service";
 
 const Playlist = () => {
     const { id } = useParams();
-    const [songs, setSongs] = useState([]);
-    const [details, setDetails] = useState([]);
     const [backgroundColor, setBackgroundColor] = useState('');
     const [scrollContainerBg, setScrollContainerBg] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
-    const [loading, setLoading] = useState(true);
+
+    const {
+        data: details,
+        isLoading: loading,
+        error,
+    } = usePlaylist(id);
+
+    const songs = details?.songs || [];
 
     const { togglePlaylist, toggleAlbum, isPlaylistSaved, isLiked, toggleLike } = useLibrary();
     const { recordActivity } = useActivity();
+
+    useEffect(() => {
+        if (!details) return;
+
+        recordActivity({
+            id: details.id,
+            type: "playlist",
+            title: details.name,
+            image: details.image?.[2]?.url,
+        });
+    }, [details]);
 
 
 
@@ -66,35 +81,6 @@ const Playlist = () => {
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        setLoading(true)
-        const fetchPlaylistData = async () => {
-            try {
-                setIsLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/playlists?id=${id}&page=0&limit=50`
-                );
-                setDetails(data.data)
-                setSongs(data.data.songs);
-                recordActivity({
-                    id: data.data.id,
-                    type: "playlist",
-                    title: data.data.name,
-                    image: data.data.image?.[2]?.url,
-                });
-            } catch (err) {
-                console.error("Error fetching song data:", err);
-                setError(err.response?.data?.message || "Failed to fetch song data");
-            } finally {
-                setLoading(false)
-            }
-        };
-
-        if (id) {
-            fetchPlaylistData();
-        }
-    }, [id]);
 
 
 

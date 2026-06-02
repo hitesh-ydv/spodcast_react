@@ -19,15 +19,16 @@ import { Vibrant } from "node-vibrant/browser";
 import { useLibrary } from "../../context/LibraryContext";
 import { motion } from "framer-motion";
 import { useActivity } from "../../context/ActivityContext";
+import { useArtist } from "../../hooks/service";
+import { useQuery } from "@tanstack/react-query";
 
 const Artist = () => {
     const { id } = useParams();
-    const [artist, setArtist] = useState(null);
     const [backgroundColor, setBackgroundColor] = useState('');
     const [scrollContainerBg, setScrollContainerBg] = useState('');
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const imageRef = useRef(null);
+
+    const { data: artist, isLoading, error } = useArtist(id);
 
     const { toggleArtist, isArtistSaved } = useLibrary();
 
@@ -40,32 +41,6 @@ const Artist = () => {
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchArtistData = async () => {
-            try {
-                setIsLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/artists/${id}`
-                );
-
-                setArtist(data.data);
-                recordActivity({
-                    id: data.data?.id,
-                    type: "artist",
-                    title: data.data?.name,
-                    image: data.data?.image?.[2]?.url,
-                });
-            } catch (err) {
-                console.error("Error fetching artist data:", err);
-                setError(err.response?.data?.message || err.message || "Failed to fetch artist data");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (id) fetchArtistData();
-    }, [id]);
 
     const extractColorFromImage = async () => {
         if (!imageRef.current) return;
@@ -111,7 +86,16 @@ const Artist = () => {
         }
     };
 
+    useEffect(() => {
+        if (!artist) return;
 
+        recordActivity({
+            id: artist.id,
+            type: "artist",
+            title: artist.name,
+            image: artist.image?.[2]?.url,
+        });
+    }, [artist]);
 
     const formatNumber = (num) => {
         if (!num) return '0';

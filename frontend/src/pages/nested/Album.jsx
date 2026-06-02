@@ -25,18 +25,15 @@ import { useRecent } from "../../context/RecentContext";
 import { useLibrary } from "../../context/LibraryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActivity } from "../../context/ActivityContext";
+import { useAlbum } from "../../hooks/service";
 
 
 const Album = () => {
     const { id } = useParams();
-    const [songs, setSongs] = useState([]);
-    const [details, setDetails] = useState([]);
     const [backgroundColor, setBackgroundColor] = useState('');
     const [scrollContainerBg, setScrollContainerBg] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const imageRef2 = useRef(null);
-    const [loading, setLoading] = useState(true);
     const { recentPlayed, saveToRecent } = useRecent(); // Home
     const { toggleLike, toggleAlbum, isAlbumSaved, isLiked } = useLibrary();
 
@@ -45,6 +42,14 @@ const Album = () => {
 
     const navigate = useNavigate();
 
+    const {
+        data: details,
+        isLoading: loading,
+        error,
+    } = useAlbum(id);
+
+    const songs = details?.songs || [];
+
 
 
     const handleLikeToggle = (e) => {
@@ -52,35 +57,6 @@ const Album = () => {
         toggleLike(currentSong);
     };
 
-    useEffect(() => {
-        setLoading(true)
-        const fetchPlaylistData = async () => {
-            try {
-                setIsLoading(true);
-                const { data } = await axios.get(
-                    `${API_URL}/api/albums?id=${id}`
-                );
-                setDetails(data.data)
-                setSongs(data.data.songs);
-                // setPlaylistSongs(data.data.songs);
-                recordActivity({
-                    id: data.data?.id,
-                    type: "album",
-                    title: data.data?.name,
-                    image: data.data?.image?.[2]?.url,
-                });
-            } catch (err) {
-                console.error("Error fetching song data:", err);
-                setError(err.response?.data?.message || "Failed to fetch song data");
-            } finally {
-                setLoading(false)
-            }
-        };
-
-        if (id) {
-            fetchPlaylistData();
-        }
-    }, [id]);
 
     const extractColorFromImage = async () => {
         if (!imageRef2.current) return;
