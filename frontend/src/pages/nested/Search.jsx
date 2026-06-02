@@ -49,7 +49,11 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
   const fetchRecommendedSongs = async (id, song) => {
     try {
       const { data } = await axios.get(
-        `${API_URL}/api/songs/${id}/suggestions?limit=20`
+        `${API_URL}/api/songs/${id}/suggestions?limit=20`,{
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          }
+        }
       );
       setPlaylistSongs([song, ...data.data])
 

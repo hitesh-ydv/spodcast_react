@@ -17,7 +17,11 @@ const ActivityGrid = () => {
 
     const fetchRecommendedSongs = async (id, song) => {
         try {
-            const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`);
+            const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`,{
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                }
+            });
             setPlaylistSongs([song, ...data.data]);
         } catch (err) {
             console.error("Error fetching recommendations:", err);

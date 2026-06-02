@@ -16,8 +16,30 @@ import { ActivityProvider } from "./context/ActivityContext";
 function App() {
 
   useEffect(() => {
+    const getSession = async () => {
+      try {
+        const res = await fetch(
+          'https://api.spodcast.workers.dev/api/session'
+        )
+
+        const data = await res.json()
+
+        console.log('Session Data:', data.token)
+
+        sessionStorage.setItem(
+          'token',
+          data.token
+        )
+      } catch (err) {
+        console.error('Session Error:', err)
+      }
+    }
+
+    getSession()
+  }, [])
+
+  useEffect(() => {
     const activate = () => {
-      console.log("TV Mode Activated");
 
       const firstBtn = document.querySelector("button, a, input");
       if (firstBtn) firstBtn.focus();

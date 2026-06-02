@@ -27,10 +27,7 @@ export default function Home({ data, loading, homePlaylists }) {
   const { recentPlayed, saveToRecent } = useRecent(); // Home
 
   const navigate = useNavigate()
-
-  console.log("Home data:", data); // ✅ log the data received from MainContent
-
-
+  
   const handleError = (e) => {
     e.target.onerror = null; // prevent infinite loop
     e.target.src = fallbackImg; // set default image
@@ -38,7 +35,11 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const fetchRecommendedSongs = async (id, song) => {
     try {
-      const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`);
+      const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`,{
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      });
       setPlaylistSongs([song, ...data.data])
 
     } catch (err) {

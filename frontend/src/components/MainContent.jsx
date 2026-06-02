@@ -85,11 +85,31 @@ export default function MainContent() {
           albumsRes,
           artistsRes
         ] = await Promise.all([
-          axios.get(`${API_URL}/api/search?query=${encoded}`),
-          axios.get(`${API_URL}/api/search/songs?query=${encoded}&limit=20`),
-          axios.get(`${API_URL}/api/search/playlists?query=${encoded}&limit=20`),
-          axios.get(`${API_URL}/api/search/albums?query=${encoded}&limit=20`),
-          axios.get(`${API_URL}/api/search/artists?query=${encoded}&limit=20`)
+          axios.get(`${API_URL}/api/search?query=${encoded}`,{
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          }),
+          axios.get(`${API_URL}/api/search/songs?query=${encoded}&limit=20`,{
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          }),
+          axios.get(`${API_URL}/api/search/playlists?query=${encoded}&limit=20`,{
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          }),
+          axios.get(`${API_URL}/api/search/albums?query=${encoded}&limit=20`,{
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          }),
+          axios.get(`${API_URL}/api/search/artists?query=${encoded}&limit=20`,{
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+          })
         ]);
 
 
@@ -120,7 +140,11 @@ export default function MainContent() {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const { data } = await axios.get(`${API_URL}/api/home`);
+        const { data } = await axios.get(`${API_URL}/api/home`,{
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          }
+        });
         setData(data.data);
       } catch (error) {
         console.error('❌ Home error:', error);

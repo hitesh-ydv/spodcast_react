@@ -8,7 +8,11 @@ export const useArtist = (id) => {
 
         queryFn: async () => {
             const { data } = await axios.get(
-                `${API_URL}/api/artists/${id}`
+                `${API_URL}/api/artists/${id}`,{
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                }
             );
 
             return data.data;
@@ -25,7 +29,11 @@ export const usePlaylist = (id) => {
 
         queryFn: async () => {
             const { data } = await axios.get(
-                `${API_URL}/api/playlists?id=${id}&page=0&limit=50`
+                `${API_URL}/api/playlists?id=${id}&page=0&limit=50`,{
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                }
             );
 
             return data.data;
@@ -42,7 +50,11 @@ export const useSong = (id) => {
         queryKey: ["song", id],
         queryFn: async () => {
             const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}`
+                `${API_URL}/api/songs/${id}`,{
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                }
             );
             return data.data;
         },
@@ -54,7 +66,11 @@ export const useSong = (id) => {
         queryKey: ["lyrics", id],
         queryFn: async () => {
             const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}/lyrics`
+                `${API_URL}/api/songs/${id}/lyrics`,{
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                }
             );
             return data.data?.lyrics || "Lyrics not available";
         },
@@ -66,7 +82,11 @@ export const useSong = (id) => {
         queryKey: ["recommendations", id],
         queryFn: async () => {
             const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}/suggestions?limit=5`
+                `${API_URL}/api/songs/${id}/suggestions?limit=5`,{
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+                    }
+                }
             );
             return data.data;
         },
@@ -87,7 +107,11 @@ export const useAlbum = (id) => {
 
     queryFn: async () => {
       const { data } = await axios.get(
-        `${API_URL}/api/albums?id=${id}`
+        `${API_URL}/api/albums?id=${id}`,{
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`
+            }
+        }
       );
 
       return data.data;

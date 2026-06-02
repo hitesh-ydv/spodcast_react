@@ -73,7 +73,11 @@ export const AudioProvider = ({ children }) => {
         triggerSlowNetwork(); // 🔥 just call context
       }, 5000);
 
-      const response = await fetch(`${API_URL}/api/songs/${songId}`);
+      const response = await fetch(`${API_URL}/api/songs/${songId}`,{
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      });
       const data = await response.json();
 
       clearTimeout(slowTimer);
