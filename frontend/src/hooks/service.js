@@ -1,18 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-const API_URL = import.meta.env.VITE_API_URL;
+import api from "../api/api";
 
 export const useArtist = (id) => {
     return useQuery({
         queryKey: ["artist", id],
 
         queryFn: async () => {
-            const { data } = await axios.get(
-                `${API_URL}/api/artists/${id}`,{
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                    }
-                }
+            const { data } = await api.get(
+                `/api/artists/${id}`
             );
 
             return data.data;
@@ -28,68 +23,60 @@ export const usePlaylist = (id) => {
         queryKey: ["playlist", id],
 
         queryFn: async () => {
-            const { data } = await axios.get(
-                `${API_URL}/api/playlists?id=${id}&page=0&limit=50`,{
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                    }
-                }
+            const { data } = await api.get(
+                `/api/playlists?id=${id}&page=0&limit=50`
             );
 
             return data.data;
         },
 
         enabled: !!id,
-
-        staleTime: 1000 * 60 * 10, // 10 min
+        staleTime: 1000 * 60 * 10,
     });
 };
 
 export const useSong = (id) => {
     const songQuery = useQuery({
         queryKey: ["song", id],
+
         queryFn: async () => {
-            const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}`,{
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                    }
-                }
+            const { data } = await api.get(
+                `/api/songs/${id}`
             );
+
             return data.data;
         },
+
         enabled: !!id,
         staleTime: 1000 * 60 * 10,
     });
 
     const lyricsQuery = useQuery({
         queryKey: ["lyrics", id],
+
         queryFn: async () => {
-            const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}/lyrics`,{
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                    }
-                }
+            const { data } = await api.get(
+                `/api/songs/${id}/lyrics`
             );
+
             return data.data?.lyrics || "Lyrics not available";
         },
+
         enabled: !!id,
-        staleTime: Infinity, // lyrics rarely change
+        staleTime: Infinity,
     });
 
     const recommendationsQuery = useQuery({
         queryKey: ["recommendations", id],
+
         queryFn: async () => {
-            const { data } = await axios.get(
-                `${API_URL}/api/songs/${id}/suggestions?limit=5`,{
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-                    }
-                }
+            const { data } = await api.get(
+                `/api/songs/${id}/suggestions?limit=5`
             );
+
             return data.data;
         },
+
         enabled: !!id,
         staleTime: 1000 * 60 * 30,
     });
@@ -102,22 +89,18 @@ export const useSong = (id) => {
 };
 
 export const useAlbum = (id) => {
-  return useQuery({
-    queryKey: ["album", id],
+    return useQuery({
+        queryKey: ["album", id],
 
-    queryFn: async () => {
-      const { data } = await axios.get(
-        `${API_URL}/api/albums?id=${id}`,{
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`
-            }
-        }
-      );
+        queryFn: async () => {
+            const { data } = await api.get(
+                `/api/albums?id=${id}`
+            );
 
-      return data.data;
-    },
+            return data.data;
+        },
 
-    enabled: !!id,
-    staleTime: 1000 * 60 * 10, // 10 min
-  });
+        enabled: !!id,
+        staleTime: 1000 * 60 * 10,
+    });
 };
