@@ -19,47 +19,28 @@ export default function DashboardLayout() {
     const { showOfflineBanner } = useOffline();
 
     useEffect(() => {
-        const checkApi = async () => {
+        const init = async () => {
             try {
                 let token = sessionStorage.getItem("token");
 
-                // Token nahi hai to pehle session banao
                 if (!token) {
-                    const sessionRes = await axios.get(
+                    const { data } = await axios.get(
                         `${API_URL}/api/session`
                     );
 
-                    token = sessionRes.data.token;
-
-                    sessionStorage.setItem(
-                        "token",
-                        token
-                    );
+                    token = data.token;
+                    sessionStorage.setItem("token", token);
                 }
-
-                // API test request
-                await axios.get(
-                    `${API_URL}/api/songs/o_azuPYd/suggestions?limit=10`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
 
                 setMaintenance(false);
             } catch (err) {
-                console.error(
-                    "Error fetching home data:",
-                    err
-                );
                 setMaintenance(true);
             } finally {
                 setLoading(false);
             }
         };
 
-        checkApi();
+        init();
     }, []);
 
     return (
