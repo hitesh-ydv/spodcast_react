@@ -29,7 +29,6 @@
     "react-lazy-load-image-component": "^1.6.3",
     "react-router-dom": "^7.9.4",
     "react-spinners": "^0.17.0",
-    "react-tsparticles": "^2.12.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.14",
     "tailwindcss-animate": "^1.0.7",
