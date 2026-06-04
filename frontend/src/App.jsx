@@ -24,8 +24,6 @@ function App() {
 
         const data = await res.json()
 
-        console.log('Session Data:', data.token)
-
         sessionStorage.setItem(
           'token',
           data.token

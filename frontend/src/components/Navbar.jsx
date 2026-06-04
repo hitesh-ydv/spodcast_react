@@ -10,6 +10,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import axios from "axios";
 import { useSearch } from "../context/SearchContext";
 import toast, { Toaster } from 'react-hot-toast';
+import { motion } from "framer-motion";
 
 const URL = import.meta.env.VITE_API_URL2;
 
@@ -46,25 +47,26 @@ export default function Navbar() {
         }
     }, [location.pathname]);
 
-    // useEffect(() => {
-    //     const fetchUser = async () => {
-    //         const token = localStorage.getItem("token");
-    //         if (!token) return;
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-    //         try {
-    //             const res = await axios.get(`${URL}/api/user/me`, {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             });
-    //             setUser(res.data); // { name, email, userid }
-    //         } catch (err) {
-    //             console.error("Failed to fetch user:", err);
-    //         }
-    //     };
+            try {
+                const res = await axios.get(`${URL}/api/user/me`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                console.log("User Data:", res.data);
+                setUser(res.data.user); // { name, email, userid }
+            } catch (err) {
+                console.error("Failed to fetch user:", err);
+            }
+        };
 
-    //     fetchUser();
-    // }, []);
+        fetchUser();
+    }, []);
 
     // const handleFocus = (e) => {
     //     navigate("/search"); // navigate to your search route
@@ -114,7 +116,7 @@ export default function Navbar() {
                     alt="Spotify"
                     className="w-8 h-8"
                     draggable={false}
-  onDragStart={(e) => e.preventDefault()}
+                    onDragStart={(e) => e.preventDefault()}
                 />
             </div>
 
@@ -127,7 +129,7 @@ export default function Navbar() {
                         src={isHomePage ? HomeFill : Home}
                         alt="Home"
                         draggable={false}
-  onDragStart={(e) => e.preventDefault()}
+                        onDragStart={(e) => e.preventDefault()}
                     />
                 </button>
 
@@ -145,7 +147,7 @@ export default function Navbar() {
     focus-within:ring-[rgba(255,255,255,0.05)]">
 
                     <img src={Search} alt="Search" className="h-8 w-8" draggable={false}
-  onDragStart={(e) => e.preventDefault()} />
+                        onDragStart={(e) => e.preventDefault()} />
 
                     <input
                         ref={inputRef}
@@ -193,12 +195,19 @@ export default function Navbar() {
                    text-sm font-semibold text-white shadow-inner shadow-white/10 
                    focus:outline-none data-hover:bg-gray-700 data-open:bg-gray-700"
                     >
-                        {user?.photoUrl ? (
-                            <img
-                                src={user.photoUrl}
-                                alt="Profile"
-                                className="w-full h-full object-cover rounded-full"
-                            />
+                        {user?.avatar ? (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }} // ✅ animate only first time it appears
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                            >
+                                <img
+                                    src={user.avatar}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover rounded-full"
+                                />
+                            </motion.div>
                         ) : (
                             user?.name ? user.name.charAt(0).toUpperCase() : ""
                         )}
@@ -209,7 +218,7 @@ export default function Navbar() {
                         className="z-43567 w-48 origin-top-right rounded-sm border border-white/5 bg-[#282828] p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95"
                     >
                         <MenuItem>
-                            <button onClick={() => navigate(`/user/${user.userId}`)} className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
+                            <button onClick={() => navigate(`/user/${user.google_id}`)} className="group flex w-full font-semibold text-base items-center gap-2 rounded-sm px-3 py-1.5 data-focus:bg-white/10">
                                 Profile
                             </button>
                         </MenuItem>

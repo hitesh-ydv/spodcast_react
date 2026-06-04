@@ -516,8 +516,13 @@ export default function FooterPlayer() {
           </div>
         </div>
 
-        {/* Hidden Audio */}
-        <audio ref={audioRef} src={audioUrl} className="hidden" />
+        {audioUrl && (
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            className="hidden"
+          />
+        )}
       </>
 
     </footer >

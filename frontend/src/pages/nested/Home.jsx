@@ -370,7 +370,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                       {song.more_info.artistMap?.artists?.length > 0 ? (
                         song.more_info.artistMap.artists.map((a, index) => (
-                          <span key={a.id || index}>
+                          <span key={index}>
                             <a
                               className="hover:underline hover:text-white"
                               onClick={(e) => {
