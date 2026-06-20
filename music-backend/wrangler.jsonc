@@ -1,0 +1,21 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "music-backend",
+	"main": "src/index.js",
+	"compatibility_date": "2026-06-04",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "music_db",
+			"database_name": "music-db",
+			"database_id": "897be98b-843f-4d57-8fa5-a9af08b6fa6f",
+			"remote": true
+		}
+	]
+}
