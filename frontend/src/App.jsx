@@ -12,6 +12,8 @@ import { RecentProvider } from "./context/RecentContext";
 import { LibraryProvider } from "./context/LibraryContext";
 import { OfflineProvider } from "./context/OfflineProvider";
 import { ActivityProvider } from "./context/ActivityContext";
+import TopLoadingBar from "./components/TopLoadingBar";
+import { LoadingProvider } from "./context/LoadingContext";
 
 function App() {
 
@@ -51,29 +53,34 @@ function App() {
   }, []);
 
   return (
-    <SearchProvider>
-      <RecentProvider>
-        <LibraryProvider>
-          <OfflineProvider>
-            <ActivityProvider>
-              <Router>
+    <LoadingProvider>
+      <TopLoadingBar />
 
-                <Routes>
-                  <Route element={<AuthRoute />}>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<Signup />} />
-                  </Route>
+      <SearchProvider>
+        <RecentProvider>
+          <LibraryProvider>
+            <OfflineProvider>
+              <ActivityProvider>
 
-                  <Route element={<ProtectedRoute />}>
-                    <Route path="/*" element={<DashboardLayout />} />
-                  </Route>
-                </Routes>
-              </Router>
-            </ActivityProvider>
-          </OfflineProvider>
-        </LibraryProvider>
-      </RecentProvider>
-    </SearchProvider>
+                <Router>
+
+                  <Routes>
+                    <Route element={<AuthRoute />}>
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<Signup />} />
+                    </Route>
+
+                    <Route element={<ProtectedRoute />}>
+                      <Route path="/*" element={<DashboardLayout />} />
+                    </Route>
+                  </Routes>
+                </Router>
+              </ActivityProvider>
+            </OfflineProvider>
+          </LibraryProvider>
+        </RecentProvider>
+      </SearchProvider>
+    </LoadingProvider>
   );
 }
 

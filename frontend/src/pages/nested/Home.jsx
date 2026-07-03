@@ -117,9 +117,9 @@ export default function Home({ data, loading, homePlaylists }) {
         </div>
       ) : (
         <>
-          {activity.length > 0 && (
+          {/* {activity.length > 0 && (
             <ActivityGrid />
-          )}
+          )} */}
 
           {data?.new_trending && data.new_trending.length > 0 && (
             <ScrollContainer title="Trending Now">
@@ -233,7 +233,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     key={song.id}
                     className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
-                      navigate(`/${song.itemType}/${song.itemId}`)
+                      navigate(`/${song.item_type}/${song.item_id}`)
                       e.stopPropagation();
                     }}
                   >

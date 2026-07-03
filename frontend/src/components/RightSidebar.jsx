@@ -7,9 +7,6 @@ import Like from "../assets/like.svg";
 import { CButton, CTooltip } from '@coreui/react'
 import Unlike from "../assets/unlike.svg";
 
-const clientId = import.meta.env.VITE_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
-
 export default function RightSidebar() {
   const { currentSong, isPlaying } = useAudio();
   const { toggleLike, toggleAlbum, isLiked } = useLibrary();
@@ -26,29 +23,17 @@ export default function RightSidebar() {
   const scrollRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const authString = btoa(`${clientId}:${clientSecret}`);
-
-
-
-  const getSpotifyToken = async () => {
-    const res = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: "grant_type=client_credentials",
-    });
-
-    const data = await res.json();
-    return data.access_token;
-  };
+  const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq";
 
   const searchSong = async (songName, token) => {
     const res = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(songName)}&type=track&limit=1`,
+      `https://api.paxsenix.org/spotify/search?q=${encodeURIComponent(songName)}&type=track&limit=1`,
       {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+
       }
     );
 
@@ -56,30 +41,35 @@ export default function RightSidebar() {
     return data.tracks.items[0]?.id;
   };
 
-  const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq";
+
 
   const getCanvasUrl = async (trackId) => {
     try {
-      const res = await fetch(`https://api.paxsenix.org/spotify/canvas?id=${trackId}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `https://api.paxsenix.org/spotify/canvas?id=${encodeURIComponent(trackId)}`,
+        {
+          method: "GET",
+          headers: {
+            "Accept": "*/*",
+            "Authorization":
+              "Bearer sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq",
+          },
+        }
+      );
 
-      if (!res.ok) {
-        throw new Error(`Request failed with status ${res.status}`);
-      }
+      const data = await response.json();
 
-      const data = await res.json();
+      console.log("Status:", response.status);
+      console.log(data);
 
-      return data.data?.canvasesList?.[0]?.canvasUrl || null;
-    } catch (error) {
-      console.error('Error fetching canvas URL:', error);
+      return data?.data?.canvasesList?.[0]?.canvasUrl || null;
+
+    } catch (err) {
+      console.error(err);
       return null;
     }
   };
+
 
   useEffect(() => {
     setCanvasUrl(""); // reset first
@@ -87,7 +77,7 @@ export default function RightSidebar() {
     const fetchCanvas = async () => {
       try {
         // 1️⃣ Get token
-        const token = await getSpotifyToken();
+        const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq"; // Replace with your actual token
 
         // 2️⃣ Search track ID
         const trackId = await searchSong(`${currentSong.name} ${currentSong.artists.primary[0].name}`, token);

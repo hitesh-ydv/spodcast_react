@@ -9,7 +9,13 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { motion } from "framer-motion";
 
 const LibrarySidebar = () => {
-  const { library } = useLibrary();
+  const {
+    likedSongs,
+    loadingLikes,
+    toggleLike,
+    isLiked,
+    library,
+  } = useLibrary();
   const navigate = useNavigate();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -173,13 +179,17 @@ const LibrarySidebar = () => {
 
       </div>
 
-      {(library.likedSongs.length > 0 || items.length > 0) && (
+      {(likedSongs.length > 0 || items.length > 0) && (
         <>
           {/* ✅ SCROLLABLE AREA */}
           <div className="flex-1 overflow-y-auto pr-1">
 
             {/* ❤️ LIKED SONGS */}
-            {library.likedSongs.length > 0 && (
+            {loadingLikes ? (
+              <div className="px-2 py-3 text-sm text-[#A0A0B2]">
+                Loading liked songs...
+              </div>
+            ) : likedSongs.length > 0 && (
               <div className="mb-1" onClick={() => navigate("/liked")}>
                 <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
                   <motion.div
@@ -197,7 +207,7 @@ const LibrarySidebar = () => {
                     <div>
                       <p className="text-sm font-medium">Liked Songs</p>
                       <p className="text-sm font-medium text-[#A0A0B2]">
-                        {library.likedSongs.length} songs
+                        {likedSongs.length} songs
                       </p>
                     </div>
                   )}
@@ -251,7 +261,7 @@ const LibrarySidebar = () => {
 
 
       {/* EMPTY */}
-      {library.likedSongs.length === 0 &&
+      {likedSongs.length === 0 &&
         items.length === 0 &&
         !finalCollapsed && (
           <div className="text-center mt-4 text-[#A0A0B2] text-sm">

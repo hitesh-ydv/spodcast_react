@@ -35,7 +35,10 @@ const LikedSong = () => {
     const imageRef2 = useRef(null);
     const [loading, setLoading] = useState(true);
 
-    const { library } = useLibrary();
+    const {
+        likedSongs,
+        loadingLikes,
+    } = useLibrary();
 
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
@@ -87,11 +90,9 @@ const LikedSong = () => {
         }
     };
 
-    // if (library.likedSongs.length > 0) {
-    //     return (
-    //         <Loader />
-    //     );
-    // }
+    if (loadingLikes) {
+        return <Loader />;
+    }
 
     if (error) {
         return (
@@ -101,10 +102,12 @@ const LikedSong = () => {
         );
     }
 
-    if (!library.likedSongs.length) {
+    if (likedSongs.length === 0) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-900">
-                <div className="text-white text-xl">No Liked Songs</div>
+                <div className="text-white text-xl">
+                    No Liked Songs
+                </div>
             </div>
         );
     }
@@ -115,10 +118,10 @@ const LikedSong = () => {
     };
 
     const handleRecommendedSongClick = (song) => {
-        if (currentSong?.id === song.id) {
+        if (currentSong?.song_id === song.song_id) {
             togglePlayPause(); // ✅ pause/resume same song
         } else {
-            playSong(song.id); // ✅ play new song
+            playSong(song.song_id); // ✅ play new song
         }
     };
 
@@ -199,8 +202,8 @@ const LikedSong = () => {
                         className="mb-0 flex flex-row items-center gap-2 mt-1"
                     >
                         <span className="text-sm text-[#adadad] font-medium">
-                            {library.likedSongs.length}{" "}
-                            {library.likedSongs.length === 1 ? "song" : "songs"}
+                            {likedSongs.length}{" "}
+                            {likedSongs.length === 1 ? "song" : "songs"}
                         </span>
                     </motion.div>
                 </motion.div>
@@ -224,13 +227,13 @@ const LikedSong = () => {
                         onClick={() => {
                             //saveToRecent(details)
                             // If no song is playing or the current song is not in this playlist
-                            const isCurrentInPlaylist = library.likedSongs.some(s => s.id === currentSong?.id);
-                            setPlaylistSongs(library.likedSongs); // update context with current playlist songs
+                            const isCurrentInPlaylist = likedSongs.some(s => s.id === currentSong?.id);
+                            setPlaylistSongs(likedSongs); // update context with current playlist songs
 
                             if (!currentSong || !isCurrentInPlaylist) {
                                 // Play first song of this playlist
-                                if (library.likedSongs.length > 0) {
-                                    playSong(library.likedSongs[0].id, library.likedSongs); // pass playlist songs to context
+                                if (likedSongs.length > 0) {
+                                    playSong(likedSongs[0].id, likedSongs); // pass playlist songs to context
                                 }
                             } else {
                                 // Toggle play/pause of current song
@@ -241,12 +244,12 @@ const LikedSong = () => {
                     >
                         <img
                             src={
-                                library.likedSongs.some(s => s.id === currentSong?.id) && isPlaying
+                                likedSongs.some(s => s.id === currentSong?.id) && isPlaying
                                     ? PauseBtn
                                     : PlayBtn
                             }
                             alt={
-                                library.likedSongs.some(s => s.id === currentSong?.id) && isPlaying
+                                likedSongs.some(s => s.id === currentSong?.id) && isPlaying
                                     ? "Pause"
                                     : "Play"
                             }
@@ -280,18 +283,18 @@ const LikedSong = () => {
                     </Menu>
                 </div>
 
-                {library.likedSongs.length !== 0 && (
+                {likedSongs.length !== 0 && (
                     <ScrollContainer title={false} icons={false} direction="col">
-                        {library.likedSongs.map((song, index) => {
-                            const isCurrent = currentSong?.id === song.id;
+                        {likedSongs.map((song, index) => {
+                            const isCurrent = currentSong?.song_id === song.song_id;
                             const isCurrentPlaying = isCurrent && isPlaying;
 
                             return (
                                 <div
-                                    key={song.id}
+                                    key={song.song_id}
                                     onClick={() => {
                                         handleRecommendedSongClick(song);
-                                         setPlaylistSongs(songs);
+                                        setPlaylistSongs(songs);
                                     }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
@@ -303,7 +306,7 @@ const LikedSong = () => {
                                         <div className="relative">
                                             <LazyLoadImage
                                                 defaultImage={LoadImage}
-                                                image={song.image[1]?.url || fallbackImg}
+                                                image={song.image || fallbackImg}
                                                 className="w-11 h-11 rounded"
                                                 onError={handleError}
                                                 draggable={false}
@@ -345,7 +348,7 @@ const LikedSong = () => {
                                         <div className="flex flex-col min-w-0">
                                             <h1
                                                 onClick={(e) => {
-                                                    navigate(`/${song.type}/${song.id}`);
+                                                    navigate(`/song/${song.song_id}`);
                                                     e.stopPropagation();
                                                 }}
                                                 className={`inline-block cursor-pointer text-md font-medium truncate ${isCurrent ? "text-[#7C4DFF]" : "text-white hover:underline"
@@ -355,20 +358,7 @@ const LikedSong = () => {
                                             </h1>
 
                                             <p className="text-[14px] text-[#A0A0B2] truncate font-medium">
-                                                {song.artists.primary.map((a, index) => (
-                                                    <span key={a.id || index}>
-                                                        <a
-                                                            className="hover:underline cursor-pointer hover:text-white"
-                                                            onClick={(e) => {
-                                                                navigate(`/artist/${a.id}`);
-                                                                e.stopPropagation();
-                                                            }}
-                                                        >
-                                                            {a.name}
-                                                        </a>
-                                                        {index < song.artists.primary.length - 1 && ", "}
-                                                    </span>
-                                                ))}
+                                                {song.artists}
                                             </p>
                                         </div>
                                     </div>

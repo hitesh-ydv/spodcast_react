@@ -37,9 +37,13 @@ const Song = () => {
     const [currentSongId, setCurrentSongId] = useState("");
     const token = localStorage.getItem("token")
 
-    const { toggleLike, removeFromLiked, library, isLiked, toggleArtist } = useLibrary();
+    const {
+        toggleLike,
+        isLiked,
+        likedSongs,
+    } = useLibrary();
 
-    const { recentPlayed, saveToRecent } = useRecent(); // Home
+    const { recentPlayed, saveToRecent } = useRecent();
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
 
@@ -61,12 +65,12 @@ const Song = () => {
     const error =
         songQuery.error
 
-    const liked = isLiked(currentSong?.id)
+  const liked = isLiked(id)
 
-    const handleLikeToggle = (e) => {
-        e.stopPropagation();
-        toggleLike(currentSong);
-    };
+  const handleLikeToggle = (e,song) => {
+    e.stopPropagation();
+    toggleLike(song);
+  };
 
 
 
@@ -336,7 +340,7 @@ const Song = () => {
                     >
                         <button
                             type="button"
-                            onClick={handleLikeToggle}
+                            onClick={(e) => handleLikeToggle(e, song[0])}
                             className="flex items-center justify- cursor-pointer"
                         >
                             <img
