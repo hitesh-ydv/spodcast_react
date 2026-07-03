@@ -49,11 +49,11 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
   const fetchRecommendedSongs = async (id, song) => {
     try {
       const { data } = await axios.get(
-        `${API_URL}/api/songs/${id}/suggestions?limit=20`,{
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem('token')}`
-          }
+        `${API_URL}/api/songs/${id}/suggestions?limit=20`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
         }
+      }
       );
       setPlaylistSongs([song, ...data.data])
 
@@ -217,7 +217,13 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                         </motion.div>
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
-                            saveToRecent(song);
+                            console.log("Clicked song:", song);
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.name,
+                              image: song.image?.[2]?.url || song.image?.[1]?.url || song.image?.[0]?.url || fallbackImg,
+                            });
                             setCurrentSongId(song.id)
                             e.stopPropagation()
                             fetchRecommendedSongs(song.id, song)

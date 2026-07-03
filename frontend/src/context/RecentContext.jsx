@@ -1,51 +1,146 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const RecentContext = createContext();
 
+const API_URL = import.meta.env.VITE_API_URL2;
+
 export const RecentProvider = ({ children }) => {
   const [recentPlayed, setRecentPlayed] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // load once
-  useEffect(() => {
-    const stored = localStorage.getItem("recentPlayed");
-    if (stored) {
-      try {
-        setRecentPlayed(JSON.parse(stored));
-      } catch (e) {
-        console.error("Error loading recentPlayed:", e);
+  // Load recent from backend
+  const fetchRecent = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setLoading(false);
+        return;
       }
+
+      const res = await fetch(`${API_URL}/api/recent`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        console.log("Recent data fetched:", data.data);
+        setRecentPlayed(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchRecent();
   }, []);
 
-  const saveToRecent = (item) => {
-    setRecentPlayed((prev) => {
-      // 🧠 Normalize values (important!)
-      const newItem = {
-        ...item,
-        id: String(item.id),
-        type: item.type || "song",
-      };
+  // Save recent
+  const saveToRecent = async (item) => {
+    const recentItem = {
+      itemType: item.type || "song",
+      itemId: String(item.id),
+      title: item.name,
+      image: item.image,
+    };
 
-      let updated = prev.filter(
+    // Optimistic update
+    setRecentPlayed((prev) => {
+      const filtered = prev.filter(
         (i) =>
-          !(String(i.id) === newItem.id && (i.type || "song") === newItem.type)
+          !(
+            i.itemId === recentItem.itemId &&
+            i.itemType === recentItem.itemType
+          )
       );
 
-      // add to top
-      updated.unshift(newItem);
-
-      // limit 15
-      if (updated.length > 15) updated = updated.slice(0, 15);
-
-      // save
-      localStorage.setItem("recentPlayed", JSON.stringify(updated));
-
-      return updated;
+      return [recentItem, ...filtered].slice(0, 10);
     });
+
+    try {
+      const token = localStorage.getItem("token");
+
+      console.log("token", token);
+
+      await fetch(`${API_URL}/api/recent`, {
+        method: "POST",
+
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(recentItem),
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Remove one item
+  const removeRecent = async (itemType, itemId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await fetch(
+        `${API_URL}/api/recent/${itemType}/${itemId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setRecentPlayed((prev) =>
+        prev.filter(
+          (i) =>
+            !(
+              i.itemType === itemType &&
+              i.itemId === itemId
+            )
+        )
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Clear all
+  const clearRecent = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await fetch(`${API_URL}/api/recent`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setRecentPlayed([]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <RecentContext.Provider value={{ recentPlayed, saveToRecent }}>
+    <RecentContext.Provider
+      value={{
+        recentPlayed,
+        loading,
+        fetchRecent,
+        saveToRecent,
+        removeRecent,
+        clearRecent,
+      }}
+    >
       {children}
     </RecentContext.Provider>
   );

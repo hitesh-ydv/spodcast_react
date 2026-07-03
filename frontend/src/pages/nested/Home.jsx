@@ -239,7 +239,7 @@ export default function Home({ data, loading, homePlaylists }) {
                       >
                         <LazyLoadImage
                           defaultImage={LoadImage}
-                          image={song.image?.[2]?.url || fallbackImg}
+                          image={song.image || fallbackImg}
                           className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
                           onError={handleError}
                           draggable={false}
