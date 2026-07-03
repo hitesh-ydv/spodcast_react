@@ -226,7 +226,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     key={song.id}
                     className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
-                      navigate(`/${song.type}/${song.id}`)
+                      navigate(`/${song.item_type}/${song.item_id}`)
                       e.stopPropagation();
                     }}
                   >
@@ -272,7 +272,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     </div>
 
                     <h3 onClick={(e) => {
-                      navigate(`/${song.type}/${song.id}`)
+                      navigate(`/${song.item_type}/${song.item_id}`)
                       e.stopPropagation();
                     }} className={`text-base font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
                     {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
