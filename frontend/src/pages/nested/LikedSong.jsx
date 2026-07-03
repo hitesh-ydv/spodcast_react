@@ -290,12 +290,7 @@ const LikedSong = () => {
                                 <div
                                     key={song.id}
                                     onClick={() => {
-                                        handleRecommendedSongClick(song); saveToRecent({
-                                            id: details.id,
-                                            type: details.type,
-                                            name: details.name,
-                                            image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
-                                        });
+                                        handleRecommendedSongClick(song);
                                          setPlaylistSongs(songs);
                                     }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
