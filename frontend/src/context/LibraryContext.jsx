@@ -5,32 +5,15 @@ import { useLoading } from "../context/LoadingContext";
 const LibraryContext = createContext();
 
 export const LibraryProvider = ({ children }) => {
-  const [library, setLibrary] = useState({
-    artists: [],
-    albums: [],
-    playlists: [],
-  });
+  const [library, setLibrary] = useState([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
+
+  useEffect(() => {
+    fetchLibrary();
+  }, []);
 
   const { startLoading, finishLoading } = useLoading();
 
-  useEffect(() => {
-    const stored = localStorage.getItem("library");
-
-    if (stored) {
-      const parsed = JSON.parse(stored);
-
-      setLibrary({
-        artists: parsed.artists || [],
-        albums: parsed.albums || [],
-        playlists: parsed.playlists || [],
-      });
-    }
-  }, []);
-
-  // ✅ SAVE
-  useEffect(() => {
-    localStorage.setItem("library", JSON.stringify(library));
-  }, [library]);
 
   const [likedSongs, setLikedSongs] = useState([]);
   const [loadingLikes, setLoadingLikes] = useState(false);
@@ -146,70 +129,165 @@ export const LibraryProvider = ({ children }) => {
     }
   };
 
+  const fetchLibrary = async () => {
+    try {
+      setLoadingLibrary(true);
 
-  // 🎤 TOGGLE ARTIST
-  const toggleArtist = (artist) => {
-    const newArtist = Array.isArray(artist) ? artist[0] : artist;
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-    setLibrary((prev) => {
-      const exists = prev.artists.some((a) => a.id === newArtist.id);
+      const res = await fetch(`${API_URL}/api/library`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      return {
-        ...prev,
-        artists: exists
-          ? prev.artists.filter((a) => a.id !== newArtist.id)
-          : [newArtist, ...prev.artists],
-      };
-    });
+      const data = await res.json();
+
+      if (data.success) {
+        setLibrary(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingLibrary(false);
+    }
   };
 
-  // 💿 TOGGLE ALBUM
-  const toggleAlbum = (album) => {
-    const newAlbum = Array.isArray(album) ? album[0] : album;
+  const toggleLibrary = async (item, itemType) => {
+    try {
+      startLoading();
 
-    setLibrary((prev) => {
-      const exists = prev.albums.some((a) => a.id === newAlbum.id);
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-      return {
-        ...prev,
-        albums: exists
-          ? prev.albums.filter((a) => a.id !== newAlbum.id)
-          : [newAlbum, ...prev.albums],
-      };
-    });
+      const itemId = String(item.id);
+
+      const exists = library.some(
+        (i) =>
+          String(i.itemId) === itemId &&
+          i.itemType === itemType
+      );
+
+      if (exists) {
+        const res = await fetch(`${API_URL}/api/library`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            itemId,
+            itemType,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!data.success) return;
+
+        setLibrary((prev) =>
+          prev.filter(
+            (i) =>
+              !(
+                String(i.itemId) === itemId &&
+                i.itemType === itemType
+              )
+          )
+        );
+      } else {
+        const body = {
+          itemId,
+          itemType,
+          title: item.name || item.title || "",
+          image:
+            item.image?.[2]?.url ||
+            item.image?.url ||
+            item.image ||
+            "",
+        };
+
+        const res = await fetch(`${API_URL}/api/library`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        console.log("Adding to library:", body);
+
+        const data = await res.json();
+
+        if (!data.success) return;
+
+        setLibrary((prev) => [
+          {
+            ...body,
+          },
+          ...prev,
+        ]);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      finishLoading();
+    }
   };
 
-  // 📂 TOGGLE PLAYLIST
-  const togglePlaylist = (playlist) => {
-    const newPlaylist = Array.isArray(playlist) ? playlist[0] : playlist;
 
-    setLibrary((prev) => {
-      const exists = prev.playlists.some((p) => p.id === newPlaylist.id);
+  const toggleArtist = (artist) =>
+    toggleLibrary(
+      Array.isArray(artist) ? artist[0] : artist,
+      "artist"
+    );
 
-      return {
-        ...prev,
-        playlists: exists
-          ? prev.playlists.filter((p) => p.id !== newPlaylist.id)
-          : [newPlaylist, ...prev.playlists],
-      };
-    });
-  };
+  const toggleAlbum = (album) =>
+    toggleLibrary(
+      Array.isArray(album) ? album[0] : album,
+      "album"
+    );
 
-  const artistSet = useMemo(() => {
-    return new Set(library.artists.map((a) => a.id));
-  }, [library.artists]);
+  const togglePlaylist = (playlist) =>
+    toggleLibrary(
+      Array.isArray(playlist) ? playlist[0] : playlist,
+      "playlist"
+    );
 
-  const albumSet = useMemo(() => {
-    return new Set(library.albums.map((a) => a.id));
-  }, [library.albums]);
+  const artistSet = useMemo(
+    () =>
+      new Set(
+        library
+          .filter((i) => i.itemType === "artist")
+          .map((i) => String(i.itemId))
+      ),
+    [library]
+  );
 
-  const playlistSet = useMemo(() => {
-    return new Set(library.playlists.map((p) => p.id));
-  }, [library.playlists]);
+  const albumSet = useMemo(
+    () =>
+      new Set(
+        library
+          .filter((i) => i.itemType === "album")
+          .map((i) => String(i.itemId))
+      ),
+    [library]
+  );
 
-  const isArtistSaved = (id) => artistSet.has(id);
-  const isAlbumSaved = (id) => albumSet.has(id);
-  const isPlaylistSaved = (id) => playlistSet.has(id);
+  const playlistSet = useMemo(
+    () =>
+      new Set(
+        library
+          .filter((i) => i.itemType === "playlist")
+          .map((i) => String(i.itemId))
+      ),
+    [library]
+  );
+
+  const isArtistSaved = (id) => artistSet.has(String(id));
+  const isAlbumSaved = (id) => albumSet.has(String(id));
+  const isPlaylistSaved = (id) => playlistSet.has(String(id));
 
 
 
@@ -217,6 +295,8 @@ export const LibraryProvider = ({ children }) => {
     <LibraryContext.Provider
       value={{
         library,
+        loadingLibrary,
+        fetchLibrary,
 
         likedSongs,
         loadingLikes,

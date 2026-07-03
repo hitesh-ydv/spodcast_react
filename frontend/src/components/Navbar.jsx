@@ -58,7 +58,6 @@ export default function Navbar() {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log("User Data:", res.data);
                 setUser(res.data.user); // { name, email, userid }
             } catch (err) {
                 console.error("Failed to fetch user:", err);

@@ -30,7 +30,6 @@ export const AudioProvider = ({ children }) => {
     if (audioUrl) {
       localStorage.setItem("lastAudioUrl", audioUrl);
 
-      console.log("Audio URL updated:", audioUrl);
     }
   }, [audioUrl]);
 
@@ -94,8 +93,6 @@ export const AudioProvider = ({ children }) => {
         title: currentSong?.name,
         image: currentSong?.image?.[2]?.url ,
       });
-
-      console.log("Playing song:", currentSong?.name, "image:", currentSong?.image?.[2]?.url, currentSong?.id);
 
       setTimeout(() => {
         if (audioRef.current) {

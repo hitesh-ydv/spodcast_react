@@ -59,9 +59,6 @@ export default function RightSidebar() {
 
       const data = await response.json();
 
-      console.log("Status:", response.status);
-      console.log(data);
-
       return data?.data?.canvasesList?.[0]?.canvasUrl || null;
 
     } catch (err) {

@@ -225,7 +225,6 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                         </motion.div>
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
-                            console.log("Clicked song:", song);
                             saveToRecent({
                               id: song.id,
                               type: song.type,

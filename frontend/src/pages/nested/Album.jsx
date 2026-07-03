@@ -162,6 +162,7 @@ const Album = () => {
         },
     };
 
+    console.log("Saved to recent:", details);
 
 
 
@@ -256,6 +257,7 @@ const Album = () => {
                                 name: details.name,
                                 image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
                             });
+                            
                             setPlaylistSongs(songs); // update context with current playlist songs
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
@@ -304,7 +306,7 @@ const Album = () => {
                             className="custom-target-icon cursor-pointer px-2.5 py-2.5 flex items-center justify-center transition-transform duration-200 hover:scale-105"
                         >
                             <img
-                                src={saved ? Unlike : Like}   // 👈 CHANGE ICON
+                                src={saved ? Unlike : Like}
                                 alt="like"
                                 className={`h-8 w-8 transition-all duration-200 ${saved ? "scale-110" : ""
                                     }`}

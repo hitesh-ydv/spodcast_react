@@ -27,7 +27,6 @@ export const RecentProvider = ({ children }) => {
       const data = await res.json();
 
       if (data.success) {
-        console.log("Recent data fetched:", data.data);
         setRecentPlayed(data.data);
       }
     } catch (err) {

@@ -26,8 +26,6 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const { recentPlayed, saveToRecent } = useRecent(); // Home
 
-  console.log("Recent Played in Home:", recentPlayed); // Debugging line
-
   const navigate = useNavigate()
 
   const handleError = (e) => {
@@ -225,7 +223,7 @@ export default function Home({ data, loading, homePlaylists }) {
           {recentPlayed.length > 0 && (
             <ScrollContainer title="Recent Played">
               {recentPlayed.map((song) => {
-                const isCurrent = currentSongId === song?.id;
+                const isCurrent = currentSongId === song?.item_id;
                 const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
 
                 return (
@@ -233,7 +231,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     key={song.id}
                     className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
-                      navigate(`/${song.item_type}/${song.item_id}`)
+                      navigate(`/${song.itemType}/${song.itemId}`)
                       e.stopPropagation();
                     }}
                   >
@@ -241,7 +239,7 @@ export default function Home({ data, loading, homePlaylists }) {
                       <motion.div
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }} // ✅ animate only first time it appears
+                        viewport={{ once: true }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
                       >
                         <LazyLoadImage
@@ -256,15 +254,15 @@ export default function Home({ data, loading, homePlaylists }) {
                       {song.item_type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
-                            setCurrentSongId(song.id)
+                            setCurrentSongId(song.item_id)
                             e.stopPropagation()
-                            fetchRecommendedSongs(song.id, song)
+                            fetchRecommendedSongs(song.item_id, song)
                             if (isCurrent) {
                               // same song → toggle play/pause
                               togglePlayPause();
                             } else {
                               // different song → play new song
-                              playSong(song.id);
+                              playSong(song.item_id);
                             }
 
                           }}
@@ -279,7 +277,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     </div>
 
                     <h3 onClick={(e) => {
-                      navigate(`/${song.item_type}/${song.item_id}`)
+                      navigate(`/${song.itemType}/${song.itemId}`)
                       e.stopPropagation();
                     }} className={`text-sm font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
                     {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">

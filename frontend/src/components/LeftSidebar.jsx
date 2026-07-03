@@ -15,6 +15,7 @@ const LibrarySidebar = () => {
     toggleLike,
     isLiked,
     library,
+    loadingLibrary,
   } = useLibrary();
   const navigate = useNavigate();
 
@@ -39,39 +40,32 @@ const LibrarySidebar = () => {
     setFilter((prev) => (prev === type ? null : type));
   };
 
-  // 🎯 FILTER LOGIC
   const getItems = () => {
-    let items = [];
+    let items = [...library];
 
-    // ✅ no filter = show all
-    if (!filter || filter === "artists") {
-      items.push(
-        ...library.artists.map((a) => ({ ...a, type: "artist" }))
+    // Filter
+    if (filter) {
+      const map = {
+        artists: "artist",
+        albums: "album",
+        playlists: "playlist",
+      };
+
+      items = items.filter(
+        (item) => item.itemType === map[filter]
       );
     }
 
-    if (!filter || filter === "albums") {
-      items.push(
-        ...library.albums.map((a) => ({ ...a, type: "album" }))
-      );
-    }
-
-    if (!filter || filter === "playlists") {
-      items.push(
-        ...library.playlists.map((p) => ({ ...p, type: "playlist" }))
-      );
-    }
-
-    // 🔍 search
+    // Search
     if (search) {
-      items = items.filter((i) =>
-        i.name.toLowerCase().includes(search.toLowerCase())
+      items = items.filter((item) =>
+        item.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
-    // 🔃 sort
+    // Sort
     if (sort === "az") {
-      items.sort((a, b) => a.name.localeCompare(b.name));
+      items.sort((a, b) => a.title.localeCompare(b.title));
     }
 
     return items;
@@ -179,95 +173,116 @@ const LibrarySidebar = () => {
 
       </div>
 
-      {(likedSongs.length > 0 || items.length > 0) && (
-        <>
-          {/* ✅ SCROLLABLE AREA */}
-          <div className="flex-1 overflow-y-auto pr-1">
+      {/* ❤️ LIKED SONGS */}
+      {loadingLikes ? (
+        <div className="mb-2 px-1">
+          <div className="flex items-center gap-3 p-2">
+            {/* Cover */}
+            <div className="w-12 h-12 rounded bg-[#1d1d2f] animate-pulse" />
 
-            {/* ❤️ LIKED SONGS */}
-            {loadingLikes ? (
-              <div className="px-2 py-3 text-sm text-[#A0A0B2]">
-                Loading liked songs...
+            {!finalCollapsed && (
+              <div className="flex-1">
+                <div className="h-4 w-28 rounded-full bg-[#1d1d2f] animate-pulse mb-2" />
+                <div className="h-3 w-16 rounded-full bg-[#1d1d2f] animate-pulse" />
               </div>
-            ) : likedSongs.length > 0 && (
-              <div className="mb-1" onClick={() => navigate("/liked")}>
-                <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }} // ✅ animate only first time it appears
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  >
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-                      ♥
-                    </div>
-                  </motion.div>
-
-                  {!finalCollapsed && (
-                    <div>
-                      <p className="text-sm font-medium">Liked Songs</p>
-                      <p className="text-sm font-medium text-[#A0A0B2]">
-                        {likedSongs.length} songs
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* LIST */}
-            {items.length > 0 && (
-              <ul className="space-y-0">
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    onClick={() => navigate(`/${item.type}/${item.id}`)}
-                    className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
-                      } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
-                  >
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }} // ✅ animate only first time it appears
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                    >
-                      <LazyLoadImage
-                        defaultImage={LoadImage}
-                        image={item.image?.[2]?.url || fallbackImg}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                        className={`w-12 h-12 ${item.type === "artist" ? "rounded-full" : "rounded"
-                          }`}
-                      />
-                    </motion.div>
-
-                    {!finalCollapsed && (
-                      <div>
-                        <p className="text-sm font-medium line-clamp-1 hover:underline">
-                          {item.name}
-                        </p>
-                        <p className="text-sm font-medium text-[#A0A0B2] capitalize">
-                          {item.type}
-                        </p>
-                      </div>
-                    )}
-                  </li>
-                ))}
-              </ul>
             )}
           </div>
-        </>
+        </div>
+      ) : likedSongs.length > 0 && (
+        <div className="mb-1" onClick={() => navigate("/liked")}>
+          <div className="flex items-center gap-3 p-2 rounded hover:bg-[#1d1d2f] cursor-pointer">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
+                ♥
+              </div>
+            </motion.div>
+
+            {!finalCollapsed && (
+              <div>
+                <p className="text-sm font-medium">Liked Songs</p>
+                <p className="text-sm text-[#A0A0B2]">
+                  {likedSongs.length} songs
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
+      {/* LIBRARY */}
+      {loadingLibrary ? (
+        <ul className="space-y-1 mt-0">
+          {[...Array(8)].map((_, i) => (
+            <li
+              key={i}
+              className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+                } p-2`}
+            >
+              {/* Image */}
+              <div
+                className={`w-12 h-12 ${i % 3 === 0 ? "rounded-full" : "rounded"
+                  } bg-[#1d1d2f] animate-pulse`}
+              />
 
-      {/* EMPTY */}
-      {likedSongs.length === 0 &&
-        items.length === 0 &&
-        !finalCollapsed && (
-          <div className="text-center mt-4 text-[#A0A0B2] text-sm">
-            No items found 🎵
-          </div>
-        )}
+              {!finalCollapsed && (
+                <div className="flex-1">
+                  <div className="h-4 w-3/4 rounded-full bg-[#1d1d2f] animate-pulse mb-2" />
+                  <div className="h-3 w-20 rounded-full bg-[#1d1d2f] animate-pulse" />
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        items.length > 0 && (
+          <ul className="space-y-0">
+            {items.map((item) => (
+              <li
+                key={item.itemId}
+                onClick={() =>
+                  navigate(`/${item.itemType}/${item.itemId}`)
+                }
+                className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+                  } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+              >
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <LazyLoadImage
+                    defaultImage={LoadImage}
+                    image={item.image || fallbackImg}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                    className={`w-12 h-12 ${item.itemType === "artist"
+                        ? "rounded-full"
+                        : "rounded"
+                      }`}
+                  />
+                </motion.div>
+
+                {!finalCollapsed && (
+                  <div>
+                    <p className="text-sm font-medium line-clamp-1 hover:underline">
+                      {item.title}
+                    </p>
+                    <p className="text-sm text-[#A0A0B2] capitalize">
+                      {item.itemType}
+                    </p>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )
+      )}
     </aside>
   );
 };
