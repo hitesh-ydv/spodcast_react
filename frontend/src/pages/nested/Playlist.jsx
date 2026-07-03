@@ -262,7 +262,12 @@ const Playlist = () => {
                 <div className='px-6 py-1 flex items-center gap-4'>
                     <button
                         onClick={() => {
-                            saveToRecent(details)
+                            saveToRecent({
+                                id: details.id,
+                                type: details.type,
+                                name: details.name,
+                                image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url
+                            });
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
                             setPlaylistSongs(songs); // update context with current playlist songs
@@ -356,7 +361,16 @@ const Playlist = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    onClick={() => { handleRecommendedSongClick(song); saveToRecent(details); setPlaylistSongs(songs); }}
+                                    onClick={() => {
+                                        handleRecommendedSongClick(song); 
+                                        saveToRecent({
+                                            id: details.id,
+                                            type: details.type,
+                                            name: details.name,
+                                            image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url
+                                        }); 
+                                        setPlaylistSongs(songs);
+                                    }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >

@@ -250,7 +250,12 @@ const Album = () => {
                 <div className='px-6 py-1 flex items-center gap-4'>
                     <button
                         onClick={() => {
-                            saveToRecent(details)
+                            saveToRecent({
+                                id: details.id,
+                                type: details.type,
+                                name: details.name,
+                                image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
+                            });
                             setPlaylistSongs(songs); // update context with current playlist songs
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
@@ -387,7 +392,12 @@ const Album = () => {
                                                     e.stopPropagation();
                                                     handleRecommendedSongClick(song);
                                                     setPlaylistSongs(songs);
-                                                    saveToRecent(song);
+                                                    saveToRecent({
+                                                        id: details.id,
+                                                        type: details.type,
+                                                        name: details.name,
+                                                        image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
+                                                    });
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}
                                             >

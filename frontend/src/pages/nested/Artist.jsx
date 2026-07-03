@@ -136,7 +136,12 @@ const Artist = () => {
 
         // set this playlist globally
         setPlaylistSongs(artist.topSongs);
-        saveToRecent(artist);
+        saveToRecent({
+            id: artist.id,
+            type: artist.type,
+            name: artist.name,
+            image: artist.image?.[2]?.url || artist.image?.[1]?.url || artist.image?.[0]?.url || fallbackImg,
+        });
 
         if (!localCurrentSongId || !isCurrentInPlaylist) {
             if (artist.topSongs.length > 0) {
@@ -339,7 +344,12 @@ const Artist = () => {
                                                     // different song → play new song
                                                     playSong(song.id);
                                                 }
-                                                saveToRecent(artist)
+                                                saveToRecent({
+                                                    id: artist.id,
+                                                    type: artist.type,
+                                                    name: artist.name,
+                                                    image: artist.image?.[2]?.url || artist.image?.[1]?.url || artist.image?.[0]?.url || fallbackImg,
+                                                });
 
                                             }}
                                         >

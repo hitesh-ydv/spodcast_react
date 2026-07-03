@@ -289,7 +289,15 @@ const LikedSong = () => {
                             return (
                                 <div
                                     key={song.id}
-                                    onClick={() => { handleRecommendedSongClick(song); saveToRecent(details); setPlaylistSongs(songs); }}
+                                    onClick={() => {
+                                        handleRecommendedSongClick(song); saveToRecent({
+                                            id: details.id,
+                                            type: details.type,
+                                            name: details.name,
+                                            image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
+                                        });
+                                         setPlaylistSongs(songs);
+                                    }}
                                     className={`recommended-cont2 relative p-2.5 rounded flex items-center justify-between  cursor-pointer
                     ${isCurrent ? "bg-[rgba(124,77,255,0.2)]" : "hover:bg-[rgba(124,77,255,0.1)]"}`}
                                 >

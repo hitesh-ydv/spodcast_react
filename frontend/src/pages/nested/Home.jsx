@@ -26,8 +26,10 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const { recentPlayed, saveToRecent } = useRecent(); // Home
 
+  console.log("Recent Played in Home:", recentPlayed); // Debugging line
+
   const navigate = useNavigate()
-  
+
   const handleError = (e) => {
     e.target.onerror = null; // prevent infinite loop
     e.target.src = fallbackImg; // set default image
@@ -35,7 +37,7 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const fetchRecommendedSongs = async (id, song) => {
     try {
-      const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`,{
+      const { data } = await axios.get(`${API_URL}/api/songs/${id}/suggestions?limit=10`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`
         }
@@ -170,7 +172,12 @@ export default function Home({ data, loading, homePlaylists }) {
                               // different song → play new song
                               playSong(song.id);
                             }
-                            saveToRecent(song);
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.title || song.name,
+                              image: song.image.replace('150x150', '500x500')
+                            });
                           }}
                         >
                           <img
@@ -224,9 +231,9 @@ export default function Home({ data, loading, homePlaylists }) {
                 return (
                   <div
                     key={song.id}
-                    className="flex-shrink-0 w-46 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                    className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
-                      navigate(`/${song.item_type}/${song.item_id}`)
+                      navigate(`/${song.itemType}/${song.itemId}`)
                       e.stopPropagation();
                     }}
                   >
@@ -240,13 +247,13 @@ export default function Home({ data, loading, homePlaylists }) {
                         <LazyLoadImage
                           defaultImage={LoadImage}
                           image={song.image || fallbackImg}
-                          className={`${song.type === "artist" ? "rounded-full" : `song-image`}`}
+                          className={`${song.item_type === "artist" ? "rounded-full" : `song-image`}`}
                           onError={handleError}
                           draggable={false}
                           onDragStart={(e) => e.preventDefault()}
                         />
                       </motion.div>
-                      {song.type === "song" && (
+                      {song.item_type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
                             setCurrentSongId(song.id)
@@ -274,7 +281,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     <h3 onClick={(e) => {
                       navigate(`/${song.item_type}/${song.item_id}`)
                       e.stopPropagation();
-                    }} className={`text-base font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
+                    }} className={`text-sm font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
                     {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                     {song.artists.primary.map((a, index) => (
                       <span key={a.id || index}>
@@ -341,6 +348,12 @@ export default function Home({ data, loading, homePlaylists }) {
                       {song.type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.title || song.name,
+                              image: song.image.replace('150x150', '500x500')
+                            });
                             setCurrentSongId(song.id)
                             e.stopPropagation()
                             fetchRecommendedSongs(song.id, song)
@@ -351,7 +364,7 @@ export default function Home({ data, loading, homePlaylists }) {
                               // different song → play new song
                               playSong(song.id);
                             }
-                            saveToRecent(song);
+
                           }}
                         >
                           <img
@@ -437,6 +450,7 @@ export default function Home({ data, loading, homePlaylists }) {
                       {song.type === "song" && (
                         <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
+
                             setCurrentSongId(song.id)
                             e.stopPropagation()
                             fetchRecommendedSongs(song.id, song)
@@ -447,7 +461,13 @@ export default function Home({ data, loading, homePlaylists }) {
                               // different song → play new song
                               playSong(song.id);
                             }
-                            saveToRecent(song);
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.title || song.name,
+                              image: song.image.replace('150x150', '500x500')
+                            });
+
                           }}
                         >
                           <img
@@ -543,7 +563,12 @@ export default function Home({ data, loading, homePlaylists }) {
                               // different song → play new song
                               playSong(song.id);
                             }
-                            saveToRecent(song);
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.title || song.name,
+                              image: song.image.replace('150x150', '500x500')
+                            });
                           }}
                         >
                           <img
@@ -639,7 +664,12 @@ export default function Home({ data, loading, homePlaylists }) {
                               // different song → play new song
                               playSong(song.id);
                             }
-                            saveToRecent(song);
+                            saveToRecent({
+                              id: song.id,
+                              type: song.type,
+                              name: song.title || song.name,
+                              image: song.image.replace('150x150', '500x500'),
+                            });
                           }}
                         >
                           <img

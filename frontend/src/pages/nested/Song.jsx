@@ -155,7 +155,12 @@ const Song = () => {
     const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
 
     const handleClick = () => {
-        saveToRecent(song[0])
+        saveToRecent({
+            id: song[0].id,
+            type: song[0].type,
+            name: song[0].title || song[0].name,
+            image: song[0].image?.[2]?.url || song[0].image?.[1]?.url || song[0].image?.[0]?.url || fallbackImg,
+        });
         setCurrentSongId(song[0].id)
         if (isCurrent) {
             // same song → toggle play/pause
@@ -384,7 +389,7 @@ const Song = () => {
                     </div>
                 )}
 
-                
+
                 {song[0].artists.primary !== 0 && (
                     <div className='p-3'>
                         {song[0].artists.primary.map((artist) => (

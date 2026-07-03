@@ -160,7 +160,15 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                   </motion.div>
 
                   {song.type == "song" && (
-                    <button onClick={(e) => { handleClick(e, song); saveToRecent(song); }} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
+                    <button onClick={(e) => {
+                      handleClick(e, song); 
+                      saveToRecent({
+                        id: song.id,
+                        type: song.type,
+                        name: song.title || song.name,
+                        image: song.image?.[2]?.url || song.image?.[1]?.url || song.image?.[0]?.url || fallbackImg,
+                      });
+                    }} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
                       <img
                         src={isCurrentPlaying ? PauseBtn : PlayBtn}
                         alt={isCurrentPlaying ? "Pause" : "Play"}
@@ -221,7 +229,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                             saveToRecent({
                               id: song.id,
                               type: song.type,
-                              name: song.name,
+                              name: song.title || song.name,
                               image: song.image?.[2]?.url || song.image?.[1]?.url || song.image?.[0]?.url || fallbackImg,
                             });
                             setCurrentSongId(song.id)
