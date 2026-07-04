@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 const API_URL = import.meta.env.VITE_API_URL2;
 import { useLoading } from "../context/LoadingContext";
+import toast from "react-hot-toast";
 
 const LibraryContext = createContext();
 
@@ -55,6 +56,28 @@ export const LibraryProvider = ({ children }) => {
 
   const isLiked = (id) => likedSet.has(String(id));
 
+  const addedToLiked = () =>
+    toast.success("Added to Liked Songs", {
+      id: "liked-song",
+      style: {
+        background: "#fff",
+        color: "#000",
+        marginBottom: "100px",
+      },
+      duration: 2000,
+    });
+
+  const removedFromLiked = () =>
+    toast.success("Removed from Liked Songs", {
+      id: "liked-song",
+      style: {
+        background: "#fff",
+        color: "#000",
+        marginBottom: "100px",
+      },
+      duration: 2000,
+    });
+
   const toggleLike = async (song) => {
     try {
       startLoading();
@@ -80,6 +103,8 @@ export const LibraryProvider = ({ children }) => {
         setLikedSongs((prev) =>
           prev.filter((s) => String(s.song_id) !== songId)
         );
+
+        removedFromLiked();
 
       } else {
 
@@ -122,6 +147,9 @@ export const LibraryProvider = ({ children }) => {
           },
           ...prev,
         ]);
+
+        addedToLiked();
+
       }
 
     } catch (err) {
@@ -195,6 +223,15 @@ export const LibraryProvider = ({ children }) => {
               )
           )
         );
+        toast.success("Removed from your Library", {
+          id: "library-item",
+          style: {
+            background: "#fff",
+            color: "#000",
+            marginBottom: "100px",
+          },
+          duration: 2000,
+        });
       } else {
         const body = {
           itemId,
@@ -228,6 +265,15 @@ export const LibraryProvider = ({ children }) => {
           },
           ...prev,
         ]);
+        toast.success("Added to your Library",{
+          id: "library-item",
+          style: {
+            background: "#fff",
+            color: "#000",
+            marginBottom: "100px",
+          },
+          duration: 2000,
+        });
       }
     } catch (err) {
       console.error(err);

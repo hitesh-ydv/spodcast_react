@@ -245,26 +245,30 @@ export default function Home({ data, loading, homePlaylists }) {
                         <LazyLoadImage
                           defaultImage={LoadImage}
                           image={song.image || fallbackImg}
-                          className={`${song.item_type === "artist" ? "rounded-full" : `song-image`}`}
+                          className={`${(song.item_type === "artist" || song.itemType === "artist")
+                              ? "rounded-full"
+                              : "song-image"
+                            }`}
                           onError={handleError}
                           draggable={false}
                           onDragStart={(e) => e.preventDefault()}
                         />
                       </motion.div>
-                      {song.item_type === "song" && (
-                        <button className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                      {(song.item_type === "song" || song.itemType === "song") && (
+                        <button
+                          className={`play-button ${isCurrentPlaying ? "active" : ""}`}
                           onClick={(e) => {
-                            setCurrentSongId(song.item_id)
-                            e.stopPropagation()
-                            fetchRecommendedSongs(song.item_id, song)
+                            e.stopPropagation();
+
+                            setCurrentSongId(song.item_id);
+
+                            fetchRecommendedSongs(song.item_id, song);
+
                             if (isCurrent) {
-                              // same song → toggle play/pause
                               togglePlayPause();
                             } else {
-                              // different song → play new song
                               playSong(song.item_id);
                             }
-
                           }}
                         >
                           <img

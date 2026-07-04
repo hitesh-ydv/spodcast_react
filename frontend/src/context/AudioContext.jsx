@@ -36,13 +36,13 @@ export const AudioProvider = ({ children }) => {
     const data = await res.json();
 
     if (data.success && data.data?.song_id) {
-      playSong(data.data.song_id);
+      playSong(data.data.song_id, [], false);
     }
   };
 
 
 
-  const playSong = async (songId, playlist = playlistSongs) => {
+  const playSong = async (songId, playlist = playlistSongs, autoPlay = true) => {
     let slowTimer;
 
     try {
@@ -79,7 +79,7 @@ export const AudioProvider = ({ children }) => {
       setCurrentSong(data.data[0]);
 
 
-      await fetch(`${API_URL}/api/last-played`, {
+      await fetch(`${API_URL2}/api/last-played`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -100,12 +100,16 @@ export const AudioProvider = ({ children }) => {
       //   image: currentSong?.image?.[2]?.url ,
       // });
 
-      setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current.play();
-          setIsPlaying(true);
-        }
-      }, 200);
+      if (autoPlay) {
+        setTimeout(() => {
+          if (audioRef.current) {
+            audioRef.current.play();
+            setIsPlaying(true);
+          }
+        }, 200);
+      } else {
+        setIsPlaying(false);
+      }
 
     } catch (err) {
       console.error("Error fetching audio:", err);

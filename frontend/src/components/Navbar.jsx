@@ -32,6 +32,7 @@ export default function Navbar() {
     const isHomePage = location.pathname === "/";
 
     const notify = () => toast.success('Link Copied', {
+        id: 'link-copied',
         style: {
             background: '#fff',
             color: '#000',
@@ -178,7 +179,7 @@ export default function Navbar() {
 
                     <img
                         onClick={() => {
-                            navigator.clipboard.writeText(window.location.href);
+                            navigator.clipboard.writeText(window.location.origin);
                             notify(); // your toast / alert
                         }}
                         src={Share}
