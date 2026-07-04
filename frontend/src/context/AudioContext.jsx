@@ -1,6 +1,7 @@
 // src/context/AudioContext.js
 import { createContext, useState, useContext, useRef, useEffect } from "react";
 const API_URL = import.meta.env.VITE_API_URL;
+const API_URL2 = import.meta.env.VITE_API_URL2;
 import { useOffline } from "../context/OfflineProvider";
 import { useActivity } from "../context/ActivityContext";
 
@@ -18,38 +19,28 @@ export const AudioProvider = ({ children }) => {
   const { triggerSlowNetwork } = useOffline();
   const { recordActivity } = useActivity();
 
-
-
   useEffect(() => {
-    if (currentSong) {
-      localStorage.setItem("lastSong", JSON.stringify(currentSong));
-    }
-  }, [currentSong]);
-
-  useEffect(() => {
-    if (audioUrl) {
-      localStorage.setItem("lastAudioUrl", audioUrl);
-
-    }
-  }, [audioUrl]);
-
-  useEffect(() => {
-    const savedSong = localStorage.getItem("lastSong");
-    const savedUrl = localStorage.getItem("lastAudioUrl");
-
-    if (savedSong) {
-      try {
-        const parsedSong = JSON.parse(savedSong);
-        setCurrentSong(parsedSong);
-      } catch (err) {
-        console.error("Error parsing lastSong:", err);
-      }
-    }
-
-    if (savedUrl) {
-      setAudioUrl(savedUrl);
-    }
+    loadLastSong();
   }, []);
+
+  const loadLastSong = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch(`${API_URL2}/api/last-played`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.data?.song_id) {
+      playSong(data.data.song_id);
+    }
+  };
+
+
 
   const playSong = async (songId, playlist = playlistSongs) => {
     let slowTimer;
@@ -72,7 +63,7 @@ export const AudioProvider = ({ children }) => {
         triggerSlowNetwork(); // 🔥 just call context
       }, 5000);
 
-      const response = await fetch(`${API_URL}/api/songs/${songId || song_id}`,{
+      const response = await fetch(`${API_URL}/api/songs/${songId}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('token')}`
         }
@@ -87,12 +78,27 @@ export const AudioProvider = ({ children }) => {
       setAudioUrl(url);
       setCurrentSong(data.data[0]);
 
-      recordActivity({
-        id: currentSong?.id,
-        type: "song",
-        title: currentSong?.name,
-        image: currentSong?.image?.[2]?.url ,
+
+      await fetch(`${API_URL}/api/last-played`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          songId: data.data[0].id,
+        }),
       });
+
+      console.log("Local:", localStorage.getItem("token"));
+      console.log("Session:", sessionStorage.getItem("token"));
+
+      // recordActivity({
+      //   id: currentSong?.id,
+      //   type: "song",
+      //   title: currentSong?.name,
+      //   image: currentSong?.image?.[2]?.url ,
+      // });
 
       setTimeout(() => {
         if (audioRef.current) {

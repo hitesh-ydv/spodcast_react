@@ -1,4 +1,5 @@
 import axios from "axios";
+import { decodeObject } from "../utils/decodeHtml";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,7 +36,10 @@ api.interceptors.request.use(async (config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    response.data = decodeObject(response.data);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 

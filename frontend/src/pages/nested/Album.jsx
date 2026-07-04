@@ -26,6 +26,7 @@ import { useLibrary } from "../../context/LibraryContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useActivity } from "../../context/ActivityContext";
 import { useAlbum } from "../../hooks/service";
+import { decodeObject } from "../../utils/decodeHtml";
 
 
 const Album = () => {

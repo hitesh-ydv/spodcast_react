@@ -11,6 +11,8 @@ import axios from "axios";
 import { useSearch } from "../context/SearchContext";
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from "framer-motion";
+import { useLibrary } from "@/context/LibraryContext";
+import { useRecent } from "@/context/RecentContext";
 
 const URL = import.meta.env.VITE_API_URL2;
 
@@ -18,6 +20,8 @@ export default function Navbar() {
 
     const navigate = useNavigate();
     const { setQuery } = useSearch();
+    const { clearLibraryData } = useLibrary();
+    const { clearRecentPlayed } = useRecent();
 
     const inputRef = useRef(null);
 

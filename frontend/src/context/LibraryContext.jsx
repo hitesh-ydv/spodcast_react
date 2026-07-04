@@ -290,6 +290,10 @@ export const LibraryProvider = ({ children }) => {
   const isPlaylistSaved = (id) => playlistSet.has(String(id));
 
 
+  const clearLibraryData = () => {
+    setLikedSongs([]);
+    setLibrary([]);
+  };
 
   return (
     <LibraryContext.Provider
@@ -312,6 +316,8 @@ export const LibraryProvider = ({ children }) => {
         isArtistSaved,
         isAlbumSaved,
         isPlaylistSaved,
+
+        clearLibraryData,
       }}
     >
       {children}

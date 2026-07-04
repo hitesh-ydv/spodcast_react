@@ -3,10 +3,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useLibrary } from "@/context/LibraryContext";
+import { useRecent } from "@/context/RecentContext";
 const URL = import.meta.env.VITE_API_URL2;
 
 export default function Login() {
   const navigate = useNavigate();
+  const {
+    clearLibraryData,
+    fetchLikedSongs,
+    fetchLibrary,
+  } = useLibrary();
+
+  const {
+    clearRecentPlayed,
+    fetchRecent,
+  } = useRecent();
 
   const [loading, setLoading] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(0);
@@ -49,6 +61,7 @@ export default function Login() {
     try {
       setLoading(true);
 
+
       const { data } = await axios.post(
         `${URL}/api/auth/google`,
         {
@@ -57,6 +70,17 @@ export default function Login() {
       );
 
       localStorage.setItem("token", data.token);
+
+
+      clearLibraryData();
+      clearRecentPlayed();
+
+      // Fetch new user's data
+      await Promise.all([
+        fetchLikedSongs(),
+        fetchLibrary(),
+        fetchRecent(),
+      ]);
 
       setTimeout(() => {
         navigate("/");

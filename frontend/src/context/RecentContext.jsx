@@ -129,6 +129,10 @@ export const RecentProvider = ({ children }) => {
     }
   };
 
+  const clearRecentPlayed = () => {
+    setRecentPlayed([]);
+  };
+
   return (
     <RecentContext.Provider
       value={{
@@ -138,6 +142,7 @@ export const RecentProvider = ({ children }) => {
         saveToRecent,
         removeRecent,
         clearRecent,
+        clearRecentPlayed,
       }}
     >
       {children}

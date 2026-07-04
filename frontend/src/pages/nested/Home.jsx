@@ -223,7 +223,7 @@ export default function Home({ data, loading, homePlaylists }) {
           {recentPlayed.length > 0 && (
             <ScrollContainer title="Recent Played">
               {recentPlayed.map((song) => {
-                const isCurrent = currentSongId === song?.item_id;
+                const isCurrent = currentSongId === song.item_id || song.itemId;
                 const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
 
                 return (
@@ -231,7 +231,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     key={song.id}
                     className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
                     onClick={(e) => {
-                      navigate(`/${song.itemType}/${song.itemId}`)
+                      navigate(`/${song.itemType || song.item_type}/${song.itemId || song.item_id}`)
                       e.stopPropagation();
                     }}
                   >
@@ -277,7 +277,7 @@ export default function Home({ data, loading, homePlaylists }) {
                     </div>
 
                     <h3 onClick={(e) => {
-                      navigate(`/${song.itemType}/${song.itemId}`)
+                      navigate(`/${song.itemType || item_type}/${song.itemId || item_id}`)
                       e.stopPropagation();
                     }} className={`text-sm font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
                     {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
