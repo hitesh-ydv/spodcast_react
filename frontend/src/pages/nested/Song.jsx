@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import DefaultCover from "../../assets/artist.jpg"
@@ -11,13 +11,9 @@ import Download from "../../assets/download.svg";
 import { LazyLoadImage } from '@tjoskar/react-lazyload-img';
 import ScrollContainer from '../../layouts/ScrollContainer';
 import fallbackImg from "../../assets/playlist_cover.jpg";
-import axios from 'axios';
 import { useAudio } from '../../context/AudioContext';
 import { CButton, CTooltip } from '@coreui/react'
-import { toggleLikeSong } from '../../api/UserApi';
 import LoadImage from "../../assets/afterload.png";
-const API_URL = import.meta.env.VITE_API_URL;
-const URL = import.meta.env.VITE_API_URL2;
 import { Vibrant } from "node-vibrant/browser";
 import MusicGif from "../../assets/music.gif";
 import { useRecent } from "../../context/RecentContext";
@@ -27,33 +23,41 @@ import { motion } from "framer-motion";
 import { useSong } from "../../hooks/service";
 
 
+const container = {
+    hidden: {},
+    show: {
+        transition: {
+            staggerChildren: 0.12,
+        },
+    },
+};
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.5, ease: "easeOut" },
+    },
+};
+
 const Song = () => {
     const { id } = useParams();
     const [backgroundColor, setBackgroundColor] = useState(null);
     const [scrollContainerBg, setScrollContainerBg] = useState(null);
     const imageRef2 = useRef(null);
     const [showMore, setShowMore] = useState(false);
-    const [isLikedd, setIsLikedd] = useState(false);
-    const [currentSongId, setCurrentSongId] = useState("");
-    const token = localStorage.getItem("token")
-
-    const {
-        toggleLike,
-        isLiked,
-        likedSongs,
-    } = useLibrary();
-
-    const { recentPlayed, saveToRecent } = useRecent();
-
-    const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
-
-    const navigate = useNavigate();
-
+    const { toggleLike, isLiked, } = useLibrary();
     const {
         songQuery,
         lyricsQuery,
         recommendationsQuery,
     } = useSong(id);
+
+    const { saveToRecent } = useRecent();
+    const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
+
+    const navigate = useNavigate();
 
     const song = songQuery.data;
     const lyrics = lyricsQuery.data;
@@ -65,16 +69,14 @@ const Song = () => {
     const error =
         songQuery.error
 
-  const liked = isLiked(id)
+    const liked = isLiked(id)
 
-  const handleLikeToggle = (e,song) => {
-    e.stopPropagation();
-    toggleLike(song);
-  };
+    const handleLikeToggle = (e, song) => {
+        e.stopPropagation();
+        toggleLike(song);
+    };
 
-
-
-    const extractColorFromImage = async () => {
+    const extractColorFromImage = useCallback(async () => {
         if (!imageRef2.current) return;
 
         try {
@@ -116,20 +118,8 @@ const Song = () => {
         } catch (err) {
             console.error("Vibrant error:", err);
         }
-    };
+    }, []);
 
-    // const handleLike = async () => {
-    //     try {
-    //         const data = await toggleLikeSong(token, song[0]?.id);
-    //         setIsLiked(data.likedSongs.includes(song[0]?.id))
-    //     } catch (err) {
-    //         console.error("Error liking song:", err);
-    //     }
-    // };
-
-
-
-    // Split lyrics by <br> to handle HTML format
     const lines = lyrics?.split(/<br\s*\/?>/i).filter((line) => line.trim() !== "");
     const MAX_LINES = 8;
     const displayedLyrics = showMore ? lines : lines?.slice(0, MAX_LINES);
@@ -155,17 +145,16 @@ const Song = () => {
         e.target.src = fallbackImg; // set default image
     };
 
-    const isCurrent = currentSongId === song[0]?.id;
-    const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+    const isCurrent = currentSong?.id === song?.[0]?.id;
+    const isCurrentPlaying = isCurrent && isPlaying;
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         saveToRecent({
             id: song[0].id,
             type: song[0].type,
             name: song[0].title || song[0].name,
             image: song[0].image?.[2]?.url || song[0].image?.[1]?.url || song[0].image?.[0]?.url || fallbackImg,
         });
-        setCurrentSongId(song[0].id)
         if (isCurrent) {
             // same song → toggle play/pause
             togglePlayPause();
@@ -176,9 +165,9 @@ const Song = () => {
         if (song && song.length > 0 && recommendedSongs.length > 0) {
             setPlaylistSongs([song[0], ...recommendedSongs]);
         }
-    };
+    }, []);
 
-    const handleRecommendedSongClick = (song) => {
+    const handleRecommendedSongClick = useCallback((song) => {
         const id = song?.id;
         if (!id) return;
 
@@ -190,26 +179,11 @@ const Song = () => {
         if (recommendedSongs.length > 0) {
             setPlaylistSongs(recommendedSongs);
         }
-    };
+    }, [
+        currentSong
+    ]);
 
 
-    const container = {
-        hidden: {},
-        show: {
-            transition: {
-                staggerChildren: 0.12,
-            },
-        },
-    };
-
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.5, ease: "easeOut" },
-        },
-    };
 
 
     return (

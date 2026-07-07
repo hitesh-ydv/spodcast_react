@@ -7,15 +7,20 @@ import { useNavigate } from "react-router-dom";
 import { TextWrap } from "lucide-react";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { motion } from "framer-motion";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 const LibrarySidebar = () => {
   const {
     likedSongs,
     loadingLikes,
-    toggleLike,
-    isLiked,
     library,
     loadingLibrary,
+    toggleLibrary,
   } = useLibrary();
   const navigate = useNavigate();
 
@@ -242,43 +247,57 @@ const LibrarySidebar = () => {
         items.length > 0 && (
           <ul className="space-y-0">
             {items.map((item) => (
-              <li
-                key={item.itemId}
-                onClick={() =>
-                  navigate(`/${item.itemType}/${item.itemId}`)
-                }
-                className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
-                  } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
-              >
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <LazyLoadImage
-                    defaultImage={LoadImage}
-                    image={item.image || fallbackImg}
-                    draggable={false}
-                    onDragStart={(e) => e.preventDefault()}
-                    className={`w-12 h-12 ${item.itemType === "artist"
-                        ? "rounded-full"
-                        : "rounded"
-                      }`}
-                  />
-                </motion.div>
+              <>
+                <ContextMenu key={item.id}>
+                  <ContextMenuTrigger>
+                    <li
+                      key={item.itemId}
+                      onClick={() =>
+                        navigate(`/${item.itemType}/${item.itemId}`)
+                      }
+                      className={`flex items-center ${finalCollapsed ? "justify-center" : "gap-3"
+                        } p-2 rounded hover:bg-[#1d1d2f] cursor-pointer`}
+                    >
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <LazyLoadImage
+                          defaultImage={LoadImage}
+                          image={item.image || fallbackImg}
+                          draggable={false}
+                          onDragStart={(e) => e.preventDefault()}
+                          className={`w-12 h-12 ${item.itemType === "artist"
+                            ? "rounded-full"
+                            : "rounded"
+                            }`}
+                        />
+                      </motion.div>
 
-                {!finalCollapsed && (
-                  <div>
-                    <p className="text-sm font-medium line-clamp-1 hover:underline">
-                      {item.title}
-                    </p>
-                    <p className="text-sm text-[#A0A0B2] capitalize">
-                      {item.itemType}
-                    </p>
-                  </div>
-                )}
-              </li>
+                      {!finalCollapsed && (
+                        <div>
+                          <p className="text-sm font-medium line-clamp-1 hover:underline">
+                            {item.title}
+                          </p>
+                          <p className="text-sm text-[#A0A0B2] capitalize">
+                            {item.itemType}
+                          </p>
+                        </div>
+                      )}
+                    </li>
+                  </ContextMenuTrigger>
+
+                  <ContextMenuContent className="w-56 bg-[#12121A] border border-white/10 text-white p-2 rounded-sm">
+                    <ContextMenuItem className="focus:bg-[#f4000024] text-red-600 focus:text-red-600 rounded-sm p-2 font-semibold">
+                      <button onClick={() => toggleLibrary(item, item.itemType || item.item_type || item.type)}>
+                        Remove from Recent
+                      </button>
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              </>
             ))}
           </ul>
         )

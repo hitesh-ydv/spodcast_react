@@ -15,18 +15,27 @@ import { Vibrant } from "node-vibrant/browser";
 import { motion } from "framer-motion";
 import ActivityGrid from "@/components/ActivityGrid";
 import { getActivity } from "../../utils/activity";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { useLibrary } from "@/context/LibraryContext";
+
 
 export default function Home({ data, loading, homePlaylists }) {
 
   const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
+  const { recentPlayed, saveToRecent, removeRecent } = useRecent();
+  const { toggleLibrary, toggleLike, isLiked } = useLibrary();
+
+  const navigate = useNavigate()
 
   const [currentSongId, setCurrentSongId] = useState("");
   const [backgroundColor, setBackgroundColor] = useState('');
   const [scrollContainerBg, setScrollContainerBg] = useState('');
-
-  const { recentPlayed, saveToRecent } = useRecent(); // Home
-
-  const navigate = useNavigate()
+  const [showClearModal, setShowClearModal] = useState(false);
 
   const handleError = (e) => {
     e.target.onerror = null; // prevent infinite loop
@@ -97,12 +106,15 @@ export default function Home({ data, loading, homePlaylists }) {
 
   const activity = getActivity();
 
+  const background =
+    scrollContainerBg ||
+    "linear-gradient(to bottom, #12121A, #12121A)";
 
   return (
     <motion.div
       className="scroll-container h-full w-full"
       animate={{
-        background: scrollContainerBg,
+        background,
       }}
       transition={{
         duration: 0.8,
@@ -174,7 +186,8 @@ export default function Home({ data, loading, homePlaylists }) {
                               id: song.id,
                               type: song.type,
                               name: song.title || song.name,
-                              image: song.image.replace('150x150', '500x500')
+                              image: song.image.replace('150x150', '500x500'),
+                              artists: song.more_info.artistMap?.artists || [],
                             });
                           }}
                         >
@@ -221,70 +234,76 @@ export default function Home({ data, loading, homePlaylists }) {
           )}
 
           {recentPlayed.length > 0 && (
-            <ScrollContainer title="Recent Played">
+            <ScrollContainer title="Recent Played" clear={true}>
               {recentPlayed.map((song) => {
-                const isCurrent = currentSongId === song.item_id || song.itemId;
-                const isCurrentPlaying = isCurrent && isPlaying;   // check if current song is playing
+                const isCurrent =
+                  currentSongId === (song.itemId || song.item_id);
+
+                const isCurrentPlaying = isCurrent && isPlaying;
 
                 return (
-                  <div
-                    key={song.id}
-                    className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
-                    onClick={(e) => {
-                      navigate(`/${song.itemType || song.item_type}/${song.itemId || song.item_id}`)
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div className="image-wrapper mb-2">
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
+                  <ContextMenu key={song.id}>
+                    <ContextMenuTrigger>
+                      <div
+                        key={song.id}
+                        className="flex-shrink-0 w-40 rounded-lg p-2.5 hover:bg-[rgba(124,77,255,0.1)] transition-all cursor-pointer snap-start"
+                        onClick={(e) => {
+                          navigate(`/${song.itemType || song.item_type}/${song.itemId || song.item_id}`)
+                          e.stopPropagation();
+                        }}
                       >
-                        <LazyLoadImage
-                          defaultImage={LoadImage}
-                          image={song.image || fallbackImg}
-                          className={`${(song.item_type === "artist" || song.itemType === "artist")
-                              ? "rounded-full"
-                              : "song-image"
-                            }`}
-                          onError={handleError}
-                          draggable={false}
-                          onDragStart={(e) => e.preventDefault()}
-                        />
-                      </motion.div>
-                      {(song.item_type === "song" || song.itemType === "song") && (
-                        <button
-                          className={`play-button ${isCurrentPlaying ? "active" : ""}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
+                        <div className="image-wrapper mb-2">
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                          >
+                            <LazyLoadImage
+                              defaultImage={LoadImage}
+                              image={song.image || fallbackImg}
+                              className={`${(song.item_type === "artist" || song.itemType === "artist")
+                                ? "rounded-full"
+                                : "song-image"
+                                }`}
+                              onError={handleError}
+                              draggable={false}
+                              onDragStart={(e) => e.preventDefault()}
+                            />
+                          </motion.div>
+                          {(song.item_type === "song" || song.itemType === "song") && (
+                            <button
+                              className={`play-button ${isCurrentPlaying ? "active" : ""}`}
+                              onClick={(e) => {
+                                e.stopPropagation();
 
-                            setCurrentSongId(song.item_id);
+                                const songId = song.itemId || song.item_id;
 
-                            fetchRecommendedSongs(song.item_id, song);
+                                setCurrentSongId(songId);
 
-                            if (isCurrent) {
-                              togglePlayPause();
-                            } else {
-                              playSong(song.item_id);
-                            }
-                          }}
-                        >
-                          <img
-                            src={isCurrentPlaying ? PauseBtn : PlayBtn}
-                            alt={isCurrentPlaying ? "Pause" : "Play"}
-                            className="h-8 w-8"
-                          />
-                        </button>
-                      )}
-                    </div>
+                                fetchRecommendedSongs(songId, song);
 
-                    <h3 onClick={(e) => {
-                      navigate(`/${song.itemType || item_type}/${song.itemId || item_id}`)
-                      e.stopPropagation();
-                    }} className={`text-sm font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
-                    {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                                if (isCurrent) {
+                                  togglePlayPause();
+                                } else {
+                                  playSong(songId);
+                                }
+                              }}
+                            >
+                              <img
+                                src={isCurrentPlaying ? PauseBtn : PlayBtn}
+                                alt={isCurrentPlaying ? "Pause" : "Play"}
+                                className="h-8 w-8"
+                              />
+                            </button>
+                          )}
+                        </div>
+
+                        <h3 onClick={(e) => {
+                          navigate(`/${song.itemType || item_type}/${song.itemId || item_id}`)
+                          e.stopPropagation();
+                        }} className={`text-sm font-semibold line-clamp-2 hover:underline ${isCurrentPlaying ? "bg-gradient-to-br from-purple-500 to-blue-500 bg-clip-text text-transparent" : "text-white"} `}>{song.name || song.title}</h3>
+                        {/* <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
                     {song.artists.primary.map((a, index) => (
                       <span key={a.id || index}>
                         <a
@@ -301,7 +320,18 @@ export default function Home({ data, loading, homePlaylists }) {
                     ))}
                   </p> */}
 
-                  </div>
+                      </div>
+                    </ContextMenuTrigger>
+
+                    <ContextMenuContent className="w-56 bg-[#12121A] border border-white/10 text-white p-2 rounded-sm">
+
+                      <ContextMenuItem className="focus:bg-[#f4000024] text-red-600 focus:text-red-600 rounded-sm p-2 font-semibold">
+                        <button onClick={() => removeRecent(song.itemType || song.item_type, song.itemId || song.item_id)}>
+                          Remove from Recent
+                        </button>
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
 
                 )
 
@@ -354,7 +384,8 @@ export default function Home({ data, loading, homePlaylists }) {
                               id: song.id,
                               type: song.type,
                               name: song.title || song.name,
-                              image: song.image.replace('150x150', '500x500')
+                              image: song.image.replace('150x150', '500x500'),
+                              artists: song.artists?.primary || [],
                             });
                             setCurrentSongId(song.id)
                             e.stopPropagation()
@@ -467,7 +498,8 @@ export default function Home({ data, loading, homePlaylists }) {
                               id: song.id,
                               type: song.type,
                               name: song.title || song.name,
-                              image: song.image.replace('150x150', '500x500')
+                              image: song.image.replace('150x150', '500x500'),
+                              artists: song.artists?.primary || [],
                             });
 
                           }}
@@ -569,7 +601,8 @@ export default function Home({ data, loading, homePlaylists }) {
                               id: song.id,
                               type: song.type,
                               name: song.title || song.name,
-                              image: song.image.replace('150x150', '500x500')
+                              image: song.image.replace('150x150', '500x500'),
+                              artists: song.artists?.primary || [],
                             });
                           }}
                         >
@@ -671,6 +704,7 @@ export default function Home({ data, loading, homePlaylists }) {
                               type: song.type,
                               name: song.title || song.name,
                               image: song.image.replace('150x150', '500x500'),
+                              artists: song.artists?.primary || [],
                             });
                           }}
                         >
@@ -718,7 +752,8 @@ export default function Home({ data, loading, homePlaylists }) {
 
 
         </>
-      )}
+      )
+      }
     </motion.div>
   );
 }

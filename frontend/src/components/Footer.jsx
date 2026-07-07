@@ -510,6 +510,7 @@ export default function FooterPlayer() {
                   isOpen={fullScreen}
                   onClose={() => setFullScreen(false)}
                   song={currentSong}
+                  videoUrl={"https://canvaz.scdn.co/upload/licensor/2ihNpZNPbbQ6eQ6usuTcMm/video/55833f536a9f48ff9e70c26bb489adb3.cnvs.mp4"}
                 />
               </>
             )}

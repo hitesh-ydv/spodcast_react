@@ -189,12 +189,12 @@ export const LibraryProvider = ({ children }) => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const itemId = String(item.id);
-
+      const itemId = String(item.id || item.itemId || item.item_id);
+      const type = itemType || item.itemType || item.item_type;
       const exists = library.some(
         (i) =>
-          String(i.itemId) === itemId &&
-          i.itemType === itemType
+          String(i.itemId || i.item_id) === itemId &&
+          (i.itemType || i.item_type) === type
       );
 
       if (exists) {
@@ -206,7 +206,7 @@ export const LibraryProvider = ({ children }) => {
           },
           body: JSON.stringify({
             itemId,
-            itemType,
+            itemType: type,
           }),
         });
 
@@ -218,8 +218,8 @@ export const LibraryProvider = ({ children }) => {
           prev.filter(
             (i) =>
               !(
-                String(i.itemId) === itemId &&
-                i.itemType === itemType
+                String(i.itemId || i.item_id) === itemId &&
+                (i.itemType || i.item_type) === type
               )
           )
         );
@@ -235,7 +235,7 @@ export const LibraryProvider = ({ children }) => {
       } else {
         const body = {
           itemId,
-          itemType,
+          itemType: type,
           title: item.name || item.title || "",
           image:
             item.image?.[2]?.url ||
@@ -265,7 +265,7 @@ export const LibraryProvider = ({ children }) => {
           },
           ...prev,
         ]);
-        toast.success("Added to your Library",{
+        toast.success("Added to your Library", {
           id: "library-item",
           style: {
             background: "#fff",
@@ -362,7 +362,7 @@ export const LibraryProvider = ({ children }) => {
         isArtistSaved,
         isAlbumSaved,
         isPlaylistSaved,
-
+        toggleLibrary,
         clearLibraryData,
       }}
     >

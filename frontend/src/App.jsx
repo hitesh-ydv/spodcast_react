@@ -39,6 +39,18 @@ function App() {
   }, [])
 
   useEffect(() => {
+    const disableContextMenu = (e) => {
+      e.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", disableContextMenu);
+
+    return () => {
+      document.removeEventListener("contextmenu", disableContextMenu);
+    };
+  }, []);
+
+  useEffect(() => {
     const activate = () => {
 
       const firstBtn = document.querySelector("button, a, input");

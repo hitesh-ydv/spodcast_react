@@ -161,12 +161,13 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
 
                   {song.type == "song" && (
                     <button onClick={(e) => {
-                      handleClick(e, song); 
+                      handleClick(e, song);
                       saveToRecent({
                         id: song.id,
                         type: song.type,
                         name: song.title || song.name,
                         image: song.image?.[2]?.url || song.image?.[1]?.url || song.image?.[0]?.url || fallbackImg,
+                        artists: song.artists?.primary || [],
                       });
                     }} className={`play-button-topresults ${isCurrentPlaying ? "active" : ""}`}>
                       <img
@@ -230,6 +231,7 @@ export default function Search({ topResults, songs, playlists, albums, artists, 
                               type: song.type,
                               name: song.title || song.name,
                               image: song.image?.[2]?.url || song.image?.[1]?.url || song.image?.[0]?.url || fallbackImg,
+                              artists: song.artists?.primary || [],
                             });
                             setCurrentSongId(song.id)
                             e.stopPropagation()

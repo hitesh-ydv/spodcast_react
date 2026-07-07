@@ -13,6 +13,7 @@ export const AudioProvider = ({ children }) => {
   const [audioUrl, setAudioUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [playlistSongs, setPlaylistSongs] = useState([]); // ✅ clearer naming
+  const [canvasUrl, setCanvasUrl] = useState("");
 
   const audioRef = useRef(null);
 
@@ -40,6 +41,77 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
+  const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq";
+
+  const searchSong = async (songName, token) => {
+    const res = await fetch(
+      `https://api.paxsenix.org/spotify/search?q=${encodeURIComponent(songName)}&type=track&limit=1`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+
+      }
+    );
+
+    const data = await res.json();
+    return data.tracks.items[0]?.id;
+  };
+
+  const getCanvasUrl = async (trackId) => {
+    try {
+      const response = await fetch(
+        `https://api.paxsenix.org/spotify/canvas?id=${encodeURIComponent(trackId)}`,
+        {
+          method: "GET",
+          headers: {
+            "Accept": "*/*",
+            "Authorization":
+              "Bearer sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      return data?.data?.canvasesList?.[0]?.canvasUrl || null;
+
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    setCanvasUrl(""); // reset first
+
+    const fetchCanvas = async () => {
+      try {
+        // 1️⃣ Get token
+        const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq"; // Replace with your actual token
+
+        // 2️⃣ Search track ID
+        const trackId = await searchSong(`${currentSong.name} ${currentSong.artists.primary[0].name}`, token);
+        if (!trackId) return;
+
+        // 3️⃣ Fetch canvas URL
+        const url = await getCanvasUrl(trackId);
+
+        // ✅ Check if URL contains "image"
+        if (url.toLowerCase().includes("image")) {
+          setCanvasUrl(""); // or leave it as "" to render nothing
+          return null;
+        }
+
+        setCanvasUrl(url);
+      } catch (err) {
+        
+      }
+    };
+
+    fetchCanvas();
+  }, [currentSong]);
 
 
   const playSong = async (songId, playlist = playlistSongs, autoPlay = true) => {
@@ -89,10 +161,6 @@ export const AudioProvider = ({ children }) => {
           songId: data.data[0].id,
         }),
       });
-
-      console.log("Local:", localStorage.getItem("token"));
-      console.log("Session:", sessionStorage.getItem("token"));
-
       // recordActivity({
       //   id: currentSong?.id,
       //   type: "song",
@@ -118,6 +186,8 @@ export const AudioProvider = ({ children }) => {
       triggerSlowNetwork(); // also show on error
     }
   };
+
+
 
   useEffect(() => {
     if (currentSong?.name && currentSong?.artists.primary[0].name) {
@@ -176,6 +246,7 @@ export const AudioProvider = ({ children }) => {
         audioRef,
         playlistSongs, // ✅ renamed here
         setPlaylistSongs, // ✅ cleaner naming
+        canvasUrl,
       }}
     >
       {children}

@@ -8,13 +8,11 @@ import { CButton, CTooltip } from '@coreui/react'
 import Unlike from "../assets/unlike.svg";
 
 export default function RightSidebar() {
-  const { currentSong, isPlaying } = useAudio();
+  const { currentSong, isPlaying, canvasUrl } = useAudio();
   const { toggleLike, toggleAlbum, isLiked } = useLibrary();
 
   const navigate = useNavigate();
 
-  // Static canvas video (Spotify style)
-  const [canvasUrl, setCanvasUrl] = useState("");
   const liked = currentSong ? isLiked(currentSong.id) : false;
 
   const songImage = currentSong?.image?.[2]?.url;
@@ -22,82 +20,6 @@ export default function RightSidebar() {
 
   const scrollRef = useRef(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq";
-
-  const searchSong = async (songName, token) => {
-    const res = await fetch(
-      `https://api.paxsenix.org/spotify/search?q=${encodeURIComponent(songName)}&type=track&limit=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-
-      }
-    );
-
-    const data = await res.json();
-    return data.tracks.items[0]?.id;
-  };
-
-
-
-  const getCanvasUrl = async (trackId) => {
-    try {
-      const response = await fetch(
-        `https://api.paxsenix.org/spotify/canvas?id=${encodeURIComponent(trackId)}`,
-        {
-          method: "GET",
-          headers: {
-            "Accept": "*/*",
-            "Authorization":
-              "Bearer sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq",
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      return data?.data?.canvasesList?.[0]?.canvasUrl || null;
-
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
-
-
-  useEffect(() => {
-    setCanvasUrl(""); // reset first
-
-    const fetchCanvas = async () => {
-      try {
-        // 1️⃣ Get token
-        const token = "sk-paxsenix-4-JKEqHQQzxDQv_gKvs1SFpePsIMwO-62NQK-WiIAiZ1rbVq"; // Replace with your actual token
-
-        // 2️⃣ Search track ID
-        const trackId = await searchSong(`${currentSong.name} ${currentSong.artists.primary[0].name}`, token);
-        if (!trackId) return;
-
-        // 3️⃣ Fetch canvas URL
-        const url = await getCanvasUrl(trackId);
-
-        // ✅ Check if URL contains "image"
-        if (url.toLowerCase().includes("image")) {
-          setCanvasUrl(""); // or leave it as "" to render nothing
-          return null;
-        }
-
-        setCanvasUrl(url);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchCanvas();
-  }, [currentSong]);
-
 
   useEffect(() => {
     const video = videoRef.current;
@@ -128,7 +50,7 @@ export default function RightSidebar() {
   return (
     <aside className="right-section relative w-77 [@media(min-height:1000px)]:w-100 bg-[#12121A] rounded-md ml-2 overflow-hidden">
       {/* ===== Background Layer (fixed height 500px) ===== */}
-      <div className="absolute top-0 left-0 right-0 h-[58vh] rounded-md overflow-hidden z-10">
+      <div className="absolute top-0 left-0 right-0 h-[70vh] rounded-md overflow-hidden z-10">
         {/* Background image */}
         <AnimatePresence mode="wait">
           {songImage && (
@@ -146,25 +68,25 @@ export default function RightSidebar() {
           )}
         </AnimatePresence>
 
-        {/* Canvas video */}
-        {!canvasUrl !== "" && !canvasUrl.toLowerCase().includes("image") && (
-          <AnimatePresence mode="wait">
-            <motion.video
-              ref={videoRef}
-              key={canvasUrl}
-              src={canvasUrl}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
-            />
-          </AnimatePresence>
-        )}
+        {canvasUrl &&
+          !canvasUrl.toLowerCase().includes("image") && (
+            <AnimatePresence mode="wait">
+              <motion.video
+                ref={videoRef}
+                key={canvasUrl}
+                src={canvasUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+              />
+            </AnimatePresence>
+          )}
 
         <div className="absolute inset-0 bg-gradient-to-b from-transparentt via-transparent vai-transaprent to-[#12121A] min-h-[58vh]  " />
 

@@ -1,15 +1,25 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { Vibrant } from "node-vibrant/browser";
+import { X, Video } from "lucide-react";
+import { useAudio } from "@/context/AudioContext";
 
 export default function FullScreenPlayer({ isOpen, onClose, song }) {
   const containerRef = useRef(null);
   const [bg, setBg] = useState("");
   const [prevBg, setPrevBg] = useState("");
   const imageRef = useRef(null);
+  const [showControls, setShowControls] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
+  const videoRef = useRef(null);
+  const { canvasUrl, isPlaying } = useAudio();
 
-  // 👉 FULLSCREEN
+  useEffect(() => {
+    if (song) {
+      setShowVideo(false); // Every new song starts with Artwork
+    }
+  }, [song?.id]);
+
   useEffect(() => {
     if (isOpen && containerRef.current) {
       const el = containerRef.current;
@@ -17,7 +27,42 @@ export default function FullScreenPlayer({ isOpen, onClose, song }) {
     }
   }, [isOpen]);
 
-  // 👉 ESC CLOSE
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || !showVideo) return;
+
+    if (isPlaying) {
+      video.play().catch(() => { });
+    } else {
+      video.pause();
+    }
+  }, [isPlaying, showVideo, canvasUrl]);
+
+
+  useEffect(() => {
+    let timer;
+
+    const handleMove = () => {
+      setShowControls(true);
+
+      clearTimeout(timer);
+
+      timer = setTimeout(() => {
+        setShowControls(false);
+      }, 2000);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+
+    handleMove();
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("mousemove", handleMove);
+    };
+  }, []);
+
   useEffect(() => {
     const handle = () => {
       if (!document.fullscreenElement) onClose();
@@ -26,7 +71,6 @@ export default function FullScreenPlayer({ isOpen, onClose, song }) {
     return () => document.removeEventListener("fullscreenchange", handle);
   }, []);
 
-  // 👉 COLOR EXTRACTION ON SONG CHANGE
   useEffect(() => {
     if (!song) return;
 
@@ -60,7 +104,6 @@ export default function FullScreenPlayer({ isOpen, onClose, song }) {
     extract();
   }, [song]);
 
-  // 👉 CLOSE
   const handleClose = () => {
     document.exitFullscreen?.();
     onClose();
@@ -98,27 +141,124 @@ export default function FullScreenPlayer({ isOpen, onClose, song }) {
             />
           </div>
 
-          {/* CLOSE */}
-          <button
-            onClick={handleClose}
-            className="absolute top-5 right-5 z-50 cursor-pointer"
-          >
-            <X className="text-white" />
-          </button>
+          <AnimatePresence>
+            {showControls && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute top-7 right-7 z-50 flex items-start gap-7"
+              >
+                {showControls && (
+                  <>
+                    {/* Artwork - only if a song exists */}
+                    {song && (
+                      <button
+                        onClick={() => setShowVideo(false)}
+                        className="flex flex-col items-center cursor-pointer"
+                      >
+                        {showVideo ? (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-6 h-6 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                          >
+                            <circle cx="8" cy="8" r="7" />
+                            <circle cx="8" cy="8" r="2" />
+                          </svg>
+                        ) : (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-6 h-6 text-white"
+                            fill="currentColor"
+                          >
+                            <path d="M9.5 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                            <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                          </svg>
+                        )}
 
-          {/* 🔥 IMAGE ANIMATION ON SONG CHANGE */}
+                        <span
+                          className={`mt-2 h-[4px] w-[4px] rounded-full bg-white transition-opacity ${showVideo ? "opacity-0" : "opacity-100"
+                            }`}
+                        />
+                      </button>
+                    )}
+
+                    {/* Canvas - only if canvasUrl exists */}
+                    {canvasUrl && (
+                      <button
+                        onClick={() => setShowVideo(true)}
+                        className="flex flex-col items-center cursor-pointer"
+                      >
+                        {showVideo ? (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-6 h-6 text-white"
+                            fill="currentColor"
+                          >
+                            <path d="M14.49.513c.328.328.512.773.512 1.237v12.5a1.75 1.75 0 0 1-1.75 1.75h-10.5a1.75 1.75 0 0 1-1.75-1.75V1.75A1.75 1.75 0 0 1 2.752 0h10.5c.464 0 .91.184 1.237.513ZM6 5v6l5.196-3z" />
+                          </svg>
+                        ) : (
+                          <svg
+                            viewBox="0 0 16 16"
+                            className="w-6 h-6 text-white"
+                            fill="currentColor"
+                          >
+                            <path d="M11.196 8 6 5v6z" />
+                            <path d="M15.002 1.75A1.75 1.75 0 0 0 13.252 0h-10.5a1.75 1.75 0 0 0-1.75 1.75v12.5c0 .966.783 1.75 1.75 1.75h10.5a1.75 1.75 0 0 0 1.75-1.75zm-1.75-.25a.25.25 0 0 1 .25.25v12.5a.25.25 0 0 1-.25.25h-10.5a.25.25 0 0 1-.25-.25V1.75a.25.25 0 0 1 .25-.25z" />
+                          </svg>
+                        )}
+
+                        <span
+                          className={`mt-2 h-[4px] w-[4px] rounded-full bg-white transition-opacity ${showVideo ? "opacity-100" : "opacity-0"
+                            }`}
+                        />
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {/* Close */}
+                <button
+                  onClick={handleClose}
+                  className="cursor-pointer pt-[1px]"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <AnimatePresence mode="wait">
-            <motion.img
-              key={song?.id} // 🔥 important
-              src={song.image?.[2]?.url}
-              ref={imageRef}
-              initial={{ opacity: 0, scale: 0.8, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.1 }}
-              transition={{ duration: 0.5 }}
-              className="w-96 h-96 rounded-xl shadow-2xl object-cover z-10"
-              draggable={false}
-            />
+            {showVideo ? (
+              <motion.video
+                key={song?.id + "-video"}
+                ref={videoRef}
+                src={canvasUrl}
+                autoPlay
+                playsInline
+                loop
+                controls={false}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                className="w-[22vw] max-w-6xl rounded-xl shadow-2xl z-10"
+              />
+            ) : (
+              <motion.img
+                key={song?.id + "-image"}
+                src={song.image?.[2]?.url}
+                initial={{ opacity: 0, scale: 0.8, y: 40 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+                className="w-100 h-100 rounded-xl shadow-2xl object-cover z-10"
+                draggable={false}
+              />
+            )}
           </AnimatePresence>
 
           {/* 🔥 TEXT ANIMATION */}

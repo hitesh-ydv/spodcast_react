@@ -40,6 +40,8 @@ const LikedSong = () => {
         loadingLikes,
     } = useLibrary();
 
+    console.log("Liked Songs:", likedSongs);
+
     const { recentPlayed, saveToRecent } = useRecent(); // Home
 
     const { playSong, currentSong, isPlaying, togglePlayPause, setPlaylistSongs } = useAudio();
@@ -286,8 +288,32 @@ const LikedSong = () => {
                 {likedSongs.length !== 0 && (
                     <ScrollContainer title={false} icons={false} direction="col">
                         {likedSongs.map((song, index) => {
-                            const isCurrent = currentSong?.song_id === song.song_id;
+                            const isCurrent =
+                                currentSong?.song_id === song.song_id ||
+                                currentSong?.id === song.song_id;
                             const isCurrentPlaying = isCurrent && isPlaying;
+
+                            let artists = [];
+
+                            try {
+                                const parsed =
+                                    typeof song.artists === "string"
+                                        ? JSON.parse(song.artists)
+                                        : song.artists;
+
+                                if (Array.isArray(parsed)) {
+                                    artists = parsed;
+                                } else if (parsed?.primary) {
+                                    artists = parsed.primary;
+                                } else if (parsed) {
+                                    artists = [parsed];
+                                }
+                            } catch (err) {
+                                console.error("Artists parse error:", err, song.artists);
+                            }
+
+                            console.log(song.artists);
+                            console.log(typeof song.artists);
 
                             return (
                                 <div
@@ -357,8 +383,12 @@ const LikedSong = () => {
                                                 {song.name}
                                             </h1>
 
-                                            <p className="text-[14px] text-[#A0A0B2] truncate font-medium">
-                                                {song.artists}
+                                            <p className="text-sm text-[#A0A0B2] line-clamp-2 font-medium">
+                                                {song.artists ? (
+                                                    song.artists
+                                                ) : (
+                                                    <span>Unknown Artist</span>
+                                                )}
                                             </p>
                                         </div>
                                     </div>

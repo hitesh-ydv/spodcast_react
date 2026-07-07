@@ -141,6 +141,7 @@ const Artist = () => {
             type: artist.type,
             name: artist.name,
             image: artist.image?.[2]?.url || artist.image?.[1]?.url || artist.image?.[0]?.url || fallbackImg,
+            artists: artist.artists?.primary || [],
         });
 
         if (!localCurrentSongId || !isCurrentInPlaylist) {
@@ -349,6 +350,7 @@ const Artist = () => {
                                                     type: artist.type,
                                                     name: artist.name,
                                                     image: artist.image?.[2]?.url || artist.image?.[1]?.url || artist.image?.[0]?.url || fallbackImg,
+                                                    artists: artist.artists?.primary || [],
                                                 });
 
                                             }}

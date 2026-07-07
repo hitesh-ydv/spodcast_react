@@ -266,7 +266,8 @@ const Playlist = () => {
                                 id: details.id,
                                 type: details.type,
                                 name: details.name,
-                                image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url
+                                image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url,
+                                artists: details.artists || [],
                             });
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
@@ -367,7 +368,8 @@ const Playlist = () => {
                                             id: details.id,
                                             type: details.type,
                                             name: details.name,
-                                            image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url
+                                            image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url,
+                                            artists: details.artists?.primary || [],
                                         }); 
                                         setPlaylistSongs(songs);
                                     }}

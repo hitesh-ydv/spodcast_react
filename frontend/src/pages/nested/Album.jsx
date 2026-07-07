@@ -257,6 +257,7 @@ const Album = () => {
                                 type: details.type,
                                 name: details.name,
                                 image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
+                                artists: details.artists?.primary || [],
                             });
                             
                             setPlaylistSongs(songs); // update context with current playlist songs
@@ -400,6 +401,7 @@ const Album = () => {
                                                         type: details.type,
                                                         name: details.name,
                                                         image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
+                                                        artists: details.artists?.primary || [],
                                                     });
                                                 }}
                                                 className={`play-btn rounded ${isCurrentPlaying ? "visible" : ""}`}

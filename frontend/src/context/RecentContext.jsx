@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLoading } from "@/context/LoadingContext";
+import toast from "react-hot-toast";
 
 const RecentContext = createContext();
 
@@ -7,6 +9,19 @@ const API_URL = import.meta.env.VITE_API_URL2;
 export const RecentProvider = ({ children }) => {
   const [recentPlayed, setRecentPlayed] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { startLoading, finishLoading } = useLoading();
+
+  const removedFromRecent = () =>
+    toast.success("Removed from Recents", {
+      id: "recent-item",
+      style: {
+        background: "#fff",
+        color: "#000",
+        marginBottom: "100px",
+      },
+      duration: 2000,
+    });
 
   // Load recent from backend
   const fetchRecent = async () => {
@@ -29,6 +44,7 @@ export const RecentProvider = ({ children }) => {
       if (data.success) {
         setRecentPlayed(data.data);
       }
+      console.log(data.data, "Fetched Recent Played");
     } catch (err) {
       console.error(err);
     } finally {
@@ -40,24 +56,26 @@ export const RecentProvider = ({ children }) => {
     fetchRecent();
   }, []);
 
-  // Save recent
   const saveToRecent = async (item) => {
+
     const recentItem = {
       itemType: item.type || "song",
       itemId: String(item.id),
       title: item.name,
+      artists: JSON.stringify(item.artists || item.artists.primary || []),
       image: item.image,
     };
 
-    // Optimistic update
     setRecentPlayed((prev) => {
-      const filtered = prev.filter(
-        (i) =>
-          !(
-            i.itemId === recentItem.itemId &&
-            i.itemType === recentItem.itemType
-          )
-      );
+      const filtered = prev.filter((i) => {
+        const id = String(i.itemId || i.item_id);
+        const type = i.itemType || i.item_type;
+
+        return !(
+          id === recentItem.itemId &&
+          type === recentItem.itemType
+        );
+      });
 
       return [recentItem, ...filtered].slice(0, 10);
     });
@@ -65,29 +83,27 @@ export const RecentProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
 
-      console.log("token", token);
-
       await fetch(`${API_URL}/api/recent`, {
         method: "POST",
-
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-
         body: JSON.stringify(recentItem),
+
       });
     } catch (err) {
       console.error(err);
     }
   };
 
-  // Remove one item
   const removeRecent = async (itemType, itemId) => {
     try {
+      startLoading();
+
       const token = localStorage.getItem("token");
 
-      await fetch(
+      const res = await fetch(
         `${API_URL}/api/recent/${itemType}/${itemId}`,
         {
           method: "DELETE",
@@ -97,23 +113,32 @@ export const RecentProvider = ({ children }) => {
         }
       );
 
+      if (!res.ok) {
+        throw new Error("Delete failed");
+      }
+
+      // ✅ Remove only after successful delete
       setRecentPlayed((prev) =>
-        prev.filter(
-          (i) =>
-            !(
-              i.itemType === itemType &&
-              i.itemId === itemId
-            )
-        )
+        prev.filter((i) => {
+          const type = i.itemType || i.item_type;
+          const id = String(i.itemId || i.item_id);
+
+          return !(type === itemType && id === String(itemId));
+        })
       );
+
+      removedFromRecent();
     } catch (err) {
       console.error(err);
+    } finally {
+      finishLoading();
     }
   };
 
   // Clear all
   const clearRecent = async () => {
     try {
+      startLoading();
       const token = localStorage.getItem("token");
 
       await fetch(`${API_URL}/api/recent`, {
@@ -122,6 +147,8 @@ export const RecentProvider = ({ children }) => {
           Authorization: `Bearer ${token}`,
         },
       });
+
+      finishLoading();
 
       setRecentPlayed([]);
     } catch (err) {

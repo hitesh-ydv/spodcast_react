@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 
 @plugin "tailwindcss-animate";
 
@@ -19,8 +22,6 @@ body {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none;     /* IE */
 }
-
-
 
 /* src/index.css */
 ::-webkit-scrollbar {
@@ -263,6 +264,11 @@ body {
     transform: translateY(calc(-100% - var(--gap)));
     }
   }
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6)
 }
 
 :root {
@@ -285,11 +291,11 @@ body {
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -319,11 +325,11 @@ body {
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -334,7 +340,6 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-
 .container2 {
   overflow-y: overlay; /* scrollbar floats over content */
   scrollbar-gutter: stable both-edges;
@@ -343,7 +348,6 @@ body {
 button{
   outline: none;
 }
-
 
 /* 🔥 Hide scrollbar by default */
 .scrollbar-hide {
@@ -417,3 +421,44 @@ img {
   /* subtle black shadow */
 }
 
+/* Menu */
+.react-contexify {
+  --contexify-menu-bgColor: #12121A;
+  --contexify-menu-border-radius: 12px;
+  --contexify-menu-shadow: 0 12px 40px rgba(0, 0, 0, .45);
+
+  --contexify-item-color: #fff;
+
+  /* Your purple hover */
+  --contexify-activeItem-bgColor: rgba(124, 77, 255, 0.1);
+  --contexify-activeItem-color: #fff;
+
+  --contexify-separator-color: rgba(255,255,255,.08);
+
+  background: #12121A !important;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Remove browser focus outline */
+.react-contexify__item:focus {
+  outline: none !important;
+}
+
+/* Force hover/active color */
+.react-contexify__item:hover,
+.react-contexify__item--active {
+  background: rgba(124, 77, 255, 0.1) !important;
+  color: white !important;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

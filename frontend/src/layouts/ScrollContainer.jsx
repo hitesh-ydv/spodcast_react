@@ -1,15 +1,28 @@
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { useRecent } from "@/context/RecentContext";
+import ConfirmModal from "@/components/ConfirmModal";
+
 
 export default function ScrollContainer({
   title,
   children,
   icons = true,
-  direction = "row", // 👈 NEW PROP — "row" (default) or "col"
+  direction = "row", // 👈 NEW PROP — "row" (default) or "col",
+  clear = false, // 👈 NEW PROP — "clear" (default) or "col",
 }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
+
+  const {clearRecent } = useRecent(); // Home
+
+  const handleClearAll = async () => {
+    await clearRecent();
+    setShowClearModal(false);
+  };
+
 
   const updateScrollButtons = () => {
     const el = scrollRef.current;
@@ -54,7 +67,10 @@ export default function ScrollContainer({
 
   return (
     <div className="relative p-1 pt-6">
-      {title && <h2 className="text-2xl font-bold mb-3 pl-6">{title}</h2>}
+      <div className="flex items-center justify-between mb-2">
+        {title && <h2 className="text-2xl font-bold mb-3 pl-6">{title}</h2>}
+        {clear && <h2 onClick={() => setShowClearModal(true)} className="text-[13px] hover:underline cursor-pointer font-semibold mr-4 text-[#A0A0B2] pl-6">Clear All</h2>}
+      </div>
 
       <div className="relative group">
         {/* Scrollable Container */}
@@ -96,6 +112,16 @@ export default function ScrollContainer({
             </button>
           </div>
         )}
+
+        <ConfirmModal
+          open={showClearModal}
+          title="Clear recent history?"
+          description="Are you sure you want to clear your recently played items?"
+          confirmText="Clear"
+          cancelText="Cancel"
+          onCancel={() => setShowClearModal(false)}
+          onConfirm={handleClearAll}
+        />
       </div>
     </div>
   );
