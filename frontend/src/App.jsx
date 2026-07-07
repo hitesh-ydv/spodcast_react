@@ -1,12 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import AuthRoute from "./routes/AuthRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { SearchProvider } from "./context/SearchContext";
-import MaintenanceModal from "./components/MaintenanceModal";
-import { useState, useEffect } from "react";
 import './App.css'
 import { RecentProvider } from "./context/RecentContext";
 import { LibraryProvider } from "./context/LibraryContext";
@@ -14,8 +12,23 @@ import { OfflineProvider } from "./context/OfflineProvider";
 import { ActivityProvider } from "./context/ActivityContext";
 import TopLoadingBar from "./components/TopLoadingBar";
 import { LoadingProvider } from "./context/LoadingContext";
+import { useEffect } from "react";
+import {
+  listenForLogout,
+} from "./utils/logoutChannel"; // <-- use your correct path
 
 function App() {
+
+  useEffect(() => {
+    const stopListening = listenForLogout(() => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      window.location.href = "/login";
+    });
+
+    return stopListening;
+  }, []);
 
   useEffect(() => {
     const getSession = async () => {

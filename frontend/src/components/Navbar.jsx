@@ -13,6 +13,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { motion } from "framer-motion";
 import { useLibrary } from "@/context/LibraryContext";
 import { useRecent } from "@/context/RecentContext";
+import { broadcastLogout } from "../utils/logoutChannel";
 
 const URL = import.meta.env.VITE_API_URL2;
 
@@ -90,7 +91,10 @@ export default function Navbar() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        navigate("/login");
+
+        broadcastLogout();
+
+        navigate("/login", { replace: true });
     };
 
     const handleInputChange = (e) => {
