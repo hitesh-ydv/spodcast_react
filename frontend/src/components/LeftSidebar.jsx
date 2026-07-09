@@ -202,8 +202,13 @@ const LibrarySidebar = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center text-white font-bold">
-                ♥
+              <div className="w-12 h-12 flex items-center justify-center text-white font-bold">
+                <img
+                  // ref={imageRef2}
+                  src="https://misc.scdn.co/liked-songs/liked-songs-640.jpg"
+                  className="w-full h-full rounded object-cover"
+                  crossOrigin="anonymous"
+                />
               </div>
             </motion.div>
 
@@ -292,7 +297,7 @@ const LibrarySidebar = () => {
                   <ContextMenuContent className="w-56 bg-[#12121A] border border-white/10 text-white p-2 rounded-sm">
                     <ContextMenuItem className="focus:bg-[#f4000024] text-red-600 focus:text-red-600 rounded-sm p-2 font-semibold">
                       <button onClick={() => toggleLibrary(item, item.itemType || item.item_type || item.type)}>
-                        Remove from Recent
+                        Remove from your Library
                       </button>
                     </ContextMenuItem>
                   </ContextMenuContent>

@@ -2,21 +2,22 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useRecent } from "@/context/RecentContext";
 import ConfirmModal from "@/components/ConfirmModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export default function ScrollContainer({
   title,
   children,
   icons = true,
-  direction = "row", // 👈 NEW PROP — "row" (default) or "col",
-  clear = false, // 👈 NEW PROP — "clear" (default) or "col",
+  direction = "row",
+  clear = false,
 }) {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [showClearModal, setShowClearModal] = useState(false);
 
-  const {clearRecent } = useRecent(); // Home
+  const { clearRecent } = useRecent();
 
   const handleClearAll = async () => {
     await clearRecent();
@@ -88,30 +89,81 @@ export default function ScrollContainer({
             : children}
         </div>
 
-        {/* Conditionally render gradients + icons */}
-        {icons && direction === "row" && canScrollLeft && (
-          <div className="absolute inset-y-0 left-0  flex items-center pointer-events-none">
-            <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-[#12121A] to-transparent  -ml-1" />
-            <button
-              onClick={() => scroll("left")}
-              className="pointer-events-auto relative z-10 bg-[#1f1f1f]/50 p-2 rounded-full hover:bg-[#2a2a2a] ml-3 shadow-md transition-all"
+        {/* Left Scroll Button */}
+        <AnimatePresence>
+          {icons && direction === "row" && canScrollLeft && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-y-0 left-0 flex items-center pointer-events-none"
             >
-              <ChevronLeftIcon className="h-6 w-6 text-white" />
-            </button>
-          </div>
-        )}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55 }}
+                className="absolute left-0 top-0 h-full w-22 bg-gradient-to-r from-[#12121A] to-transparent -ml-1"
+              />
 
-        {icons && direction === "row" && canScrollRight && (
-          <div className="absolute inset-y-0 right-0  flex items-center justify-end pointer-events-none">
-            <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-[#12121A] to-transparent  -mr-1" />
-            <button
-              onClick={() => scroll("right")}
-              className="pointer-events-auto relative z-10 bg-[#1f1f1f]/50 p-2 rounded-full hover:bg-[#2a2a2a] mr-3 shadow-md transition-all"
+              <motion.button
+                onClick={() => scroll("left")}
+                initial={{ x: -15, opacity: 0, scale: 0.9 }}
+                animate={{ x: 0, opacity: 1, scale: 1 }}
+                exit={{ x: -15, opacity: 0, scale: 0.9 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 350,
+                  damping: 25,
+                }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                className="pointer-events-auto relative z-10 bg-[#1D1D2F]/50 p-2 rounded-full hover:bg-[#1D1D2F] ml-3 shadow-md"
+              >
+                <ChevronLeftIcon className="h-6 w-6 text-white" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Right Scroll Button */}
+        <AnimatePresence>
+          {icons && direction === "row" && canScrollRight && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-y-0 right-0 flex items-center justify-end pointer-events-none"
             >
-              <ChevronRightIcon className="h-6 w-6 text-white" />
-            </button>
-          </div>
-        )}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55 }}
+                className="absolute right-0 top-0 h-full w-22 bg-gradient-to-l from-[#12121A] to-transparent -mr-1"
+              />
+
+              <motion.button
+                onClick={() => scroll("right")}
+                initial={{ x: 15, opacity: 0, scale: 0.9 }}
+                animate={{ x: 0, opacity: 1, scale: 1 }}
+                exit={{ x: 15, opacity: 0, scale: 0.9 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 28,
+                }}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.95 }}
+                className="pointer-events-auto relative z-10 bg-[#1D1D2F]/50 p-2 rounded-full hover:bg-[#1D1D2F] mr-3 shadow-md"
+              >
+                <ChevronRightIcon className="h-6 w-6 text-white" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <ConfirmModal
           open={showClearModal}

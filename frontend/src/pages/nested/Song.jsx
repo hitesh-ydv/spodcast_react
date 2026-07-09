@@ -21,6 +21,7 @@ import { useLibrary } from "../../context/LibraryContext";
 import Unlike from "../../assets/unlike.svg";
 import { motion } from "framer-motion";
 import { useSong } from "../../hooks/service";
+import DownloadModal from '@/components/DownloadModal';
 
 
 const container = {
@@ -48,6 +49,7 @@ const Song = () => {
     const imageRef2 = useRef(null);
     const [showMore, setShowMore] = useState(false);
     const { toggleLike, isLiked, } = useLibrary();
+    const [showDownload, setShowDownload] = useState(false);
     const {
         songQuery,
         lyricsQuery,
@@ -63,6 +65,8 @@ const Song = () => {
     const lyrics = lyricsQuery.data;
     const recommendedSongs = recommendationsQuery.data || [];
 
+    console.log("song", song);
+
     const isLoading =
         songQuery.isLoading
 
@@ -76,7 +80,7 @@ const Song = () => {
         toggleLike(song);
     };
 
-    const extractColorFromImage = useCallback(async () => {
+    const extractColorFromImage = async () => {
         if (!imageRef2.current) return;
 
         try {
@@ -118,7 +122,7 @@ const Song = () => {
         } catch (err) {
             console.error("Vibrant error:", err);
         }
-    }, []);
+    }
 
     const lines = lyrics?.split(/<br\s*\/?>/i).filter((line) => line.trim() !== "");
     const MAX_LINES = 8;
@@ -148,7 +152,7 @@ const Song = () => {
     const isCurrent = currentSong?.id === song?.[0]?.id;
     const isCurrentPlaying = isCurrent && isPlaying;
 
-    const handleClick = useCallback(() => {
+    const handleClick = () => {
         saveToRecent({
             id: song[0].id,
             type: song[0].type,
@@ -165,9 +169,9 @@ const Song = () => {
         if (song && song.length > 0 && recommendedSongs.length > 0) {
             setPlaylistSongs([song[0], ...recommendedSongs]);
         }
-    }, []);
+    };
 
-    const handleRecommendedSongClick = useCallback((song) => {
+    const handleRecommendedSongClick = (song) => {
         const id = song?.id;
         if (!id) return;
 
@@ -179,10 +183,23 @@ const Song = () => {
         if (recommendedSongs.length > 0) {
             setPlaylistSongs(recommendedSongs);
         }
-    }, [
-        currentSong
-    ]);
+    }
 
+    const downloadSong = ({ fileName, quality }) => {
+        const url =
+            song[0].downloadUrl?.[quality]?.url ||
+            song[0].downloadUrl?.[quality - 1]?.url;
+
+        if (!url) return;
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${fileName}.m4a`; // Works only if the server allows it
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    };
 
 
 
@@ -304,7 +321,7 @@ const Song = () => {
                         content={liked ? "Remove from Liked Songs" : "Add to Liked Songs"}
                         placement="top"
                         style={{
-                            backgroundColor: "#242424",
+                            backgroundColor: "#1D1D2F",
                             color: "white",
                             padding: 6,
                             borderRadius: 5,
@@ -329,10 +346,20 @@ const Song = () => {
                     <CTooltip
                         content="Download Song"
                         placement="top"
-                        style={{ backgroundColor: '#242424', color: 'white', padding: 6, borderRadius: 5, fontSize: 15, fontWeight: 550 }}
+                        style={{
+                            backgroundColor: "#1D1D2F",
+                            color: "white",
+                            padding: 6,
+                            borderRadius: 5,
+                            fontSize: 15,
+                            fontWeight: 550,
+                        }}
                     >
-                        <button className="px-2.5 py-2.5 flex items-center cursor-pointer  justify-center transition-transform duration-200 hover:scale-105">
-                            <img src={Download} alt="Play" className="h-8 w-8" />
+                        <button
+                            onClick={() => setShowDownload(true)}
+                            className="px-2.5 py-2.5 flex items-center cursor-pointer justify-center transition-transform duration-200 hover:scale-105"
+                        >
+                            <img src={Download} alt="Download" className="h-8 w-8" />
                         </button>
                     </CTooltip>
                 </div>
@@ -507,6 +534,13 @@ const Song = () => {
                 )}
 
             </motion.div>
+
+            <DownloadModal
+                open={showDownload}
+                onClose={() => setShowDownload(false)}
+                song={song[0]}
+                onDownload={downloadSong}
+            />
 
         </div >
     )

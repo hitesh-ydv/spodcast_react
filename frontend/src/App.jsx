@@ -15,7 +15,7 @@ import { LoadingProvider } from "./context/LoadingContext";
 import { useEffect } from "react";
 import {
   listenForLogout,
-} from "./utils/logoutChannel"; // <-- use your correct path
+} from "./utils/logoutChannel";
 
 function App() {
 

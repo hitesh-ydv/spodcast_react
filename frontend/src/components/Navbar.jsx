@@ -117,7 +117,6 @@ export default function Navbar() {
     return (
         <nav className="w-full flex items-center justify-between px-2 py-2 pr-4 text-white h-16">
 
-            {/* Left Logo */}
             <div className="ml-2.5">
                 <img
                     src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_White.png"
@@ -128,10 +127,8 @@ export default function Navbar() {
                 />
             </div>
 
-            {/* Middle Search Section */}
             <div className="h-full w-[35%] min-w-[20%] flex items-center gap-2">
 
-                {/* Home Button */}
                 <button onClick={handleFocus2} className="duration-300 hover:scale-105 w-13 bg-[#151520] p-2 rounded-full hover:bg-[#1d1d2f] cursor-pointer transition-all">
                     <img
                         src={isHomePage ? HomeFill : Home}
@@ -146,7 +143,7 @@ export default function Navbar() {
     bg-[#151520] 
     hover:bg-[#1d1d2f] 
     focus-within:bg-[#1d1d2f] 
-    rounded-full w-full 
+    rounded-full w-full min-w-[15%]
     transition-all duration-200 
     h-full px-3 
     border border-transparent 

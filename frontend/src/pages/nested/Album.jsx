@@ -259,7 +259,7 @@ const Album = () => {
                                 image: details.image?.[2]?.url || details.image?.[1]?.url || details.image?.[0]?.url || fallbackImg,
                                 artists: details.artists?.primary || [],
                             });
-                            
+
                             setPlaylistSongs(songs); // update context with current playlist songs
                             // If no song is playing or the current song is not in this playlist
                             const isCurrentInPlaylist = songs.some(s => s.id === currentSong?.id);
@@ -295,7 +295,7 @@ const Album = () => {
                         content={saved ? "Remove from Your Library" : "Save to Your Library"}
                         placement="top"
                         style={{
-                            backgroundColor: "#242424",
+                            backgroundColor: "#1D1D2F",
                             color: "white",
                             padding: 6,
                             borderRadius: 5,
@@ -457,9 +457,9 @@ const Album = () => {
                                         }
                                         placement="top"
                                         style={{
-                                            backgroundColor: "#242424",
+                                            backgroundColor: "#FFFFFF",
                                             color: "white",
-                                            padding: 6,
+                                            padding: 20,
                                             borderRadius: 5,
                                             fontSize: 12,
                                             fontWeight: 550,
