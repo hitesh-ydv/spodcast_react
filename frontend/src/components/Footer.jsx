@@ -13,6 +13,13 @@ import VolumeControl from "./VolumeControl";
 import { Volume2, Volume1, VolumeX, Maximize } from "lucide-react";
 import FullScreenPlayer from "@/pages/dashboard/FullScreenPlayer";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Home,
+  Search,
+  Heart,
+  Library,
+} from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 export default function FooterPlayer() {
   const {
@@ -27,6 +34,7 @@ export default function FooterPlayer() {
 
   const { toggleLike, removeFromLiked, library, isLiked } = useLibrary();
   const [fullScreen, setFullScreen] = useState(false);
+  const location = useLocation();
 
 
 
@@ -224,10 +232,10 @@ export default function FooterPlayer() {
   };
 
   return (
-    <footer className="py-2.5 w-full flex flex-col text-white">
+    <footer className="w-full flex flex-col text-white py-2.5 max-[799px]:py-0">
       <>
         {/* 🎧 Song Info + Controls */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex z-330 bg-[#12121a] min-[799px]:bg-transparent items-center justify-between w-full p-0 max-[799px]:p-3 max-[799px]:fixed max-[799px]:bottom-16 max-[799px]:left-0">
           {/* Left - Song info */}
 
 
@@ -244,11 +252,12 @@ export default function FooterPlayer() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
+                  // className="hidden min-[950px]:block"
                   >
                     <LazyLoadImage
                       defaultImage={LoadImage}
                       image={currentSong.image?.[1]?.url}
-                      className="w-12 h-12 rounded"
+                      className="min-w-12 min-h-12 w-12 h-12 rounded"
                       draggable={false}
                       onDragStart={(e) => e.preventDefault()}
                     />
@@ -256,7 +265,7 @@ export default function FooterPlayer() {
                 </AnimatePresence>
 
                 {/* 📝 TEXT */}
-                <div className="max-w-60 flex flex-col">
+                <div className="max-w-50 flex flex-col">
                   <AnimatePresence mode="wait">
                     <motion.div
                       className="flex flex-col"
@@ -266,17 +275,17 @@ export default function FooterPlayer() {
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.25 }}
                     >
-                      <p
-                        className="text-sm inline-block font-medium truncate line-clamp-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/${currentSong.type}/${currentSong.id}`);
-                        }}
-                      >
-                        <a className="inline-block hover:underline cursor-pointer">
-                          {currentSong.name}
-                        </a>
-                      </p>
+                        <p
+                          className="text-sm inline-block w-fit font-medium truncate line-clamp-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/${currentSong.type}/${currentSong.id}`);
+                          }}
+                        >
+                          <a className="inline-block hover:underline cursor-pointer">
+                            {currentSong.name}
+                          </a>
+                        </p>
 
                       <p className="inline-block text-sm font-medium text-[#A0A0B2] truncate line-clamp-1">
                         {currentSong.artists.primary.map((a, i) => (
@@ -309,13 +318,14 @@ export default function FooterPlayer() {
                     fontSize: 12,
                     fontWeight: 550,
                   }}
+
                 >
                   <AnimatePresence mode="wait">
                     <motion.button
                       key={currentSong?.id + "-like"} // ✅ only changes when song changes
                       type="button"
                       onClick={handleLikeToggle}
-                      className="flex items-center justify-center w-5 h-5 cursor-pointer"
+                      className="flex items-center justify-center w-5 h-5 cursor-pointer hidden min-[1050px]:block"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 1.05 }}
@@ -341,11 +351,11 @@ export default function FooterPlayer() {
 
 
           {/* Center - Controls */}
-          <div className="flex flex-col items-center w-1/3">
-            <div className="flex items-center gap-3 justify-center pt-1 ">
+          <div className="flex flex-col items-center w-1/3 max-[800px]:w-fit">
+            <div className="flex items-center gap-3 justify-end pt-1 ">
               <button
                 onClick={toggleShuffle}
-                className={`p-2 rounded-full transition ${isShuffle ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white"
+                className={`p-2 rounded-full transition ${isShuffle ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white hidden min-[800px]:block"
                   }`}
               >
                 <svg
@@ -366,7 +376,7 @@ export default function FooterPlayer() {
 
               <button
                 onClick={playPrevious}
-                className="p-2 rounded-full hover:text-white text-gray-300 transition"
+                className="p-2 rounded-full hover:text-white text-gray-300 transition hidden min-[800px]:block"
               >
                 <svg
                   width="32"
@@ -387,7 +397,7 @@ export default function FooterPlayer() {
 
               <button
                 onClick={togglePlayPause}
-                className="bg-white cursor-pointer text-black p-1 rounded-full flex items-center justify-center"
+                className="bg-white cursor-pointer text-black p-1 rounded-full flex items-center justify-center "
               >
                 <img src={isPlaying ? PauseBtn : PlayBtn} alt="Play" className="h-6.5 w-6.5" draggable={false}
                   onDragStart={(e) => e.preventDefault()} />
@@ -415,7 +425,7 @@ export default function FooterPlayer() {
 
               <button
                 onClick={toggleRepeat}
-                className={`p-2 rounded-full transition ${isRepeat ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white"
+                className={`p-2 rounded-full transition ${isRepeat ? "text-[#7C4DFF]" : "text-gray-300 hover:text-white hidden min-[800px]:block"
                   }`}
               >
                 <svg
@@ -437,8 +447,8 @@ export default function FooterPlayer() {
             </div>
 
             {/* Progress Bar */}
-            <div className="flex items-center gap-2 w-full">
-              <span className="text-xs font-medium text-[#A0A0B2]">
+            <div className="z-30000 flex items-center justify-center gap-2 w-full min-[800px]:flex max-[800px]:fixed max-[800px]:left-0 max-[800px]:bottom-13 max-[800px]:px-3">
+              <span className="text-xs font-medium text-[#A0A0B2] hidden min-[800px]:flex">
                 {formatTime(currentTime)}
               </span>
 
@@ -487,7 +497,7 @@ export default function FooterPlayer() {
                 </AnimatePresence>
               </div>
 
-              <span className="text-xs font-medium text-[#A0A0B2]">
+              <span className="text-xs font-medium text-[#A0A0B2] hidden min-[800px]:flex">
                 {formatTime(duration)}
               </span>
             </div>
@@ -496,12 +506,12 @@ export default function FooterPlayer() {
 
           </div>
 
-          <div className="w-1/3 flex justify-end font-medium text-[#A0A0B2] text-xs items-center gap-4 pr-2"
+          <div className="w-1/3 flex justify-end font-medium text-[#A0A0B2] text-xs items-center gap-4 pr-2 max-[800px]:hidden"
           >
             {currentSong && (
               <>
                 <VolumeControl audioRef={audioRef} />
-                <button onClick={() => setFullScreen(true)} className="text-gray-400 hover:text-white transition-colors cursor-pointer p-2">
+                <button onClick={() => setFullScreen(true)} className="text-gray-400 hover:text-white transition-colors cursor-pointer p-2 hidden min-[800px]:block">
                   <Maximize size={20} />
                 </button>
 
@@ -515,6 +525,53 @@ export default function FooterPlayer() {
               </>
             )}
           </div>
+        </div>
+
+        {/* Mobile Bottom Navigation */}
+        <div className="flex min-[800px]:hidden bg-[#12121A] h-16">
+          <button
+            onClick={() => navigate("/")}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 ${location.pathname === "/"
+              ? "text-white"
+              : "text-[#A0A0B2]"
+              }`}
+          >
+            <Home size={22} />
+            <span className="text-[11px] font-medium">Home</span>
+          </button>
+
+          <button
+            onClick={() => navigate("/search")}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 ${location.pathname === "/search"
+              ? "text-white"
+              : "text-[#A0A0B2]"
+              }`}
+          >
+            <Search size={22} />
+            <span className="text-[11px] font-medium">Search</span>
+          </button>
+
+          <button
+            onClick={() => navigate("/liked")}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 ${location.pathname === "/liked"
+              ? "text-white"
+              : "text-[#A0A0B2]"
+              }`}
+          >
+            <Heart size={22} fill={location.pathname === "/liked" ? "currentColor" : "none"} />
+            <span className="text-[11px] font-medium">Liked</span>
+          </button>
+
+          <button
+            onClick={() => navigate("/library")}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 ${location.pathname === "/library"
+              ? "text-white"
+              : "text-[#A0A0B2]"
+              }`}
+          >
+            <Library size={22} />
+            <span className="text-[11px] font-medium">Library</span>
+          </button>
         </div>
 
         {audioUrl && (

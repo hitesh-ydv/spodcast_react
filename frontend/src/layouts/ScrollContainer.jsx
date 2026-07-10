@@ -97,7 +97,7 @@ export default function ScrollContainer({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-y-0 left-0 flex items-center pointer-events-none"
+              className="absolute inset-y-0 left-0 hidden min-[800px]:flex items-center pointer-events-none"
             >
               <motion.div
                 initial={{ opacity: 0 }}
@@ -135,7 +135,7 @@ export default function ScrollContainer({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-y-0 right-0 flex items-center justify-end pointer-events-none"
+              className="absolute inset-y-0 right-0 hidden min-[800px]:flex items-center justify-end pointer-events-none"
             >
               <motion.div
                 initial={{ opacity: 0 }}

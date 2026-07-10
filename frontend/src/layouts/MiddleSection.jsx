@@ -12,9 +12,15 @@ const MiddleSection = () => {
 
     return (
         <div className='flex h-full bg-black text-white overflow-hidden'>
-            <LeftSidebar />
+            <div className="hidden min-[600px]:block">
+                <LeftSidebar />
+            </div>
             <MainContent />
-            {currentSong && <RightSidebar />}
+            {currentSong && (
+                <div className="hidden min-[850px]:block">
+                    <RightSidebar />
+                </div>
+            )}
         </div>
     )
 }

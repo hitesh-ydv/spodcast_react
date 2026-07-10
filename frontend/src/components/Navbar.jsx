@@ -117,7 +117,7 @@ export default function Navbar() {
     return (
         <nav className="w-full flex items-center justify-between px-2 py-2 pr-4 text-white h-16">
 
-            <div className="ml-2.5">
+            <div className="ml-2.5 hidden min-[700px]:block">
                 <img
                     src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_White.png"
                     alt="Spotify"
@@ -127,9 +127,9 @@ export default function Navbar() {
                 />
             </div>
 
-            <div className="h-full w-[35%] min-w-[20%] flex items-center gap-2">
+            <div className="h-full w-[32%] min-w-[15%] flex items-center gap-2">
 
-                <button onClick={handleFocus2} className="duration-300 hover:scale-105 w-13 bg-[#151520] p-2 rounded-full hover:bg-[#1d1d2f] cursor-pointer transition-all">
+                <button onClick={handleFocus2} className="duration-300 hover:scale-105 w-13 min-w-13 bg-[#151520] p-2 rounded-full hover:bg-[#1d1d2f] cursor-pointer transition-all">
                     <img
                         src={isHomePage ? HomeFill : Home}
                         alt="Home"
@@ -137,63 +137,110 @@ export default function Navbar() {
                         onDragStart={(e) => e.preventDefault()}
                     />
                 </button>
-
                 {/* Search Bar */}
-                <div className="flex items-center 
-    bg-[#151520] 
-    hover:bg-[#1d1d2f] 
-    focus-within:bg-[#1d1d2f] 
-    rounded-full w-full min-w-[15%]
-    transition-all duration-200 
-    h-full px-3 
-    border border-transparent 
-    focus-within:border-[rgba(255,255,255,0.08)] 
-    focus-within:ring-1 
-    focus-within:ring-[rgba(255,255,255,0.05)]">
+                <div
+                    className="
+        flex flex-1 min-w-[290px] max-w-[700px]
+        items-center h-full
+        rounded-full
+        bg-[#151520]
+        hover:bg-[#1d1d2f]
+        focus-within:bg-[#1d1d2f]
+        transition-all duration-200
+        px-3
+        border border-transparent
+        focus-within:border-[rgba(255,255,255,0.08)]
+        focus-within:ring-1
+        focus-within:ring-[rgba(255,255,255,0.05)]
+    "
+                >
+                    {/* Search Icon */}
+                    <img
+                        src={Search}
+                        alt="Search"
+                        className="h-8 w-8 shrink-0"
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
+                    />
 
-                    <img src={Search} alt="Search" className="h-8 w-8" draggable={false}
-                        onDragStart={(e) => e.preventDefault()} />
-
+                    {/* Input */}
                     <input
                         ref={inputRef}
                         type="text"
                         placeholder="What do you want to play?"
                         value={searchText}
                         onChange={handleInputChange}
-                        className="bg-transparent outline-none text-white placeholder-[#adadad] flex-1 ml-3 h-full font-semibold"
                         onClick={handleFocus}
+                        className="
+            ml-3
+            flex-1
+            min-w-0
+            bg-transparent
+            outline-none
+            text-white
+            placeholder-[#adadad]
+            font-semibold
+        "
                     />
 
+                    {/* Clear Button */}
                     {searchText && (
                         <button
                             onClick={() => {
-                                setSearchText("")
-                                inputRef.current.focus();
+                                setSearchText("");
+                                inputRef.current?.focus();
                             }}
-                            className="p-1 hover:bg-[#2a2a2a] rounded-full transition flex items-center justify-center mr-1"
+                            className="
+                ml-2
+                flex
+                h-8
+                w-8
+                shrink-0
+                items-center
+                justify-center
+                rounded-full
+                hover:bg-[#2a2a2a]
+                transition
+            "
                         >
-                            <img src={Close} alt="Clear" className="h-8 w-8 cursor-pointer" />
+                            <img
+                                src={Close}
+                                alt="Clear"
+                                className="h-6 w-6 cursor-pointer"
+                            />
                         </button>
                     )}
 
-                    <div className="h-6 w-[1px] bg-[#adadad] py-2"></div>
+                    {/* Divider */}
+                    <div className="mx-2 hidden h-6 w-px shrink-0 bg-[#adadad] min-[1250px]:block" />
 
+                    {/* Share */}
                     <img
                         onClick={() => {
                             navigator.clipboard.writeText(window.location.origin);
-                            notify(); // your toast / alert
+                            notify();
                         }}
                         src={Share}
                         alt="Share"
-                        className="h-8 ml-2 p-1 hover:bg-[#2c2c47] rounded-full cursor-pointer"
+                        className="
+            hidden
+            min-[1250px]:block
+            h-8
+            shrink-0
+            cursor-pointer
+            rounded-full
+            p-1
+            hover:bg-[#2c2c47]
+        "
                     />
+
                     <Toaster position="bottom-center" />
                 </div>
             </div>
 
             {/* Right Section */}
             <div className="flex items-center gap-6 ">
-                <img src={Bell} onClick={() => navigate("/notifications")} alt="Notifications" className="h-8 w-8 cursor-pointer p-1 rounded-full" />
+                <img src={Bell} onClick={() => navigate("/notifications")} alt="Notifications" className="h-8 w-8 cursor-pointer p-1 rounded-full hidden min-[850px]:block" />
                 <Menu>
                     <MenuButton
                         className="cursor-pointer w-10 h-10 inline-flex items-center justify-center rounded-full bg-gray-800 p-1

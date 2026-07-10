@@ -73,7 +73,7 @@ export default function DashboardLayout() {
                         <MiddleSection />
                     </main>
 
-                    <div className="px-4">
+                    <div className="px-4 max-[799px]:px-0 ">
                         <Footer />
                     </div>
 
